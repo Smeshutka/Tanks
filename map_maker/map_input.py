@@ -1,4 +1,22 @@
-def read_map_data(input_filename):
+import random
+
+def map_maker(map):
+    screen_width = 20 * len(map[0])
+    screen_height = 20 * len(map)
+    tiles = []
+
+    for i in range(len(map)):
+        for j in range(len(map[i])):
+            if map[i][j] == 'g':
+                tiles.append((20 * j, 20 * i, 'tile_grass'))
+            elif map[i][j] == 'w':
+                tiles.append((20 * j, 20 * i, 'tile_water'))
+            elif map[i][j] == 'b':
+                tiles.append((20 * j, 20 * i, 'tile_bricks'))
+
+    return (screen_width, screen_height, tiles)
+
+def file_reader(input_filename):
     """Cчитывает данные о карте из файла
 
     Параметры:
@@ -23,17 +41,43 @@ def read_map_data(input_filename):
                     line_tiles.append(char)
             map.append(line_tiles.copy())
 
-    screen_width = 100 * len(map[0])
-    screen_height = 100 * len(map)
-    tiles = []
+    return map_maker(map)
 
-    for i in range(len(map)):
-        for j in range(len(map[i])):
-            if map[i][j] == 'g':
-                tiles.append((100 * j, 100 * i, 'images/tile_grass.png'))
-            elif map[i][j] == 'w':
-                tiles.append((100 * j, 100 * i, 'images/tile_water.png'))
-            elif map[i][j] == 'b':
-                tiles.append((100 * j, 100 * i, 'images/tile_bricks.png'))
+def map_generator(a, b):
+    map = [['g' for i in range(b)] for j in range(a)]
 
-    return (screen_width, screen_height, tiles)
+    m, n = random.randint(0, a-1), random.randint(0, b-1)
+    for i in range(a*b):
+        x = random.randint(0, 3)
+        if x == 0:
+            if m < a-1:
+                m += 1
+        elif x == 1:
+            if m > 0:
+                m -= 1
+        elif x == 2:
+            if n < b-1:
+                n += 1
+        elif x == 3:
+            if n > 0:
+                n -= 1
+        map[m][n] = 'w'
+
+    m, n = random.randint(0, a - 1), random.randint(0, b - 1)
+    for i in range(a*b//10):
+        x = random.randint(0, 3)
+        if x == 0:
+            if m < a-1:
+                m += 1
+        elif x == 1:
+            if m > 0:
+                m -= 1
+        elif x == 2:
+            if n < b-1:
+                n += 1
+        elif x == 3:
+            if n > 0:
+                n -= 1
+        map[m][n] = 'b'
+
+    return map_maker(map)
