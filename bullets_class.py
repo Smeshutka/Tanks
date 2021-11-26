@@ -1,15 +1,13 @@
 from helper import*
 
-def Start_bullets():
-    bullets_type = ["bullet"]
-    name_images = {}
-    images = {}
-    for bul in bullets_type:
-        name_images[bul] = "textures/" + bul + ".png"
-        images[bul] = pygame.image.load(name_images[bul]).convert_alpha()
 
-    #masks = {"shell":pygame.mask.from_surface(images["shell"]),
-    #         "bullet":pygame.mask.from_surface(images["bullet"])}
+bullets_type = ["bullet"]
+name_images = {}
+images = {}
+for bul in bullets_type:
+    name_images[bul] = "textures/" + bul + ".png"
+    #images[bul] = pygame.image.load(name_images[bul]).convert_alpha()
+    #masks[bul] = pygame.mask.from_surface(images[bul])
 
 
 class Bullets(pygame.sprite.Sprite):

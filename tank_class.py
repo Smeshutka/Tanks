@@ -1,9 +1,7 @@
 from helper import*
 from bullets_class import*
-dt = 1/60
+from constans import*
 
-WIDTH, HEIGHT = 800, 800
-FPS = 60
 bullets = pygame.sprite.Group()
 tanks = pygame.sprite.Group()
 
@@ -11,7 +9,7 @@ tanks = pygame.sprite.Group()
 class Tank(pygame.sprite.Sprite):
     def __init__(self, x, y, tank_type, screen):
         """
-        args: x,y - положение центра танка
+        x,y - положение центра танка
         tank_type - тип танка, возможные: "light", "middle", "heavy"
         sreen - экран на котором будет отображаться танк
         """
@@ -167,8 +165,7 @@ class Tank(pygame.sprite.Sprite):
         for i in range(self.hp):
             self.screen.blit(sub, (self.center.x-50+25*i, self.center.y-b/2-30))
         
-    def fire_gun(self):
-        global flpk, frpk
+    def fire_gun(self, flpk, frpk):
         if flpk == 1 and self.time_cooldawn == 0:
             a, b = self.turret_image_start.get_size()
             x = self.center.x + a / 2 * math.cos(self.turret_ang)
@@ -177,6 +174,8 @@ class Tank(pygame.sprite.Sprite):
             bullet.add(bullets)
             self.time_cooldawn = self.cooldawn
         flpk = 0
+
+        return flpk, frpk
             
           
     def update_cooldawn(self):
@@ -184,56 +183,4 @@ class Tank(pygame.sprite.Sprite):
         if self.time_cooldawn <= 0:
             self.time_cooldawn = 0
         
-# Этот блок здесь для отладки классов
-pygame.init()
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-tank_player = Tank(250,250,"heavy",screen)
-fw, fa, fs, fd, flpk, frpk = 0, 0, 0, 0, 0, 0
-clock = pygame.time.Clock()
-finished = False
 
-while not finished:
-    screen.fill((255,255,255))
-    tank_player.draw()
-        
-    for bul in bullets:
-        bul.draw()
-    
-    pygame.display.update()
-    clock.tick(FPS)
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            finished = True
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_w:
-                fw = 1
-            if event.key == pygame.K_a:
-                fa = 1
-            if event.key == pygame.K_s:
-                fs = 1
-            if event.key == pygame.K_d:
-                fd = 1
-        elif event.type == pygame.KEYUP:
-            if event.key == pygame.K_w:
-                fw = 0
-            if event.key == pygame.K_a:
-                fa = 0
-            if event.key == pygame.K_s:
-                fs = 0
-            if event.key == pygame.K_d:
-                fd = 0
-        if event.type == pygame.MOUSEBUTTONUP:
-            if event.button == 1:
-                flpk = 1
-            if event.button == 3:
-                frpk = 1     
-                
-    tank_player.move(fw,fa,fs,fd,0.01,1)
-    tank_player.fire_gun()
-    tank_player.update_cooldawn()
-        
-    for bul in bullets:
-        bul.move()
-
-    
-pygame.quit()
