@@ -7,7 +7,6 @@ from Tanks.helper import*
 from Tanks.constans import*
 
 tiles = pygame.sprite.Group() 
-
 tiles_type = ["grass", "water", "bricks"]
 name_images = {}
 images = {}
@@ -31,19 +30,30 @@ class Tile(pygame.sprite.Sprite):
         self.screen = screen
         self.image = pygame.image.load(name_images[tile_type]).convert_alpha()
         self.corner = pos(x,y)
-
+        self.type = tile_type
         
         if tile_type == "grass":
             self.hp = -1
         elif tile_type == "water":
             self.hp = -1
         elif tile_type == "bricks":
-            self.hp = 2
+            self.hp = 1
+    def update_tile(self, tile_type):
+        """Обновляет тип тайла с сохранением всего прочего"""
         
+        self.type = tile_type
+        self.image = pygame.image.load(name_images[tile_type]).convert_alpha()
+
     def draw(self):
         self.screen.blit(self.image, (self.corner.x, self.corner.y))
 
-    
+    def meet_with_bullet(tile, bul):
+        """Обработка пересечения с пулей"""
+        
+        if tile.type == "bricks":
+                if meet(tile, bul):
+                    bul.kill()
+                    tile.update_tile("grass")
     
 class Map(pygame.sprite.Sprite):
     """По списку tiles_list формата (x, y, name_image) создает группу тайлов"""
@@ -55,4 +65,6 @@ class Map(pygame.sprite.Sprite):
     def draw(self):
         for t in tiles:
             t.draw()
+
+   
             

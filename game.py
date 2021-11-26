@@ -58,7 +58,8 @@ while not finished:
         
     for bul in bullets:
         bul.move()
-    
+        for tile in tiles:
+            tile.meet_with_bullet(bul)
             
     
 pygame.quit()
