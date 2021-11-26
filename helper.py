@@ -32,3 +32,13 @@ def meet(self, obj):
         if pygame.sprite.collide_mask(self, obj):
             return True
     return False
+
+class unnamed(pygame.sprite.Sprite):
+    """Создает безымянный класс с изображением и маской"""
+
+    def __init__(self, image, x, y):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = image
+        self.corner = pos(x, y)
+        update_mask(self)
+        self.rect = self.image.get_rect()

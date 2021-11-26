@@ -84,6 +84,17 @@ class Tank(pygame.sprite.Sprite):
                         return False
             return True
 
+        def check_turn_turret(self):
+            """Проверка на то, может ли танк повернуть свою башню"""
+            
+            obj = unnamed(self.turret_image, self.corner.x, self.corner.y) #Создается безымяный класс для проверки пересечения со стенками
+            for tile in tiles:
+                if tile.type == "bricks":
+                    if meet(obj, tile):
+                        return False
+            return True
+            
+        
         def update_for_check(self):
             """Обновляем предположительно возможное положение танка.
             Нужно для определения того, может ли танк туда попасть или нет"""
@@ -113,6 +124,8 @@ class Tank(pygame.sprite.Sprite):
             
         def turn_turret(self):
             mx , my = pygame.mouse.get_pos()
+            #if check_turn_turret(self):
+            #   print(mx, my)
             if mx > self.center.x:
                 self.turret_ang = -math.atan((my-self.center.y) / (mx-self.center.x))
             elif mx < self.center.x:
