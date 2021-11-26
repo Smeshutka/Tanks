@@ -1,13 +1,17 @@
 from helper import*
+from constans import*
 
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
 bullets_type = ["bullet"]
 name_images = {}
 images = {}
+masks = {}
 for bul in bullets_type:
     name_images[bul] = "textures/" + bul + ".png"
-    #images[bul] = pygame.image.load(name_images[bul]).convert_alpha()
-    #masks[bul] = pygame.mask.from_surface(images[bul])
+    
+    images[bul] = pygame.image.load(name_images[bul]).convert_alpha()
+    masks[bul] = pygame.mask.from_surface(images[bul])
 
 
 class Bullets(pygame.sprite.Sprite):
@@ -26,7 +30,7 @@ class Bullets(pygame.sprite.Sprite):
         self.image_start = pygame.image.load(name_images[bullet_type]).convert_alpha() 
         self.image = self.image_start
         update_corner(self)
-
+        self.mask = masks[bul]
         
         if bullet_type == "bullet":
             self.v = 10
