@@ -31,6 +31,7 @@ class Bullets(pygame.sprite.Sprite):
         self.image = self.image_start
         update_corner(self)
         self.mask = masks[bul]
+        self.rect = self.image.get_rect()
         
         if bullet_type == "bullet":
             self.v = 10

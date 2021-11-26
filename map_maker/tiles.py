@@ -31,6 +31,7 @@ class Tile(pygame.sprite.Sprite):
         self.image = pygame.image.load(name_images[tile_type]).convert_alpha()
         self.corner = pos(x,y)
         self.type = tile_type
+        self.rect = self.image.get_rect()
         
         if tile_type == "grass":
             self.hp = -1

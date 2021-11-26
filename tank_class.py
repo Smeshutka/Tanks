@@ -61,6 +61,7 @@ class Tank(pygame.sprite.Sprite):
         self.turret_image = self.turret_image_start
         update_corner(self)
         update_mask(self)
+        self.rect = self.image.get_rect()
         
     def move(self, fw, fa, fs, fd, k1, k2):
         """
@@ -142,7 +143,7 @@ class Tank(pygame.sprite.Sprite):
         self.image = self.body_image
         update_corner(self)
         self.screen.blit(self.image, (self.corner.x, self.corner.y))
-        
+        self.rect = self.image.get_rect()
         update_mask(self) #Обновление маски танка
         
         #Рисование башни танка:
@@ -182,5 +183,5 @@ class Tank(pygame.sprite.Sprite):
         self.time_cooldawn -= 1/FPS
         if self.time_cooldawn <= 0:
             self.time_cooldawn = 0
-        
+       
 

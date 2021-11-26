@@ -22,12 +22,13 @@ def meet(self, obj):
     """Проверка на то, встретились ли объект self и объект obj"""
         
 
-    self.rect = self.image.get_rect()
+    #self.rect = self.image.get_rect()
     self.rect.x, self.rect.y = self.corner.x, self.corner.y
    
-    obj.rect = obj.image.get_rect()
+    #obj.rect = obj.image.get_rect()
     obj.rect.x, obj.rect.y = obj.corner.x, obj.corner.y
    
-    if pygame.sprite.collide_mask(self, obj):
-        return True
+    if pygame.sprite.collide_rect(self, obj):
+        if pygame.sprite.collide_rect(self, obj):
+            return True
     return False
