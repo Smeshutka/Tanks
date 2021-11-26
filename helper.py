@@ -29,6 +29,6 @@ def meet(self, obj):
     obj.rect.x, obj.rect.y = obj.corner.x, obj.corner.y
    
     if pygame.sprite.collide_rect(self, obj):
-        if pygame.sprite.collide_rect(self, obj):
+        if pygame.sprite.collide_mask(self, obj):
             return True
     return False
