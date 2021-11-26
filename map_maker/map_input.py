@@ -8,11 +8,11 @@ def map_maker(map):
     for i in range(len(map)):
         for j in range(len(map[i])):
             if map[i][j] == 'g':
-                tiles.append((20 * j, 20 * i, 'tile_grass'))
+                tiles.append([20 * j, 20 * i, 'grass'])
             elif map[i][j] == 'w':
-                tiles.append((20 * j, 20 * i, 'tile_water'))
+                tiles.append([20 * j, 20 * i, 'water'])
             elif map[i][j] == 'b':
-                tiles.append((20 * j, 20 * i, 'tile_bricks'))
+                tiles.append([20 * j, 20 * i, 'bricks'])
 
     return (screen_width, screen_height, tiles)
 
@@ -44,6 +44,15 @@ def file_reader(input_filename):
     return map_maker(map)
 
 def map_generator(a, b):
+    """Генерирует карту размером a * b тайлов.
+
+    Возвращает:
+    (screen_width, screen_height, tiles)
+    **screen_width** — необходимая ширина экрана
+    **screen_height** — необходимая высота экрана
+    **screen_height** — кортеж с элементами вида
+        (координата левого верхнего угла по x, координата левого верхнего угла по y, название файла с изображением)
+    """
     map = [['g' for i in range(b)] for j in range(a)]
 
     m, n = random.randint(0, a-1), random.randint(0, b-1)
