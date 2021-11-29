@@ -4,7 +4,7 @@ from constans import*
 from  map_maker.tiles import*
 from map_maker.map_input import*
 from random import *
-s
+
 
 pygame.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
