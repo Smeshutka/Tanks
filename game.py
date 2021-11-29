@@ -1,15 +1,14 @@
-from helper import*
-from tank_class import*
-from constans import*
-from  map_maker.tiles import*
-from map_maker.map_input import*
-from random import *
-
+from helper import *
+from tank_class import *
+from constans import *
+from map_maker.tiles import *
+from map_maker.map_input import *
+from AI import *
 
 pygame.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-tank_player = Tank(250,250,"heavy",screen)
-fw, fa, fs, fd, flpk, frpk = 0, 0, 0, 0, 0, 0
+tank_player = Tank(250, 250, "heavy", screen)
+tank_enemy = Tank(400, 400, "heavy", screen)  # Пробный вариант танка противника
 clock = pygame.time.Clock()
 finished = False
 
@@ -18,13 +17,16 @@ screen = pygame.display.set_mode((w, h))
 map = Map(tiles_list, screen)
 
 while not finished:
-    screen.fill((255,255,255))
+    screen.fill((255, 255, 255))
     map.draw()
     tank_player.draw()
-        
+    tank_enemy.draw()
+    v = vision(tank_enemy, screen)
+    v.meet_with_tank(tank_player)
+
     for bul in bullets:
         bul.draw()
-    
+
     pygame.display.update()
     clock.tick(FPS)
     for event in pygame.event.get():
@@ -32,36 +34,36 @@ while not finished:
             finished = True
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_w:
-                fw = 1
+                tank_player.fw = 1
             if event.key == pygame.K_a:
-                fa = 1
+                tank_player.fa = 1
             if event.key == pygame.K_s:
-                fs = 1
+                tank_player.fs = 1
             if event.key == pygame.K_d:
-                fd = 1
+                tank_player.fd = 1
         elif event.type == pygame.KEYUP:
             if event.key == pygame.K_w:
-                fw = 0
+                tank_player.fw = 0
             if event.key == pygame.K_a:
-                fa = 0
+                tank_player.fa = 0
             if event.key == pygame.K_s:
-                fs = 0
+                tank_player.fs = 0
             if event.key == pygame.K_d:
-                fd = 0
+                tank_player.fd = 0
         if event.type == pygame.MOUSEBUTTONUP:
             if event.button == 1:
-                flpk = 1
+                tank_player.reload_left()
             if event.button == 3:
-                frpk = 1     
-                
-    tank_player.move(fw,fa,fs,fd,0.01,1)
-    flpk, frpk = tank_player.fire_gun(flpk, frpk)
+                tank_player.reload_right()
+
+    tank_player.move(0.01, 1)
+    tank_player.fire_gun()
     tank_player.update_cooldawn()
-        
+    tank_enemy.update_cooldawn()
+
     for bul in bullets:
         bul.move()
         for tile in tiles:
-            tile.meet_with_bullet(bul)
-            
-    
-pygame.quit()
+            tile.meet_with_basdwaddddddullet(bul)
+
+pygame.quit()wwdawdawdasdawdw
