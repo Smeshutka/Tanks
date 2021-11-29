@@ -3,9 +3,6 @@ from Tanks.helper import*
 class vision(pygame.sprite.Sprite):
     def __init__(self, owner, screen):
         """
-        x, y:  положение левого верхнего угла тайла
-        tile_type: тип тайла, возможные: "grass", "water", "bricks"
-        sreen: экран на котором будет отображаться танк
         """
 
         pygame.sprite.Sprite.__init__(self)
