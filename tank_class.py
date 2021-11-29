@@ -31,6 +31,7 @@ class Tank(pygame.sprite.Sprite):
         self.fa = 0
         self.fs = 0
         self.fd = 0
+        self.turret_rotate_speed = 1
         
         if tank_type == "light":
             self.hp = 5
@@ -73,16 +74,26 @@ class Tank(pygame.sprite.Sprite):
         update_mask(self)
         self.rect = self.image.get_rect()
 
+
     def turn_turret(self, tx=None, ty=None):
         if tx == None and ty == None:
             tx, ty = pygame.mouse.get_pos()
-
-        # if check_turn_turret(self):
-        #   print(mx, my)
+        
         if tx > self.center.x:
-            self.turret_ang = -math.atan((ty - self.center.y) / (tx - self.center.x))
+            self.wanted_turret_ang = -math.atan((ty-self.center.y) / (tx-self.center.x))
         elif tx < self.center.x:
-            self.turret_ang = -math.atan((ty - self.center.y) / (tx - self.center.x)) + math.pi
+            self.wanted_turret_ang = -math.atan((ty-self.center.y) / (tx-self.center.x))+math.pi
+        if self.wanted_turret_ang < 0:
+            self.wanted_turret_ang += 2*math.pi
+        ang = convert_ang(self.turret_ang) - self.wanted_turret_ang
+        if ang <= -math.pi:
+            ang += 2*math.pi
+        elif ang > math.pi:
+            ang -= 2*math.pi
+        if ang < 0:
+            self.turret_ang += self.turret_rotate_speed * dt
+        elif ang > 0:
+            self.turret_ang -= self.turret_rotate_speed * dt
 
 
     def move(self, k1, k2):
@@ -128,8 +139,10 @@ class Tank(pygame.sprite.Sprite):
             
             if self.fa == True and self.fd == False:
                 self.body_ang += self.ang_speed * dt
+                self.turret_ang += self.ang_speed * dt
             elif self.fa == False and self.fd == True:
                 self.body_ang -= self.ang_speed * dt
+                self.turret_ang -= self.ang_speed * dt
 
             update_for_check(self)
 
@@ -152,6 +165,7 @@ class Tank(pygame.sprite.Sprite):
             an = self.body_ang #Угол между горизонтом и направлением танка
             vx = self.velocity.x
             vy = self.velocity.y
+            self.turn_turret() #Поворот башни танка
             v = (vx**2 + vy**2)**0.5
             
             self.vel_ang = 0 #Угол между вектором скорости и горизонтом
