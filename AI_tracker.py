@@ -3,6 +3,7 @@ from Tanks.helper import*
 class vision(pygame.sprite.Sprite):
     def __init__(self, owner, screen):
         """
+        owner - тот, танк, чьё это поле зрения
         """
 
         pygame.sprite.Sprite.__init__(self)
