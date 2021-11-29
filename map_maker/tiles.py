@@ -6,7 +6,8 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..\..')
 from Tanks.helper import*
 from Tanks.constans import*
 
-tiles = pygame.sprite.Group() 
+tiles = pygame.sprite.Group()
+tiles_array = []
 tiles_type = ["grass", "water", "bricks"]
 name_images = {}
 images = {}
@@ -16,7 +17,6 @@ for tile in tiles_type:
     name_images[tile] = "map_maker/images/tile_" + tile + "1.png"
     images[tile] = pygame.image.load(name_images[tile]).convert_alpha()
     masks[tile] = pygame.mask.from_surface(images[tile])
-
 
 class Tile(pygame.sprite.Sprite):
     def __init__(self, x, y, tile_type, screen):
@@ -32,13 +32,19 @@ class Tile(pygame.sprite.Sprite):
         self.corner = pos(x,y)
         self.type = tile_type
         self.rect = self.image.get_rect()
-        
+            
         if tile_type == "grass":
             self.hp = -1
+            self.k1 = 0.01
+            self.k2 = 1
         elif tile_type == "water":
             self.hp = -1
+            self.k1 = 0.01
+            self.k2 = 1
         elif tile_type == "bricks":
             self.hp = 1
+            self.k1 = 0.01
+            self.k2 = 1
     def update_tile(self, tile_type):
         """Обновляет тип тайла с сохранением всего прочего"""
         
@@ -52,20 +58,33 @@ class Tile(pygame.sprite.Sprite):
         """Обработка пересечения с пулей"""
         
         if tile.type == "bricks":
-                if meet(tile, bul):
-                    bul.kill()
-                    tile.update_tile("grass")
+            if meet(tile, bul):
+                bul.kill()
+                tile.update_tile("grass")
     
 class Map(pygame.sprite.Sprite):
     """По списку tiles_list формата (x, y, name_image) создает группу тайлов"""
     
-    def __init__(self, tiles_list, screen):
-        for t in tiles_list:
-            tile = Tile(t[0], t[1], t[2], screen)
-            tile.add(tiles)
+    def __init__(self, map, screen):
+        for i in range(len(map)):
+            tiles_array.append([])
+            for j in range(len(map[i])):
+                tiles_array[i].append(Tile(map[i][j][0], map[i][j][1], map[i][j][2], screen))
+                tiles_array[i][j].add(tiles)
+            
     def draw(self):
         for t in tiles:
             t.draw()
+    
+def return_tile_ower_pos(x, y):
+    """Указываются координаты точки, возвращается тайл с данными координатами"""
+    i = int(x / a)
+    j = int(y / a)
+    if j >= 0 and j < len(tiles_array) and i >= 0 and i < len(tiles_array[0]):
+        return tiles_array[int(y // a)][int(x // a)]
+    return tiles_array[0][0]
+    
 
-   
+map = Map([], 0)
+    
             

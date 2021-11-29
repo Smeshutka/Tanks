@@ -2,7 +2,7 @@ from tank_class import *
 from helper import *
 
 def Go_to_dot(dot,tank):
-    fw,fa,fs,fd = 0,0,0,0
+    tank.fw,tank.fa,tank.fs,tank.fd = 0,0,0,0
     alpha = 0
     if dot.x > tank.center.x:
         alpha = -math.atan((dot.y-tank.center.y) / (dot.x-tank.center.x))
@@ -18,15 +18,13 @@ def Go_to_dot(dot,tank):
         ang -= 2*math.pi
     
     if abs(ang) < math.pi/3:
-        fw = 1 
+        tank.fw = 1 
     elif abs(ang) > math.pi/3:
-        fs = 1
+        tank.fs = 1
     if ang > 0:
-        fa = 1
+        tank.fa = 1
     elif ang < 0:
-        fd = 1
-        
-    return fw,fa,fs,fd
+        tank.fd = 1
 
 
 class vision(pygame.sprite.Sprite):

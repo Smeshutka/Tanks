@@ -46,3 +46,5 @@ class unnamed(pygame.sprite.Sprite):
         self.corner = pos(x, y)
         update_mask(self)
         self.rect = self.image.get_rect()
+
+

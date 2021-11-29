@@ -1,20 +1,26 @@
 import random
+import os
+import sys
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..\..')))
+from Tanks.helper import*
+from Tanks.constans import*
 
 def map_maker(map):
-    screen_width = 20 * len(map[0])
-    screen_height = 20 * len(map)
+    screen_width = a * len(map[0])
+    screen_height = a * len(map)
     tiles = []
 
     for i in range(len(map)):
         for j in range(len(map[i])):
             if map[i][j] == 'g':
-                tiles.append([20 * j, 20 * i, 'grass'])
+                map[i][j] = ([a * j, a * i, 'grass'])
             elif map[i][j] == 'w':
-                tiles.append([20 * j, 20 * i, 'water'])
+                map[i][j] = ([a * j, a * i, 'water'])
             elif map[i][j] == 'b':
-                tiles.append([20 * j, 20 * i, 'bricks'])
+               map[i][j] = ([a * j, a * i, 'bricks'])
 
-    return (screen_width, screen_height, tiles)
+    return (screen_width, screen_height, map)
 
 def file_reader(input_filename):
     """Cчитывает данные о карте из файла

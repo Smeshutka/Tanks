@@ -96,7 +96,7 @@ class Tank(pygame.sprite.Sprite):
             self.turret_ang -= self.turret_rotate_speed * dt
 
 
-    def move(self, k1, k2):
+    def move(self):
         """
         Отвечает за перемещение и поворот всего танка
         args:
@@ -105,9 +105,31 @@ class Tank(pygame.sprite.Sprite):
         """
         global dt
 
+        def get_mu(self):
+            """Возвращает коэффициент трения тайла, находящегося в центре танка"""
+            tile = return_tile_ower_pos(self.center.x, self.center.y)
+            return tile.k1, tile.k2
+        
+        def tiles_near(self):
+            """
+            Возвращает группу тайлов, находящихся поблизости танка
+            tiles_array[i][j]: i - номер строчки, j - номер столбца
+            """
+            tiles_n = pygame.sprite.Group()
+            x1, y1, x2, y2 = self.corner.x, self.corner.y, 2 * self.center.x - self.corner.x, 2 * self.center.y - self.corner.y
+            x1 = max(int(x1) // a - 2, 0)
+            x2 = min(int(x2) // a + 2, len(tiles_array[0]) - 1)
+            y1 = max(int(y1) // a - 2, 0)
+            y2 = min(int(y2) // a + 2, len(tiles_array) - 1)
+            for i in range(x1, x2):
+                for j in range(y1, y2):
+                    if j >= 0 and j < len(tiles_array) and i >= 0 and i < len(tiles_array[0]):
+                        tiles_array[j][i].add(tiles_n)
+            return tiles_n
+        
         def check_move(self):
             """Проверка на то, может ли танк сюда сдвинутся (врезался ли он с тайлами)"""
-            for tile in tiles:
+            for tile in tiles_near(self):
                 if tile.type == "bricks" or tile.type == "water":
                     if meet(self, tile):
                         return False
@@ -117,7 +139,7 @@ class Tank(pygame.sprite.Sprite):
             """Проверка на то, может ли танк повернуть свою башню"""
             
             obj = unnamed(self.turret_image, self.corner.x, self.corner.y) #Создается безымяный класс для проверки пересечения со стенками
-            for tile in tiles:
+            for tile in tiles_near(self):
                 if tile.type == "bricks":
                     if meet(obj, tile):
                         return False
@@ -217,6 +239,7 @@ class Tank(pygame.sprite.Sprite):
                 update_for_check(self)
                 
         def main(self):
+            k1, k2 = get_mu(self)
             turn_body(self) #Поворот тела танка
             self.turn_turret() #Поворот башни танка
             set_acceleration(self, k1, k2) #Расчет ускорений
@@ -272,4 +295,7 @@ class Tank(pygame.sprite.Sprite):
         if self.time_cooldawn <= 0:
             self.time_cooldawn = 0
        
-
+    def meet_with_bullet(self, obj):
+        if meet(self, obj):
+            self.hp -= obj.damage
+            obj.kill()

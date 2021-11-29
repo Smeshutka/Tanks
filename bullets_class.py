@@ -1,5 +1,6 @@
 from helper import*
 from constans import*
+from  map_maker.tiles import*
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
@@ -7,9 +8,9 @@ bullets_type = ["bullet"]
 name_images = {}
 images = {}
 masks = {}
+
 for bul in bullets_type:
     name_images[bul] = "textures/" + bul + ".png"
-    
     images[bul] = pygame.image.load(name_images[bul]).convert_alpha()
     masks[bul] = pygame.mask.from_surface(images[bul])
 
@@ -32,6 +33,7 @@ class Bullets(pygame.sprite.Sprite):
         update_corner(self)
         self.mask = masks[bul]
         self.rect = self.image.get_rect()
+        self.damage = 1
         
         if bullet_type == "bullet":
             self.v = 10
@@ -56,7 +58,23 @@ class Bullets(pygame.sprite.Sprite):
         self.image = pygame.transform.rotate(self.image_start, self.ang*180/math.pi)
         update_corner(self)
         self.screen.blit(self.image, (self.corner.x, self.corner.y))
-        
 
+    def tiles_near(self):
+        """
+        Возвращает группу тайлов, находящихся поблизости танка
+        tiles_array[i][j]: i - номер строчки, j - номер столбца
+        """
+        tiles_n = pygame.sprite.Group()
+        x1, y1, x2, y2 = self.corner.x, self.corner.y, 2 * self.center.x - self.corner.x, 2 * self.center.y - self.corner.y
+        x1 = max(int(x1) // a - 2, 0)
+        x2 = min(int(x2) // a + 2, len(tiles_array[0]) - 1)
+        y1 = max(int(y1) // a - 2, 0)
+        y2 = min(int(y2) // a + 2, len(tiles_array) - 1)
+        for i in range(x1, x2):
+            for j in range(y1, y2):
+                if j >= 0 and j < len(tiles_array) and i >= 0 and i < len(tiles_array[0]):
+                    tiles_array[j][i].add(tiles_n)
+        return tiles_n
+    
 #class Shell:
 #class Bullet:

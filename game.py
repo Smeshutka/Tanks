@@ -1,33 +1,34 @@
-from helper import *
-from tank_class import *
-from constans import *
-from map_maker.tiles import *
-from map_maker.map_input import *
-from AI import *
-
+from helper import*
+from tank_class import*
+from constans import*
+from map_maker.tiles import*
+from map_maker.map_input import*
+from AI import*
 
 pygame.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-tank_player = Tank(250, 250, "heavy", screen)
-tank_enemy = Tank(400, 400, "heavy", screen)  # Пробный вариант танка противника
+tank_player = Tank(250,250,"heavy",screen)
+tank_enemy = Tank(400, 400,"heavy",screen) # Пробный вариант танка противника
+tank_enemy.add(tanks)
 clock = pygame.time.Clock()
 finished = False
 
-w, h, tiles_list = file_reader("map_maker/maps/1.txt")
+w, h, map_ar = file_reader("map_maker/maps/1.txt")
 screen = pygame.display.set_mode((w, h))
-map = Map(tiles_list, screen)
+map = Map(map_ar, screen)
+
 
 while not finished:
-    screen.fill((255, 255, 255))
+    screen.fill((255,255,255))
     map.draw()
     tank_player.draw()
     tank_enemy.draw()
     v = vision(tank_enemy, screen)
     v.meet_with_tank(tank_player)
-
+        
     for bul in bullets:
         bul.draw()
-
+    
     pygame.display.update()
     clock.tick(FPS)
     for event in pygame.event.get():
@@ -56,15 +57,21 @@ while not finished:
                 tank_player.reload_left()
             if event.button == 3:
                 tank_player.reload_right()
-
-    tank_player.move(0.01, 1)
+                
+    tank_player.move()
     tank_player.fire_gun()
     tank_player.update_cooldawn()
+    Go_to_dot(pos(50, 50), tank_enemy)
+    #tank_enemy.move()
     tank_enemy.update_cooldawn()
-
+    
     for bul in bullets:
         bul.move()
-        for tile in tiles:
-            tile.meet_with_basdwaddddddullet(bul)
-
+        for tile in bul.tiles_near():
+            tile.meet_with_bullet(bul)
+        tank_player.meet_with_bullet(bul)
+        for tank in tanks:
+            tank.meet_with_bullet(bul)
+            
+    
 pygame.quit()
