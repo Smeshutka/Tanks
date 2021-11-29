@@ -1,69 +1,61 @@
-import sys
-
-import pygame
-from constans import*
-from game import *
-
-window = pygame.display.set_mode((WIDTH, HEIGHT))
-screen1 = pygame.display.set_mode((WIDTH, HEIGHT))
-'''
-class Button:
-    def __init__(self, screen, pos:pos, size:pos, text, command):
-        self.screen = screen
-        self.text = text
-        self.size = size
-        self.pos = pos
-        self.command = command
-    def draw(self):
-
-    def check_pressed(self):
-
-    def call_func(self):
-'''
-class Menu:
-    def __init__(self, punkts):
-        self.punkts=punkts
-    def render(self, poverhnost, font, num_punkt):
-        for i in self.punkts:
-            if num_punkt==i[5]:
-                poverhnost.blit(font.render(i[2], 1, i[4]), (i[0], i[1]))
-            else:
-                poverhnost.blit(font.render(i[2], 1, i[3]), (i[0], i[1]))
-    def menu(self):
-        done=True
-        font_menu = pygame.font.SysFont('arial', 25)
-        #font_menu = pygame.font.Font("C:\Users\Admin\Tanks\BriosoPro Italic.otf", 50)
-        punkt=0
-        while done:
-            screen1.fill(0, 100, 200)
-            mp=pygame.mouse.get.pos()
-            for i in self.punkts:
-                if mp[0]>i[0] and mp[0]<i[0]+155 and mp[1]>i[1] and mp[1]<i[1]+50:
-                    punkt = i[5]
-                self.render(screen, font_menu, punkt)
-
-            for e in pygame.event.get():
-                if e.type==pygame.QUIT:
-                    sys.exit()
-                if e.type==pygame.KEYDOWN:
-                    if e.type==pygame.K_ESCAPE:
-                        sys.exit()
-                if e.key == pygame.K_UP:
-                    if punkt>0:
-                        punkt-=1
-                    if e.key == pygame.K_DOWN:
-                        if punkt<len(self.punkts)-1:
-                            punkt+=1
-                if e.type==pygame.MOUSEBUTTON and e.button==1:
-                    if punkt==0:
-                        done = False
-                    elif punkt==1:
-                        sys.exit
-        window.blit(screen, (0, 0))
-        pygame.dislplay.flip()
+from pygame import *
 
 
-punkts=[(120, 140, u"singleplayer", (250, 250, 30), (250, 30, 250), 0), \
-                (130, 210, u"settings", (250, 250, 30), (250, 30, 250), 1)]
-game = Menu(punkts)
-game.menu()
+
+init()
+size = (800, 600)
+
+ARIAL_50 = font.SysFont('arial', 50)
+
+screen = display.set_mode(size)
+
+
+class Menu():
+    def __init__(self):
+        self._option_surfaces = []
+        self._callbacks = []
+        self._current_option_index = 0
+
+    def append_option(self, option, callback):
+        self._option_surfaces.append(ARIAL_50.render(option, True, (255, 255, 255)))
+        self._callbacks.append(callback)
+
+    def switch(self, direction):
+        self._current_option_index = max(0, min(self._current_option_index + direction, len(self._option_surfaces) - 1))
+
+    def select(self):
+        self._callbacks[self._current_option_index]()
+
+    def draw(self, surf, x, y, option_y_padding):
+        for i, option in enumerate(self._option_surfaces):
+            option_rect = option.get_rect()
+            option_rect.topleft = (x, y + i * option_y_padding)
+            if i == self._current_option_index:
+                draw.rect(surf, (0, 100, 0), option_rect)
+            surf.blit(option, option_rect)
+
+
+menu = Menu()
+menu.append_option('singleplayer', lambda:print("Hello world"))
+#menu.append_option('settings', open_settings())
+menu.append_option('Quit', quit)
+
+running = True
+while running:
+    for e in event.get():
+        if e.type == QUIT:
+            running = False
+        elif e.type == KEYDOWN:
+            if e.key == K_w:
+                menu.switch(-1)
+            elif e.key == K_s:
+                menu.switch(1)
+            elif e.key == K_SPACE:
+                menu.select()
+
+        screen.fill((0, 0, 0))
+
+        menu.draw(screen, 100, 100, 75)
+
+        display.flip()
+quit()

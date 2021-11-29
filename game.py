@@ -5,6 +5,7 @@ from map_maker.tiles import *
 from map_maker.map_input import *
 from AI import *
 
+
 pygame.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 tank_player = Tank(250, 250, "heavy", screen)
@@ -66,4 +67,4 @@ while not finished:
         for tile in tiles:
             tile.meet_with_basdwaddddddullet(bul)
 
-pygame.quit()wwdawdawdasdawdw
+pygame.quit()
