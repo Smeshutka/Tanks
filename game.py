@@ -3,7 +3,7 @@ from tank_class import*
 from constans import*
 from  map_maker.tiles import*
 from map_maker.map_input import*
-from AI_tracker import*
+from AI import*
 
 pygame.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
