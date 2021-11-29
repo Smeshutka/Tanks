@@ -25,6 +25,13 @@ class Tank(pygame.sprite.Sprite):
         self.vel_ang = 0
         self.v_ort = 0
         self.v_par = 0
+        self.flpk = 0
+        self.frpk = 0
+        self.fw = 0
+        self.fa = 0
+        self.fs = 0
+        self.fd = 0
+        self.turret_rotate_speed = 1
         
         if tank_type == "light":
             self.hp = 5
@@ -66,8 +73,30 @@ class Tank(pygame.sprite.Sprite):
         update_corner(self)
         update_mask(self)
         self.rect = self.image.get_rect()
+
+
+    def turn_turret(self, tx=None, ty=None):
+        if tx == None and ty == None:
+            tx, ty = pygame.mouse.get_pos()
         
-    def move(self, fw, fa, fs, fd, k1, k2):
+        if tx > self.center.x:
+            self.wanted_turret_ang = -math.atan((ty-self.center.y) / (tx-self.center.x))
+        elif tx < self.center.x:
+            self.wanted_turret_ang = -math.atan((ty-self.center.y) / (tx-self.center.x))+math.pi
+        if self.wanted_turret_ang < 0:
+            self.wanted_turret_ang += 2*math.pi
+        ang = convert_ang(self.turret_ang) - self.wanted_turret_ang
+        if ang <= -math.pi:
+            ang += 2*math.pi
+        elif ang > math.pi:
+            ang -= 2*math.pi
+        if ang < 0:
+            self.turret_ang += self.turret_rotate_speed * dt
+        elif ang > 0:
+            self.turret_ang -= self.turret_rotate_speed * dt
+
+
+    def move(self, k1, k2):
         """
         Отвечает за перемещение и поворот всего танка
         args:
@@ -105,13 +134,15 @@ class Tank(pygame.sprite.Sprite):
             self.rect = self.image.get_rect()
             update_mask(self) #Обновление маски танка
             
-        def turn_body(self, fa, fd):
+        def turn_body(self):
             body_ang = self.body_ang
             
-            if fa == True and fd == False:
+            if self.fa == True and self.fd == False:
                 self.body_ang += self.ang_speed * dt
-            elif fa == False and fd == True:
+                self.turret_ang += self.ang_speed * dt
+            elif self.fa == False and self.fd == True:
                 self.body_ang -= self.ang_speed * dt
+                self.turret_ang -= self.ang_speed * dt
 
             update_for_check(self)
 
@@ -120,18 +151,9 @@ class Tank(pygame.sprite.Sprite):
             else:
                 self.body_ang = body_ang
                 update_for_check(self)
-                
-            
-        def turn_turret(self):
-            mx , my = pygame.mouse.get_pos()
-            #if check_turn_turret(self):
-            #   print(mx, my)
-            if mx > self.center.x:
-                self.turret_ang = -math.atan((my-self.center.y) / (mx-self.center.x))
-            elif mx < self.center.x:
-                self.turret_ang = -math.atan((my-self.center.y) / (mx-self.center.x))+math.pi
-        
-        def set_acceleration(self, fw, fs, k1, k2):
+
+
+        def set_acceleration(self, k1, k2):
             """
             Расчет ускорений танка с учетом действующих сил:
             Сила мотора F = engine_power, соноправлена с танком
@@ -143,6 +165,7 @@ class Tank(pygame.sprite.Sprite):
             an = self.body_ang #Угол между горизонтом и направлением танка
             vx = self.velocity.x
             vy = self.velocity.y
+            self.turn_turret() #Поворот башни танка
             v = (vx**2 + vy**2)**0.5
             
             self.vel_ang = 0 #Угол между вектором скорости и горизонтом
@@ -152,10 +175,10 @@ class Tank(pygame.sprite.Sprite):
                 self.vel_ang = -math.atan(vy/vx) + math.pi
                 
             #Ускорение за счёт работы двигателя:
-            if fw == True and fs == False:
+            if self.fw == True and self.fs == False:
                 self.acceleration.x = self.engine_power * math.cos(an) / self.m
                 self.acceleration.y = -self.engine_power * math.sin(an) / self.m
-            elif fw == False and fs == True:
+            elif self.fw == False and self.fs == True:
                 self.acceleration.x = -self.engine_power * math.cos(an) / self.m
                 self.acceleration.y = self.engine_power * math.sin(an) / self.m
                 
@@ -194,9 +217,9 @@ class Tank(pygame.sprite.Sprite):
                 update_for_check(self)
                 
         def main(self):
-            turn_body(self,fa,fd) #Поворот тела танка
-            turn_turret(self) #Поворот башни танка
-            set_acceleration(self,fw,fs,k1,k2) #Расчет ускорений
+            turn_body(self) #Поворот тела танка
+            self.turn_turret() #Поворот башни танка
+            set_acceleration(self, k1, k2) #Расчет ускорений
             update_options(self) #Движение танка
 
         main(self)
@@ -225,18 +248,23 @@ class Tank(pygame.sprite.Sprite):
         b = self.body_image.get_size()[1]
         for i in range(self.hp):
             self.screen.blit(sub, (self.center.x-50+25*i, self.center.y-b/2-30))
-        
-    def fire_gun(self, flpk, frpk):
-        if flpk == 1 and self.time_cooldawn == 0:
+
+    def reload_left(self):
+        self.flpk = 1
+
+    def reload_right(self):
+        self.frpk = 1
+
+    def fire_gun(self):
+        if self.flpk == 1 and self.time_cooldawn == 0:
             a, b = self.turret_image_start.get_size()
             x = self.center.x + a / 2 * math.cos(self.turret_ang)
             y = self.center.y - a / 2 * math.sin(self.turret_ang)
             bullet = Bullets(self.screen, "bullet", x, y, self.turret_ang)
             bullet.add(bullets)
             self.time_cooldawn = self.cooldawn
-        flpk = 0
+        self.flpk = 0
 
-        return flpk, frpk
             
           
     def update_cooldawn(self):
