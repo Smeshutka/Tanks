@@ -1,7 +1,5 @@
 from pygame import *
 
-
-
 init()
 size = (800, 600)
 
@@ -34,11 +32,34 @@ class Menu():
                 draw.rect(surf, (0, 100, 0), option_rect)
             surf.blit(option, option_rect)
 
+    def current_option_index(self):
+        return self._current_option_index
+
+
+ARIAL_50.render("Back", True, (255, 255, 255))
+
+def forsettings():
+        menu._option_surfaces=[]
+        menu._callbacks=[]
+        menu._current_option_index=0
+        menu.append_option('Back', lambda: back())
+
+
+def back():
+    menu._option_surfaces=[]
+    menu._callbacks=[]
+    menu.append_option('singleplayer', lambda: exec(open('game.py').read()))
+    menu.append_option('settings', lambda: forsettings())
+    menu.append_option('Quit', quit)
+
+
+
+
 
 menu = Menu()
-menu.append_option('singleplayer', lambda:print("Hello world"))
-#menu.append_option('settings', open_settings())
-menu.append_option('Quit', quit)
+menu.append_option('singleplayer', lambda: exec(open('game.py').read()))
+menu.append_option('settings', lambda: forsettings())
+menu.append_option('Quit', lambda: exit())
 
 running = True
 while running:
@@ -52,10 +73,11 @@ while running:
                 menu.switch(1)
             elif e.key == K_SPACE:
                 menu.select()
-
-        screen.fill((0, 0, 0))
+        if running:
+            screen.fill((0, 0, 0))
 
         menu.draw(screen, 100, 100, 75)
 
         display.flip()
+
 quit()
