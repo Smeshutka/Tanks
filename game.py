@@ -9,7 +9,7 @@ pygame.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 tank_player = Tank(250, 250, 0, "heavy",screen)
 tank_enemy = Tank(400, 400, 0, "heavy",screen) # Пробный вариант танка противника
-tank_enemy.add(tanks)
+tank_enemy.add(tanks_bots)
 
 list_tile = [pos(5, 5), pos(5, 20), pos(20, 20), pos(20, 5)] #Список точек, по которым будет двигаться бот
 tank_enemy.update_list_tile(list_tile)
@@ -26,13 +26,14 @@ map = Map(map_ar, screen)
 while not finished:
     screen.fill((255,255,255))
     map.draw()
-    tank_player.draw()
-    tank_player.update_pos_mouse_for_player()
+
     for tank in tanks:
         tank.draw()
-    v = vision(tank_enemy, screen)
-    v.meet_with_tank(tank_player)
-    #v.draw()
+    tank_player.update_pos_mouse_for_player()
+    
+    for tank in tanks_bots:
+        meet_with_tank(tank, tank_player)
+        
     for bul in bullets:
         bul.draw()
     
@@ -65,27 +66,22 @@ while not finished:
             if event.button == 3:
                 tank_player.reload_right()
                 
-    tank_player.move()
-    tank_player.fire_gun()
-    tank_player.update_cooldawn()
-    move_AI(tank_enemy)
-    
-    tank_enemy.move()
-    tank_enemy.update_cooldawn()
+    for tank in tanks_bots:
+        move_AI(tank)
+
+    for tank in tanks:
+        tank.move()
+        tank.fire_gun()
+        tank.update_cooldawn()
     
     for bul in bullets:
         bul.move()
         for tile in bul.tiles_near():
             tile.meet_with_bullet(bul)
-        tank_player.meet_with_bullet(bul)
+
         for tank in tanks:
             tank.meet_with_bullet(bul)
             
-    #for tank in tanks:
-    #    tank_player.meet_with_tank(tank)
-    #for tank in tanks:
-    #    for tank in tanks:
-    #        tank.meet_with_tank(tank)
             
     
 pygame.quit()

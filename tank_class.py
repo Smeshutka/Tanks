@@ -1,8 +1,10 @@
 from helper import*
 from bullets_class import*
 from  map_maker.tiles import*
+from AI import*
 
 bullets = pygame.sprite.Group()
+tanks_bots = pygame.sprite.Group()
 tanks = pygame.sprite.Group()
 
 
@@ -33,6 +35,8 @@ class Tank(pygame.sprite.Sprite):
         self.turret_rotate_speed = 1
         self.number_dot = 0
         self.mouse = pos(x, y)
+        self.vis = vision(self, screen)
+        self.wanted_turret_ang = self.body_ang
         
         if tank_type == "light":
             self.hp = 5
@@ -74,7 +78,8 @@ class Tank(pygame.sprite.Sprite):
         update_corner(self)
         update_mask(self)
         self.rect = self.image.get_rect()
-
+        self.add(tanks)
+        
     def update_list_dot(self, list_dot):
         """
         list_dot: список координат точек траектории танка
@@ -102,7 +107,8 @@ class Tank(pygame.sprite.Sprite):
         """Обновляет положение мыши для игрока"""
         x, y = pygame.mouse.get_pos()
         self.mouse = pos(x, y)
-        
+
+
     def update_pos_mouse_for_AI(self, x, y):
         """Обновляет положение мыши у бота"""
         self.mouse = pos(x, y)
@@ -160,14 +166,26 @@ class Tank(pygame.sprite.Sprite):
                     if j >= 0 and j < len(tiles_array) and i >= 0 and i < len(tiles_array[0]):
                         tiles_array[j][i].add(tiles_n)
             return tiles_n
+
+        def check_move_tanks(self):
+            """Проверка на то, может ли танк сюда сдвинутся (врезался ли он с танками)"""
+            for tank in tanks:
+                if tank != self:
+                    if meet(self, tank):
+                        return False
+            return True
         
-        def check_move(self):
+        def check_move_tiles(self):
             """Проверка на то, может ли танк сюда сдвинутся (врезался ли он с тайлами)"""
             for tile in tiles_near(self):
                 if tile.type == "bricks" or tile.type == "water":
                     if meet(self, tile):
                         return False
             return True
+
+        def check_move(self):
+            """Проверка на то, может ли танк сюда сдвинутся (врезался ли он с тайлами или танком)"""
+            return check_move_tanks(self) and check_move_tiles(self)
 
         def check_turn_turret(self):
             """Проверка на то, может ли танк повернуть свою башню"""
