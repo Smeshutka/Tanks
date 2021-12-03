@@ -1,5 +1,4 @@
 from helper import*
-from constans import*
 from  map_maker.tiles import*
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))

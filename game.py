@@ -7,9 +7,14 @@ from AI import*
 
 pygame.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-tank_player = Tank(250,250,"heavy",screen)
-tank_enemy = Tank(400, 400,"heavy",screen) # Пробный вариант танка противника
+tank_player = Tank(250, 250, 0, "heavy",screen)
+tank_enemy = Tank(400, 400, 0, "heavy",screen) # Пробный вариант танка противника
 tank_enemy.add(tanks)
+
+list_tile = [pos(5, 5), pos(5, 20), pos(20, 20), pos(20, 5)] #Список точек, по которым будет двигаться бот
+tank_enemy.update_list_tile(list_tile)
+
+
 clock = pygame.time.Clock()
 finished = False
 
@@ -22,10 +27,12 @@ while not finished:
     screen.fill((255,255,255))
     map.draw()
     tank_player.draw()
-    tank_enemy.draw()
+    tank_player.update_pos_mouse_for_player()
+    for tank in tanks:
+        tank.draw()
     v = vision(tank_enemy, screen)
     v.meet_with_tank(tank_player)
-        
+    #v.draw()
     for bul in bullets:
         bul.draw()
     
@@ -61,8 +68,9 @@ while not finished:
     tank_player.move()
     tank_player.fire_gun()
     tank_player.update_cooldawn()
-    Go_to_dot(pos(50, 50), tank_enemy)
-    #tank_enemy.move()
+    move_AI(tank_enemy)
+    
+    tank_enemy.move()
     tank_enemy.update_cooldawn()
     
     for bul in bullets:
@@ -72,6 +80,12 @@ while not finished:
         tank_player.meet_with_bullet(bul)
         for tank in tanks:
             tank.meet_with_bullet(bul)
+            
+    #for tank in tanks:
+    #    tank_player.meet_with_tank(tank)
+    #for tank in tanks:
+    #    for tank in tanks:
+    #        tank.meet_with_tank(tank)
             
     
 pygame.quit()

@@ -1,6 +1,5 @@
 from helper import*
 from bullets_class import*
-from constans import*
 from  map_maker.tiles import*
 
 bullets = pygame.sprite.Group()
@@ -8,7 +7,7 @@ tanks = pygame.sprite.Group()
 
 
 class Tank(pygame.sprite.Sprite):
-    def __init__(self, x, y, tank_type, screen):
+    def __init__(self, x, y, angle, tank_type, screen):
         """
         x,y - положение центра танка
         tank_type - тип танка, возможные: "light", "middle", "heavy"
@@ -20,8 +19,8 @@ class Tank(pygame.sprite.Sprite):
         self.center = pos(x,y)
         self.velocity = pos(0,0)
         self.acceleration = pos(0,0)
-        self.body_ang = 0
-        self.turret_ang = 0
+        self.body_ang = angle
+        self.turret_ang = angle
         self.vel_ang = 0
         self.v_ort = 0
         self.v_par = 0
@@ -32,6 +31,8 @@ class Tank(pygame.sprite.Sprite):
         self.fs = 0
         self.fd = 0
         self.turret_rotate_speed = 1
+        self.number_dot = 0
+        self.mouse = pos(x, y)
         
         if tank_type == "light":
             self.hp = 5
@@ -74,15 +75,48 @@ class Tank(pygame.sprite.Sprite):
         update_mask(self)
         self.rect = self.image.get_rect()
 
-
-    def turn_turret(self, tx=None, ty=None):
-        if tx == None and ty == None:
-            tx, ty = pygame.mouse.get_pos()
+    def update_list_dot(self, list_dot):
+        """
+        list_dot: список координат точек траектории танка
+        элементами списка являются объекты класса pos
+        pos(x, y): точка с координатами (x, y)
+        """
         
+        self.list_dot = list_dot
+
+    def update_list_tile(self, list_tile):
+        """
+        list_tile: список тайлов, по которым хочется, чтобы двигался танк.
+        элементами списка являются объекты класса pos
+        pos(n, m): тайл с номером (n, m)
+        Этот список преобразуется в список точек, по которым будет двигаться танк
+        Самая левая ячейка карты имеет координаты (0, 0)
+        """
+        
+        list_dot = []
+        for i in range(len(list_tile)):
+            list_tile[i] = pos_tile_to_pos_map(list_tile[i])
+        self.list_dot = list_tile
+
+    def update_pos_mouse_for_player(self):
+        """Обновляет положение мыши для игрока"""
+        x, y = pygame.mouse.get_pos()
+        self.mouse = pos(x, y)
+        
+    def update_pos_mouse_for_AI(self, x, y):
+        """Обновляет положение мыши у бота"""
+        self.mouse = pos(x, y)
+    
+    def turn_turret(self):
+        tx, ty = self.mouse.x, self.mouse.y
+
         if tx > self.center.x:
             self.wanted_turret_ang = -math.atan((ty-self.center.y) / (tx-self.center.x))
         elif tx < self.center.x:
             self.wanted_turret_ang = -math.atan((ty-self.center.y) / (tx-self.center.x))+math.pi
+        else:
+            self.wanted_turret_ang = convert_ang(self.body_ang)
+            
         if self.wanted_turret_ang < 0:
             self.wanted_turret_ang += 2*math.pi
         ang = convert_ang(self.turret_ang) - self.wanted_turret_ang
@@ -288,7 +322,6 @@ class Tank(pygame.sprite.Sprite):
             self.time_cooldawn = self.cooldawn
         self.flpk = 0
 
-            
           
     def update_cooldawn(self):
         self.time_cooldawn -= 1/FPS

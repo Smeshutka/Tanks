@@ -1,7 +1,17 @@
 from tank_class import *
 from helper import *
 
+
+def check_meet_dot(dot, tank):
+    """Проверка того, доехал ли танк до точки, если да, то обновляем точку, до которой едим"""
+    
+    if abs(tank.center.x - dot.x) <= 1 and abs(tank.center.y - dot.y) <= 1:
+        tank.number_dot += 1
+        if tank.number_dot >= len(tank.list_dot):
+            tank.number_dot = 0
+
 def Go_to_dot(dot,tank):
+    
     tank.fw,tank.fa,tank.fs,tank.fd = 0,0,0,0
     alpha = 0
     if dot.x > tank.center.x:
@@ -26,6 +36,14 @@ def Go_to_dot(dot,tank):
     elif ang < 0:
         tank.fd = 1
 
+def move_AI(tank):
+    dot = tank.list_dot[tank.number_dot]
+    Go_to_dot(dot, tank)
+    check_meet_dot(dot, tank)
+    
+
+    
+vis = pygame.sprite.Group()
 
 class vision(pygame.sprite.Sprite):
     def __init__(self, owner, screen):
@@ -47,6 +65,8 @@ class vision(pygame.sprite.Sprite):
     def meet_with_tank(self, tank):
         """Обработка пересечения с игроком"""
         if meet(tank, self):
-            self.owner.turn_turret(tank.center.x, tank.center.y)
+            self.owner.update_pos_mouse_for_AI(tank.center.x, tank.center.y)
             self.owner.reload_left()
             self.owner.fire_gun()
+        else:
+            self.owner.update_pos_mouse_for_AI(self.owner.center.x, self.owner.center.y)

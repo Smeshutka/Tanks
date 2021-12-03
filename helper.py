@@ -1,11 +1,16 @@
 import pygame
 import math
+from constans import*
+
 
 class pos():
     """Класс точка"""
     def __init__(self, x, y):
         self.x = x
         self.y = y
+
+def pos_tile_to_pos_map(dot):
+    return pos(dot.x * a + a // 2, dot.y * a + a // 2)
 
 def update_mask(self):
     """Обновляет маску объекта"""
