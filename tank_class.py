@@ -259,10 +259,30 @@ class Tank(pygame.sprite.Sprite):
             #Ускорение за счёт сопротивления среды:
             self.v_ort = v * math.sin(self.vel_ang-an)
             self.v_par = v * math.cos(self.vel_ang-an)
-            self.acceleration.x -= k1 * abs(self.v_par*math.cos(an))* self.v_par*math.cos(an) / self.m
-            self.acceleration.y += k1 * abs(self.v_par*math.sin(an))* self.v_par*math.sin(an) / self.m
+
+
+            if abs(self.v_par*math.cos(an)) > 10:
+                self.acceleration.x -= k1 * abs(self.v_par*math.cos(an))* self.v_par*math.cos(an) / self.m
+            elif abs(self.v_par*math.cos(an)) > 5:
+                self.acceleration.x -= k1 * 10 * self.v_par*math.cos(an) / self.m
+            elif abs(self.v_par*math.cos(an)) > 0:
+                self.acceleration.x -= k1*25 * self.v_par*math.cos(an)/abs(self.v_par*math.cos(an))
+            else:
+                pass
+
+            if abs(self.v_par * math.sin(an)) > 10:
+                self.acceleration.y += k1 * abs(self.v_par*math.sin(an))* self.v_par*math.sin(an) / self.m
+            elif abs(self.v_par * math.sin(an)) > 5:
+                self.acceleration.y += k2 * 10 * self.v_par*math.sin(an) / self.m
+            elif abs(self.v_par*math.sin(an)) > 0:
+                self.acceleration.y += k2*25 * self.v_par*math.sin(an)/abs(self.v_par*math.sin(an))
+            else:
+                pass
+
+
             self.acceleration.x -= k2 * abs(self.v_ort*math.cos(math.pi/2+an))* self.v_ort*math.cos(math.pi/2+an) / self.m
             self.acceleration.y += k2 * abs(self.v_ort*math.sin(math.pi/2+an))* self.v_ort*math.sin(math.pi/2+an) / self.m
+
 
     
         def update_options(self):
@@ -335,7 +355,7 @@ class Tank(pygame.sprite.Sprite):
             a, b = self.turret_image_start.get_size()
             x = self.center.x + a / 2 * math.cos(self.turret_ang)
             y = self.center.y - a / 2 * math.sin(self.turret_ang)
-            bullet = Bullets(self.screen, "bullet", x, y, self.turret_ang)
+            bullet = Bullets(self.screen, "bullet", x, y, self.turret_ang, self)
             bullet.add(bullets)
             self.time_cooldawn = self.cooldawn
         self.flpk = 0
@@ -348,5 +368,8 @@ class Tank(pygame.sprite.Sprite):
        
     def meet_with_bullet(self, obj):
         if meet(self, obj):
-            self.hp -= obj.damage
-            obj.kill()
+            if obj.owner != self:
+                self.hp -= obj.damage
+                obj.kill()
+                if self.hp == 0:
+                    self.kill()

@@ -6,6 +6,7 @@ from map_maker.map_input import*
 from AI import*
 
 pygame.init()
+tank_bots = []
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 tank_player = Tank(250, 250, 0, "heavy",screen)
 tank_enemy = Tank(400, 400, 0, "heavy",screen) # Пробный вариант танка противника
@@ -83,5 +84,4 @@ while not finished:
             tank.meet_with_bullet(bul)
             
             
-    
-pygame.quit()
+
