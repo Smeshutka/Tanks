@@ -1,5 +1,4 @@
 from helper import*
-from constans import*
 from  map_maker.tiles import*
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -16,7 +15,7 @@ for bul in bullets_type:
 
 
 class Bullets(pygame.sprite.Sprite):
-    def __init__(self, screen, bullet_type, x, y, ang):
+    def __init__(self, screen, bullet_type, x, y, ang, owner):
         """ 
         x,y:  положение центра снаряда
         bullet_type: тип снаряда, возможные: "bullet", "shell"
@@ -34,6 +33,7 @@ class Bullets(pygame.sprite.Sprite):
         self.mask = masks[bul]
         self.rect = self.image.get_rect()
         self.damage = 1
+        self.owner = owner
         
         if bullet_type == "bullet":
             self.v = 10

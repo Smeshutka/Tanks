@@ -1,14 +1,20 @@
 from helper import*
 from bullets_class import*
+<<<<<<< HEAD
 from constans import*
 from map_maker.tiles import*
+=======
+from  map_maker.tiles import*
+from AI import*
+>>>>>>> de80e2659f84eb9de68179a97878f153158c6eea
 
 bullets = pygame.sprite.Group()
+tanks_bots = pygame.sprite.Group()
 tanks = pygame.sprite.Group()
 
 
 class Tank(pygame.sprite.Sprite):
-    def __init__(self, x, y, tank_type, screen):
+    def __init__(self, x, y, angle, tank_type, screen):
         """
         x,y - положение центра танка
         tank_type - тип танка, возможные: "light", "middle", "heavy"
@@ -20,8 +26,8 @@ class Tank(pygame.sprite.Sprite):
         self.center = pos(x,y)
         self.velocity = pos(0,0)
         self.acceleration = pos(0,0)
-        self.body_ang = 0
-        self.turret_ang = 0
+        self.body_ang = angle
+        self.turret_ang = angle
         self.vel_ang = 0
         self.v_ort = 0
         self.v_par = 0
@@ -32,6 +38,10 @@ class Tank(pygame.sprite.Sprite):
         self.fs = 0
         self.fd = 0
         self.turret_rotate_speed = 1
+        self.number_dot = 0
+        self.mouse = pos(x, y)
+        self.vis = vision(self, screen)
+        self.wanted_turret_ang = self.body_ang
         
         if tank_type == "light":
             self.hp = 5
@@ -73,16 +83,51 @@ class Tank(pygame.sprite.Sprite):
         update_corner(self)
         update_mask(self)
         self.rect = self.image.get_rect()
-
-
-    def turn_turret(self, tx=None, ty=None):
-        if tx == None and ty == None:
-            tx, ty = pygame.mouse.get_pos()
+        self.add(tanks)
         
+    def update_list_dot(self, list_dot):
+        """
+        list_dot: список координат точек траектории танка
+        элементами списка являются объекты класса pos
+        pos(x, y): точка с координатами (x, y)
+        """
+        
+        self.list_dot = list_dot
+
+    def update_list_tile(self, list_tile):
+        """
+        list_tile: список тайлов, по которым хочется, чтобы двигался танк.
+        элементами списка являются объекты класса pos
+        pos(n, m): тайл с номером (n, m)
+        Этот список преобразуется в список точек, по которым будет двигаться танк
+        Самая левая ячейка карты имеет координаты (0, 0)
+        """
+        
+        list_dot = []
+        for i in range(len(list_tile)):
+            list_tile[i] = pos_tile_to_pos_map(list_tile[i])
+        self.list_dot = list_tile
+
+    def update_pos_mouse_for_player(self):
+        """Обновляет положение мыши для игрока"""
+        x, y = pygame.mouse.get_pos()
+        self.mouse = pos(x, y)
+
+
+    def update_pos_mouse_for_AI(self, x, y):
+        """Обновляет положение мыши у бота"""
+        self.mouse = pos(x, y)
+    
+    def turn_turret(self):
+        tx, ty = self.mouse.x, self.mouse.y
+
         if tx > self.center.x:
             self.wanted_turret_ang = -math.atan((ty-self.center.y) / (tx-self.center.x))
         elif tx < self.center.x:
             self.wanted_turret_ang = -math.atan((ty-self.center.y) / (tx-self.center.x))+math.pi
+        else:
+            self.wanted_turret_ang = convert_ang(self.body_ang)
+            
         if self.wanted_turret_ang < 0:
             self.wanted_turret_ang += 2*math.pi
         ang = convert_ang(self.turret_ang) - self.wanted_turret_ang
@@ -126,14 +171,26 @@ class Tank(pygame.sprite.Sprite):
                     if j >= 0 and j < len(tiles_array) and i >= 0 and i < len(tiles_array[0]):
                         tiles_array[j][i].add(tiles_n)
             return tiles_n
+
+        def check_move_tanks(self):
+            """Проверка на то, может ли танк сюда сдвинутся (врезался ли он с танками)"""
+            for tank in tanks:
+                if tank != self:
+                    if meet(self, tank):
+                        return False
+            return True
         
-        def check_move(self):
+        def check_move_tiles(self):
             """Проверка на то, может ли танк сюда сдвинутся (врезался ли он с тайлами)"""
             for tile in tiles_near(self):
                 if tile.type == "bricks" or tile.type == "water":
                     if meet(self, tile):
                         return False
             return True
+
+        def check_move(self):
+            """Проверка на то, может ли танк сюда сдвинутся (врезался ли он с тайлами или танком)"""
+            return check_move_tanks(self) and check_move_tiles(self)
 
         def check_turn_turret(self):
             """Проверка на то, может ли танк повернуть свою башню"""
@@ -207,10 +264,30 @@ class Tank(pygame.sprite.Sprite):
             #Ускорение за счёт сопротивления среды:
             self.v_ort = v * math.sin(self.vel_ang-an)
             self.v_par = v * math.cos(self.vel_ang-an)
-            self.acceleration.x -= k1 * abs(self.v_par*math.cos(an))* self.v_par*math.cos(an) / self.m
-            self.acceleration.y += k1 * abs(self.v_par*math.sin(an))* self.v_par*math.sin(an) / self.m
+
+
+            if abs(self.v_par*math.cos(an)) > 10:
+                self.acceleration.x -= k1 * abs(self.v_par*math.cos(an))* self.v_par*math.cos(an) / self.m
+            elif abs(self.v_par*math.cos(an)) > 5:
+                self.acceleration.x -= k1 * 10 * self.v_par*math.cos(an) / self.m
+            elif abs(self.v_par*math.cos(an)) > 0:
+                self.acceleration.x -= k1*25 * self.v_par*math.cos(an)/abs(self.v_par*math.cos(an))
+            else:
+                pass
+
+            if abs(self.v_par * math.sin(an)) > 10:
+                self.acceleration.y += k1 * abs(self.v_par*math.sin(an))* self.v_par*math.sin(an) / self.m
+            elif abs(self.v_par * math.sin(an)) > 5:
+                self.acceleration.y += k2 * 10 * self.v_par*math.sin(an) / self.m
+            elif abs(self.v_par*math.sin(an)) > 0:
+                self.acceleration.y += k2*25 * self.v_par*math.sin(an)/abs(self.v_par*math.sin(an))
+            else:
+                pass
+
+
             self.acceleration.x -= k2 * abs(self.v_ort*math.cos(math.pi/2+an))* self.v_ort*math.cos(math.pi/2+an) / self.m
             self.acceleration.y += k2 * abs(self.v_ort*math.sin(math.pi/2+an))* self.v_ort*math.sin(math.pi/2+an) / self.m
+
 
     
         def update_options(self):
@@ -283,12 +360,11 @@ class Tank(pygame.sprite.Sprite):
             a, b = self.turret_image_start.get_size()
             x = self.center.x + a / 2 * math.cos(self.turret_ang)
             y = self.center.y - a / 2 * math.sin(self.turret_ang)
-            bullet = Bullets(self.screen, "bullet", x, y, self.turret_ang)
+            bullet = Bullets(self.screen, "bullet", x, y, self.turret_ang, self)
             bullet.add(bullets)
             self.time_cooldawn = self.cooldawn
         self.flpk = 0
 
-            
           
     def update_cooldawn(self):
         self.time_cooldawn -= 1/FPS
@@ -297,5 +373,8 @@ class Tank(pygame.sprite.Sprite):
        
     def meet_with_bullet(self, obj):
         if meet(self, obj):
-            self.hp -= obj.damage
-            obj.kill()
+            if obj.owner != self:
+                self.hp -= obj.damage
+                obj.kill()
+                if self.hp == 0:
+                    self.kill()
