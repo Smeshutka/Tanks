@@ -1,7 +1,7 @@
 from helper import*
 from bullets_class import*
 from constans import*
-from  map_maker.tiles import*
+from map_maker.tiles import*
 
 bullets = pygame.sprite.Group()
 tanks = pygame.sprite.Group()
