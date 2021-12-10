@@ -368,7 +368,7 @@ class Tank(pygame.sprite.Sprite):
        
     def meet_with_bullet(self, obj):
         if meet(self, obj):
-            if obj.owner != self:
+            if not(obj.owner is self):
                 self.hp -= obj.damage
                 obj.kill()
                 #if self.hp == 0:
