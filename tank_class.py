@@ -43,9 +43,8 @@ class Tank(pygame.sprite.Sprite):
         self.dot = pos(0, 0)
         self.dx = 0
         self.dy = 0
-        self.dx_now = 0
-        self.dy_now = 0
         self.ai = 0
+        self.dist = 300
         
         if tank_type == "light":
             self.hp = 5
@@ -82,7 +81,7 @@ class Tank(pygame.sprite.Sprite):
             self.cooldawn = 1
             self.time_cooldawn = 0
             self.hp = 3
-            self.ai = 3
+            self.ai = 1
             
         self.body_image = self.body_image_start
         self.image = self.body_image

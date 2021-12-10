@@ -44,19 +44,37 @@ def Go_to_dot(dot,tank):
         tank.fd = 1
 
 def move_at_1(tank):
-    """Движение бота типа 1 в случае, если началась атака"""
-    pass
+    """
+    Движение бота типа 1 в случае, если началась атака.
+    Пытается сохранять постоянное расстояние до врага.
+    Предназначен для легких/средних танков
+    """
+    
+    s = (tank.dx ** 2 + tank.dy ** 2) ** 0.5
+    ddx = tank.dx - tank.dist * tank.dx / s
+    ddy = tank.dy - tank.dist * tank.dy / s
+        
+    tank.dot = pos(tank.center.x + ddx, tank.center.y + ddy)
+    Go_to_dot(tank.dot, tank)
 
 
 def move_at_2(tank):
-    """Движение бота типа 1 в случае, если началась атака"""
+    """
+    Движение бота типа 2 в случае, если началась атака.
+    Начинает стрелять во врага, продолжая дивагаться по траектории (как бы патрулирует).
+    Предназначен для средних танков
+    """
     
     tank.dot = tank.list_dot[tank.number_dot]
     Go_to_dot(tank.dot, tank)
     check_meet_dot(tank.dot, tank)
 
 def move_at_3(tank):
-    """Движение бота типа 3 в случае, если началась атака"""
+    """
+    Движение бота типа 3 в случае, если началась атака.
+    Просто останавливается и начинает стрелять во врага.
+    Предназначен для тяжелых танков
+    """
     
     if tank.flag_at == 1:
         tank.dot = pos(tank.center.x, tank.center.y)
@@ -91,7 +109,7 @@ class vision(pygame.sprite.Sprite):
 
         pygame.sprite.Sprite.__init__(self)
         self.screen = screen
-        self.image = pygame.image.load('textures/visibility(1).png').convert_alpha()
+        self.image = pygame.image.load('textures/visibility(800).png').convert_alpha()
         a, b = self.image.get_size()
         self.corner = pos(owner.center.x - a/2, owner.center.y - b/2)
         self.rect = self.image.get_rect()
@@ -139,10 +157,8 @@ def meet_with_tank(tank, tank_pl):
         #Движение:
         if tank.flag_at == 0:
             tank.flag_at = 1
-            tank.dx = tank_pl.center.x - tank.center.x
-            tank.dy = tank_pl.center.y - tank.center.y
-        tank.dx_now = tank_pl.center.x - tank.center.x
-        tank.dy_now = tank_pl.center.y - tank.center.y
+        tank.dx = tank_pl.center.x - tank.center.x
+        tank.dy = tank_pl.center.y - tank.center.y
             
     else:
         tank.update_pos_mouse_for_AI(tank.center.x, tank.center.y)
