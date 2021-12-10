@@ -43,12 +43,46 @@ def Go_to_dot(dot,tank):
     elif ang < 0:
         tank.fd = 1
 
+def move_at_1(tank):
+    """Движение бота типа 1 в случае, если началась атака"""
+    pass
+
+
+def move_at_2(tank):
+    """Движение бота типа 1 в случае, если началась атака"""
+    
+    tank.dot = tank.list_dot[tank.number_dot]
+    Go_to_dot(tank.dot, tank)
+    check_meet_dot(tank.dot, tank)
+
+def move_at_3(tank):
+    """Движение бота типа 3 в случае, если началась атака"""
+    
+    if tank.flag_at == 1:
+        tank.dot = pos(tank.center.x, tank.center.y)
+        tank.flag_at = 2
+    Go_to_dot(tank.dot, tank)
+
+
+def move_at(tank):
+    """Движение бота в случае, если началась атака"""
+    if tank.ai == 1:
+        move_at_1(tank)
+    elif tank.ai == 2:
+        move_at_2(tank)
+    elif tank.ai == 3:
+        move_at_3(tank)
+    
+
 def move_AI(tank):
     """Алгоритм обработки действий AI, касательно движения"""
-    
-    dot = tank.list_dot[tank.number_dot]
-    Go_to_dot(dot, tank)
-    check_meet_dot(dot, tank)
+    if tank.flag_at == 0:
+        tank.dot = tank.list_dot[tank.number_dot]
+        Go_to_dot(tank.dot, tank)
+        check_meet_dot(tank.dot, tank)
+    else:
+        move_at(tank)
+        
     update(tank)
     
 
@@ -70,6 +104,7 @@ def meet_with_tank(tank, tank_pl):
     """Обработка событий бота, если он замечает игрока tank_pl"""
     
     if meet(tank.vis, tank_pl):
+        #Стрельба:
         tank.update_pos_mouse_for_AI(tank_pl.center.x, tank_pl.center.y)
 
         #Проверка на то, нужно ли стрелять во врага:
@@ -99,6 +134,18 @@ def meet_with_tank(tank, tank_pl):
         
         if abs(ang) <= math.pi / 6:
             tank.reload_left()
+
+
+        #Движение:
+        if tank.flag_at == 0:
+            tank.flag_at = 1
+            tank.dx = tank_pl.center.x - tank.center.x
+            tank.dy = tank_pl.center.y - tank.center.y
+        tank.dx_now = tank_pl.center.x - tank.center.x
+        tank.dy_now = tank_pl.center.y - tank.center.y
             
     else:
         tank.update_pos_mouse_for_AI(tank.center.x, tank.center.y)
+        
+        #Движение:
+        tank.flag_at = 0

@@ -1,12 +1,9 @@
 from helper import*
 from bullets_class import*
-<<<<<<< HEAD
 from constans import*
 from map_maker.tiles import*
-=======
 from  map_maker.tiles import*
 from AI import*
->>>>>>> de80e2659f84eb9de68179a97878f153158c6eea
 
 bullets = pygame.sprite.Group()
 tanks_bots = pygame.sprite.Group()
@@ -42,6 +39,13 @@ class Tank(pygame.sprite.Sprite):
         self.mouse = pos(x, y)
         self.vis = vision(self, screen)
         self.wanted_turret_ang = self.body_ang
+        self.flag_at = 0
+        self.dot = pos(0, 0)
+        self.dx = 0
+        self.dy = 0
+        self.dx_now = 0
+        self.dy_now = 0
+        self.ai = 0
         
         if tank_type == "light":
             self.hp = 5
@@ -54,6 +58,7 @@ class Tank(pygame.sprite.Sprite):
             self.cooldawn = 1
             self.time_cooldawn = 0
             self.hp = 3
+            self.ai = 1
         elif tank_type == "middle":
             self.hp = 5
             self.size = pos(100,50)
@@ -65,6 +70,7 @@ class Tank(pygame.sprite.Sprite):
             self.cooldawn = 1
             self.time_cooldawn = 0
             self.hp = 3
+            self.ai = 2
         elif tank_type == "heavy":
             self.hp = 5
             self.size = pos(134,82)
@@ -76,6 +82,7 @@ class Tank(pygame.sprite.Sprite):
             self.cooldawn = 1
             self.time_cooldawn = 0
             self.hp = 3
+            self.ai = 3
             
         self.body_image = self.body_image_start
         self.image = self.body_image
@@ -260,47 +267,36 @@ class Tank(pygame.sprite.Sprite):
             elif self.fw == False and self.fs == True:
                 self.acceleration.x = -self.engine_power * math.cos(an) / self.m
                 self.acceleration.y = self.engine_power * math.sin(an) / self.m
-                
+                            
             #Ускорение за счёт сопротивления среды:
+            if v < 15:
+                v = 15
             self.v_ort = v * math.sin(self.vel_ang-an)
             self.v_par = v * math.cos(self.vel_ang-an)
-
-
-            if abs(self.v_par*math.cos(an)) > 10:
-                self.acceleration.x -= k1 * abs(self.v_par*math.cos(an))* self.v_par*math.cos(an) / self.m
-            elif abs(self.v_par*math.cos(an)) > 5:
-                self.acceleration.x -= k1 * 10 * self.v_par*math.cos(an) / self.m
-            elif abs(self.v_par*math.cos(an)) > 0:
-                self.acceleration.x -= k1*25 * self.v_par*math.cos(an)/abs(self.v_par*math.cos(an))
-            else:
-                pass
-
-            if abs(self.v_par * math.sin(an)) > 10:
-                self.acceleration.y += k1 * abs(self.v_par*math.sin(an))* self.v_par*math.sin(an) / self.m
-            elif abs(self.v_par * math.sin(an)) > 5:
-                self.acceleration.y += k2 * 10 * self.v_par*math.sin(an) / self.m
-            elif abs(self.v_par*math.sin(an)) > 0:
-                self.acceleration.y += k2*25 * self.v_par*math.sin(an)/abs(self.v_par*math.sin(an))
-            else:
-                pass
-
-
+            self.acceleration.x -= k1 * abs(self.v_par*math.cos(an))* self.v_par*math.cos(an) / self.m
+            self.acceleration.y += k1 * abs(self.v_par*math.sin(an))* self.v_par*math.sin(an) / self.m
             self.acceleration.x -= k2 * abs(self.v_ort*math.cos(math.pi/2+an))* self.v_ort*math.cos(math.pi/2+an) / self.m
             self.acceleration.y += k2 * abs(self.v_ort*math.sin(math.pi/2+an))* self.v_ort*math.sin(math.pi/2+an) / self.m
-
-
-    
+            
+            
+            
         def update_options(self):
             """Движение танка (обновление координат, скоростей)"""
             vx = self.velocity.x 
             vy = self.velocity.y
+            v = (vx**2 + vy**2)**0.5
             x = self.center.x
             y = self.center.y
 
             #Обновление скоростей и координат
-            self.velocity.x += self.acceleration.x * dt
+            if v <= 1 and (self.fw + self.fs) % 2 == 0:
+                self.velocity.x = 0
+                self.velocity.y = 0
+            else:
+                self.velocity.x += self.acceleration.x * dt
+                self.velocity.y += self.acceleration.y * dt
+                
             self.center.x += self.velocity.x * dt
-            self.velocity.y += self.acceleration.y * dt
             self.center.y += self.velocity.y * dt
         
             update_for_check(self)
@@ -376,5 +372,5 @@ class Tank(pygame.sprite.Sprite):
             if obj.owner != self:
                 self.hp -= obj.damage
                 obj.kill()
-                if self.hp == 0:
-                    self.kill()
+                #if self.hp == 0:
+                #    self.kill()
