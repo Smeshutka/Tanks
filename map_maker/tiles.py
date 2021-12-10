@@ -67,7 +67,7 @@ class Tile(pygame.sprite.Sprite):
         self.image = pygame.image.load(name_images[tile_type]).convert_alpha()
 
     def draw(self):
-        self.screen.blit(self.image, (self.corner.x, self.corner.y))
+        self.screen.blit(self.image, (self.corner_visible.x, self.corner_visible.y))
 
     def meet_with_bullet(tile, bul):
         """Обработка пересечения с пулей"""
@@ -89,9 +89,13 @@ class Map(pygame.sprite.Sprite):
                 tiles_array[i].append(Tile(map[i][j][0], map[i][j][1], map[i][j][2], screen))
                 tiles_array[i][j].add(tiles)
             
-    def draw(self):
+    def draw(self, screen_center, tank_player):
         for t in tiles:
-            t.draw()
+            if (t.corner.y - tank_player.center.y < screen_center.y and tank_player.center.y - t.corner.y - 20 < screen_center.y) and \
+                    (t.corner.x - tank_player.center.x < screen_center.x and tank_player.center.x - t.corner.x - 20 < screen_center.x):
+                t.corner_visible = pos(screen_center.x + t.corner.x - tank_player.center.x,
+                                  screen_center.y + t.corner.y - tank_player.center.y)
+                t.draw()
     
 def return_tile_ower_pos(x, y):
     """Указываются координаты точки, возвращается тайл с данными координатами"""

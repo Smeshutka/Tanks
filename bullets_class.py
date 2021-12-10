@@ -54,10 +54,11 @@ class Bullets(pygame.sprite.Sprite):
         self.center.x += self.velocity.x
         self.center.y += self.velocity.y
 
-    def draw(self):
+    def draw(self, screen_center, tank_player):
         self.image = pygame.transform.rotate(self.image_start, self.ang*180/math.pi)
         update_corner(self)
-        self.screen.blit(self.image, (self.corner.x, self.corner.y))
+        self.screen.blit(self.image, (screen_center.x + self.corner.x - tank_player.center.x,
+                                      screen_center.y + self.corner.y - tank_player.center.y))
 
     def tiles_near(self):
         """
