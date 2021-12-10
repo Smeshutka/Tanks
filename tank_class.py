@@ -11,7 +11,7 @@ tanks = pygame.sprite.Group()
 
 
 class Tank(pygame.sprite.Sprite):
-    def __init__(self, x, y, angle, tank_type, screen):
+    def __init__(self, x, y, angle, tank_type, screen, screen_center):
         """
         x,y - положение центра танка
         tank_type - тип танка, возможные: "light", "middle", "heavy"
@@ -127,10 +127,10 @@ class Tank(pygame.sprite.Sprite):
     def turn_turret(self):
         tx, ty = self.mouse.x, self.mouse.y
 
-        if tx > self.center.x:
-            self.wanted_turret_ang = -math.atan((ty-self.center.y) / (tx-self.center.x))
-        elif tx < self.center.x:
-            self.wanted_turret_ang = -math.atan((ty-self.center.y) / (tx-self.center.x))+math.pi
+        if tx > self.center_visible.x:
+            self.wanted_turret_ang = -math.atan((ty-self.center_visible.y) / (tx-self.center_visible.x))
+        elif tx < self.center_visible.x:
+            self.wanted_turret_ang = -math.atan((ty-self.center_visible.y) / (tx-self.center_visible.x))+math.pi
         else:
             self.wanted_turret_ang = convert_ang(self.body_ang)
             
@@ -169,12 +169,12 @@ class Tank(pygame.sprite.Sprite):
             tiles_n = pygame.sprite.Group()
             x1, y1, x2, y2 = self.corner.x, self.corner.y, 2 * self.center.x - self.corner.x, 2 * self.center.y - self.corner.y
             x1 = max(int(x1) // a - 2, 0)
-            x2 = min(int(x2) // a + 2, len(tiles_array[0]) - 1)
+            x2 = min(int(x2) // a + 2, len(tiles_array[0]))
             y1 = max(int(y1) // a - 2, 0)
-            y2 = min(int(y2) // a + 2, len(tiles_array) - 1)
+            y2 = min(int(y2) // a + 2, len(tiles_array))
             for i in range(x1, x2):
                 for j in range(y1, y2):
-                    if j >= 0 and j < len(tiles_array) and i >= 0 and i < len(tiles_array[0]):
+                    if j >= 0 and j <= len(tiles_array) and i >= 0 and i <= len(tiles_array[0]):
                         tiles_array[j][i].add(tiles_n)
             return tiles_n
 
@@ -319,21 +319,19 @@ class Tank(pygame.sprite.Sprite):
 
         main(self)
             
-    def draw(self):
-
+    def draw(self, screen_center, tank_player):
+        self.center_visible = pos(screen_center.x + self.center.x - tank_player.center.x,
+                                  screen_center.y + self.center.y - tank_player.center.y)
+        self.corner_visible = pos(screen_center.x + self.corner.x - tank_player.center.x,
+                                  screen_center.y + self.corner.y - tank_player.center.y)
         #Рисование тела танка:
-        self.screen.blit(self.body_image, (self.corner.x, self.corner.y))
-        
-        #Рисование башни танка:
-        self.turret_image = pygame.transform.rotate(self.turret_image_start, self.turret_ang*180/math.pi)
-        a, b = self.turret_image.get_size()
-        self.screen.blit(self.turret_image, (self.center.x-a/2, self.center.y-b/2))
+        self.screen.blit(self.body_image, (self.corner_visible.x, self.corner_visible.y))
 
         #Рисование cooldawn:
         dx = self.center.x - self.corner.x
         dy = self.center.y - self.corner.y
-        x = self.center.x + dx
-        y = self.center.y + dy
+        x = self.center_visible.x + dx
+        y = self.center_visible.y + dy
         pygame.draw.arc(self.screen,(0, 0, 0), (x, y, 20, 20), 0, self.time_cooldawn/self.cooldawn*2*math.pi, width = 6)
 
         #Рисование жизней:
@@ -342,7 +340,13 @@ class Tank(pygame.sprite.Sprite):
         pygame.draw.polygon(sub, (255,0,0), dots)
         b = self.body_image.get_size()[1]
         for i in range(self.hp):
-            self.screen.blit(sub, (self.center.x-50+25*i, self.center.y-b/2-30))
+            self.screen.blit(sub, (self.center_visible.x-50+25*i, self.center_visible.y-b/2-30))
+
+    def draw_turret(self, screen_center, tank_player):
+        # Рисование башни танка:
+        self.turret_image = pygame.transform.rotate(self.turret_image_start, self.turret_ang * 180 / math.pi)
+        a, b = self.turret_image.get_size()
+        self.screen.blit(self.turret_image, (self.center_visible.x - a / 2, self.center_visible.y - b / 2))
 
     def reload_left(self):
         self.flpk = 1

@@ -38,6 +38,7 @@ def meet(self, obj):
             return True
     return False
 
+
 def convert_ang(ang):
     """Перевод угла ang(в радианах) в полуинтервал [0,2pi)"""
     return ang % (2*math.pi)
