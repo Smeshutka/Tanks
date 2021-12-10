@@ -189,7 +189,7 @@ class Tank(pygame.sprite.Sprite):
         def check_move_tiles(self):
             """Проверка на то, может ли танк сюда сдвинутся (врезался ли он с тайлами)"""
             for tile in tiles_near(self):
-                if tile.type == "bricks" or tile.type == "water":
+                if tile.type == "bricks" or tile.type == "water" or tile.type == "stone":
                     if meet(self, tile):
                         return False
             return True

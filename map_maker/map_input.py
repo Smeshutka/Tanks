@@ -19,7 +19,13 @@ def map_maker(map):
                 map[i][j] = ([a * j, a * i, 'water'])
             elif map[i][j] == 'b':
                map[i][j] = ([a * j, a * i, 'bricks'])
-
+            elif map[i][j] == 'S':
+               map[i][j] = ([a * j, a * i, 'stone']) 
+            elif map[i][j] == 's':
+               map[i][j] = ([a * j, a * i, 'sand']) 
+            elif map[i][j] == 'i':
+               map[i][j] = ([a * j, a * i, 'ice']) 
+            
     return (screen_width, screen_height, map)
 
 def file_reader(input_filename):

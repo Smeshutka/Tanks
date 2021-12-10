@@ -10,13 +10,13 @@ from Tanks.constans import*
 
 tiles = pygame.sprite.Group()
 tiles_array = []
-tiles_type = ["grass", "water", "bricks"]
+tiles_type = ["grass", "water", "bricks", "ice", "sand", "stone"]
 name_images = {}
 images = {}
 masks = {}
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 for tile in tiles_type:
-    name_images[tile] = "map_maker/images/tile_" + tile + "1.png"
+    name_images[tile] = "map_maker/images/" + tile + ".png"
     images[tile] = pygame.image.load(name_images[tile]).convert_alpha()
     masks[tile] = pygame.mask.from_surface(images[tile])
 
@@ -47,6 +47,19 @@ class Tile(pygame.sprite.Sprite):
             self.hp = 1
             self.k1 = 0.01
             self.k2 = 1
+        elif tile_type == "stone":
+            self.hp = -1
+            self.k1 = 0.01
+            self.k2 = 1
+        elif tile_type == "sand":
+            self.hp = -1
+            self.k1 = 0.05
+            self.k2 = 5
+        elif tile_type == "ice":
+            self.hp = -1
+            self.k1 = 0.002
+            self.k2 = 0.2
+            
     def update_tile(self, tile_type):
         """Обновляет тип тайла с сохранением всего прочего"""
         
@@ -59,10 +72,12 @@ class Tile(pygame.sprite.Sprite):
     def meet_with_bullet(tile, bul):
         """Обработка пересечения с пулей"""
         
-        if tile.type == "bricks":
+        if tile.type == "bricks" or tile.type == "stone":
             if meet(tile, bul):
                 bul.kill()
-                tile.update_tile("grass")
+                if tile.type == "bricks":
+                    tile_new = "grass"
+                    tile.update_tile(tile_new)
     
 class Map(pygame.sprite.Sprite):
     """По списку tiles_list формата (x, y, name_image) создает группу тайлов"""
