@@ -10,7 +10,21 @@ tanks_bots = pygame.sprite.Group()
 tanks = pygame.sprite.Group()
 
 
+def update_image_for_tank(self, k):
+        """
+        Меняет исходный размер катинки танка (image_start)
+        k: новая ширина танка в размерах тайла (у.е.)
+        """
+        
+        a_body, b_body = self.body_image_start.get_size()
+        a_turret, b_turret = self.turret_image_start.get_size()
+        
+        self.body_image_start = update_image(self.body_image_start, k, k * b_body / a_body)  
+        self.turret_image_start = update_image(self.turret_image_start, k * a_turret / a_body, k * b_turret / a_body)
+
+
 class Tank(pygame.sprite.Sprite):
+
     def __init__(self, x, y, angle, tank_type, screen, screen_center):
         """
         x,y - положение центра танка
@@ -73,8 +87,8 @@ class Tank(pygame.sprite.Sprite):
         elif tank_type == "heavy":
             self.hp = 5
             self.size = pos(134,82)
-            self.body_image_start = pygame.image.load("textures/heavy_body.png").convert_alpha()
-            self.turret_image_start = pygame.image.load("textures/heavy_turret.png").convert_alpha()
+            self.body_image_start = pygame.image.load("textures/heavy_body1.png").convert_alpha()
+            self.turret_image_start = pygame.image.load("textures/heavy_turret1.png").convert_alpha()
             self.engine_power = 100
             self.ang_speed = 2*math.pi/10
             self.m = 1
@@ -82,7 +96,10 @@ class Tank(pygame.sprite.Sprite):
             self.time_cooldawn = 0
             self.hp = 3
             self.ai = 1
+            self.k_turret_draw = 0.3
             
+        update_image_for_tank(self, 3.5)
+  
         self.body_image = self.body_image_start
         self.image = self.body_image
         self.turret_image = self.turret_image_start
@@ -346,7 +363,10 @@ class Tank(pygame.sprite.Sprite):
         # Рисование башни танка:
         self.turret_image = pygame.transform.rotate(self.turret_image_start, self.turret_ang * 180 / math.pi)
         a, b = self.turret_image.get_size()
-        self.screen.blit(self.turret_image, (self.center_visible.x - a / 2, self.center_visible.y - b / 2))
+        a_body, b_body = self.body_image_start.get_size()
+        k = self.k_turret_draw
+        s = b_body * k
+        self.screen.blit(self.turret_image, (self.center_visible.x - a / 2 - s * math.cos(self.body_ang), self.center_visible.y - b / 2 + s * math.sin(self.body_ang) ))
 
     def reload_left(self):
         self.flpk = 1
