@@ -10,12 +10,13 @@ tanks_bots = pygame.sprite.Group()
 tanks = pygame.sprite.Group()
 
 
-def update_image_for_tank(self, k):
+def update_image_for_tank(self):
         """
         Меняет исходный размер катинки танка (image_start)
         k: новая ширина танка в размерах тайла (у.е.)
         """
         
+        k = self.width_in_tiles
         a_body, b_body = self.body_image_start.get_size()
         a_turret, b_turret = self.turret_image_start.get_size()
         
@@ -77,13 +78,15 @@ class Tank(pygame.sprite.Sprite):
             self.size = pos(100,50)
             self.body_image_start = pygame.image.load("textures/middle_body.png").convert_alpha()
             self.turret_image_start = pygame.image.load("textures/middle_turret.png").convert_alpha()
-            self.engine_power = 2
+            self.engine_power = 100
             self.ang_speed = 2*math.pi/10
             self.m = 0.5
             self.cooldawn = 1
             self.time_cooldawn = 0
             self.hp = 3
             self.ai = 2
+            self.k_turret_draw = 0.0
+            self.width_in_tiles = 3.5
         elif tank_type == "heavy":
             self.hp = 5
             self.size = pos(134,82)
@@ -97,8 +100,9 @@ class Tank(pygame.sprite.Sprite):
             self.hp = 3
             self.ai = 1
             self.k_turret_draw = 0.3
+            self.width_in_tiles = 3.5
             
-        update_image_for_tank(self, 3.5)
+        update_image_for_tank(self)
   
         self.body_image = self.body_image_start
         self.image = self.body_image

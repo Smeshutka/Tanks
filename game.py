@@ -17,7 +17,7 @@ screen = pygame.display.set_mode((w, h))
 map = Map(map_ar, screen)
 
 tank_bots = []
-tank_player = Tank(250, 250, 0, "heavy",screen, screen_center)
+tank_player = Tank(250, 250, 0, "middle",screen, screen_center)
 tank_enemy = Tank(400, 400, 0, "heavy",screen, screen_center) # Пробный вариант танка противника
 tank_enemy.add(tanks_bots)
 
