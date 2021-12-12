@@ -65,14 +65,17 @@ class Tank(pygame.sprite.Sprite):
             self.hp = 5
             self.size = pos(100,50)
             self.body_image_start = pygame.image.load("textures/light_body.png").convert_alpha()
-            self.turret_image_start = pygame.image.load("textures/light_turret.png").convert_alpha()
-            self.engine_power = 3
+            self.turret_image_start = pygame.image.load("textures/light_turret(4).png").convert_alpha()
+            self.engine_power = 100
             self.ang_speed = 2*math.pi/10
             self.m = 0.25
             self.cooldawn = 1
             self.time_cooldawn = 0
             self.hp = 3
             self.ai = 1
+            self.k_turret_draw = 0.0
+            self.width_in_tiles = 3.5
+            
         elif tank_type == "middle":
             self.hp = 5
             self.size = pos(100,50)
@@ -297,8 +300,7 @@ class Tank(pygame.sprite.Sprite):
             self.acceleration.y += k1 * abs(self.v_par*math.sin(an))* self.v_par*math.sin(an) / self.m
             self.acceleration.x -= k2 * abs(self.v_ort*math.cos(math.pi/2+an))* self.v_ort*math.cos(math.pi/2+an) / self.m
             self.acceleration.y += k2 * abs(self.v_ort*math.sin(math.pi/2+an))* self.v_ort*math.sin(math.pi/2+an) / self.m
-            
-            
+    
             
         def update_options(self):
             """Движение танка (обновление координат, скоростей)"""
