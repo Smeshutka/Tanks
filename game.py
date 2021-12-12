@@ -6,38 +6,45 @@ from map_maker.map_input import*
 from AI import*
 
 pygame.init()
+
+clock = pygame.time.Clock()
+finished = False
+
+w, h, = 600, 600
+map_ar = file_reader("map_maker/maps/1.txt")[2]
+screen_center = pos(w//2, h//2)
+screen = pygame.display.set_mode((w, h))
+map = Map(map_ar, screen)
+
 tank_bots = []
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-tank_player = Tank(250, 250, 0, "heavy",screen)
-tank_enemy = Tank(400, 400, 0, "heavy",screen) # Пробный вариант танка противника
+tank_player = Tank(250, 250, 0, "middle",screen, screen_center)
+tank_enemy = Tank(400, 400, 0, "heavy",screen, screen_center) # Пробный вариант танка противника
 tank_enemy.add(tanks_bots)
 
 list_tile = [pos(5, 5), pos(5, 20), pos(20, 20), pos(20, 5)] #Список точек, по которым будет двигаться бот
 tank_enemy.update_list_tile(list_tile)
 
-
-clock = pygame.time.Clock()
-finished = False
-
-w, h, map_ar = file_reader("map_maker/maps/1.txt")
-screen = pygame.display.set_mode((w, h))
-map = Map(map_ar, screen)
-
-
 while not finished:
     screen.fill((255,255,255))
-    map.draw()
+    map.draw(screen_center, tank_player)
 
     for tank in tanks:
-        tank.draw()
+        tank.draw(screen_center, tank_player)
+
     tank_player.update_pos_mouse_for_player()
-    
+
     for tank in tanks_bots:
         meet_with_tank(tank, tank_player)
+
+    for tank in tanks:
+        tank.draw_turret(screen_center, tank_player)
+
+    for tank in tanks_bots:
+        tank.draw_turret(screen_center, tank_player)
         
     for bul in bullets:
-        bul.draw()
-    
+        bul.draw(screen_center, tank_player)
+
     pygame.display.update()
     clock.tick(FPS)
     for event in pygame.event.get():
