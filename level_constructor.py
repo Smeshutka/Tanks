@@ -3,7 +3,18 @@ from tank_class import*
 from map_maker.tiles import*
 from map_maker.map_input import*
 from tkinter.filedialog import *
-
+'''
+Этот модуль позволяет создавать карту
+управление: wasd - перемещение выделенного тайла
+1 - замена выделенного тайла на траву
+2 - на воду
+3 - на кирпич
+4 - на камень
+5 - на песок
+6 - на лёд
+o - вызов диалогового окна для открытия файла карты
+p - вызов диалогового окна для сохранения карты в файл, необходимо прописывать расширение .txt
+'''
 def draw_chosen(chosen_tile, screen_center):
     sur = pygame.Surface((a,a), pygame.SRCALPHA)
     pygame.draw.rect(sur, (255,255,255), (a/4,a/4,a/2,a/2))
@@ -35,8 +46,19 @@ def open_map():
     
 def save_map():
     root = Tk()
-    out_filename = asksaveasfilename(filetypes=(("Text file", ".txt"),))
+    file = asksaveasfilename(filetypes=(("Text file", ".txt"),))
     root.destroy()
+    with open(file, 'w') as file:
+        for i in range(len(map.tiles_array)):
+            for j in range(len(map.tiles_array[0])):
+                tile = map.tiles_array[i][j]
+                if tile.type == 'stone':
+                    text = 'S'
+                else:
+                    text = tile.type[0]
+                file.write(text)
+            file.write('\n')
+    
     
 pygame.init()
 w, h, = 600, 600
@@ -76,7 +98,18 @@ while not finished:
             if event.key == pygame.K_d:
                 change_pos_chosen(chosen_tile, 1, 0)
             if event.key == pygame.K_1:
+                change_chosen_type(chosen_tile, map.tiles_array[chosen_tile.map_pos.y][chosen_tile.map_pos.x], 'grass')
+            if event.key == pygame.K_2:
+                change_chosen_type(chosen_tile, map.tiles_array[chosen_tile.map_pos.y][chosen_tile.map_pos.x], 'water')
+            if event.key == pygame.K_3:
+                change_chosen_type(chosen_tile, map.tiles_array[chosen_tile.map_pos.y][chosen_tile.map_pos.x], 'bricks')
+            if event.key == pygame.K_4:
                 change_chosen_type(chosen_tile, map.tiles_array[chosen_tile.map_pos.y][chosen_tile.map_pos.x], 'stone')
+            if event.key == pygame.K_5:
+                change_chosen_type(chosen_tile, map.tiles_array[chosen_tile.map_pos.y][chosen_tile.map_pos.x], 'sand')
+            if event.key == pygame.K_6:
+                change_chosen_type(chosen_tile, map.tiles_array[chosen_tile.map_pos.y][chosen_tile.map_pos.x], 'ice')
+            
             if event.key == pygame.K_p:
                 save_map()
             if event.key == pygame.K_o:
