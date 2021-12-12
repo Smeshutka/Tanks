@@ -8,8 +8,6 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..\..')
 from Tanks.helper import*
 from Tanks.constans import*
 
-tiles = pygame.sprite.Group()
-tiles_array = []
 tiles_type = ["grass", "water", "bricks", "ice", "sand", "stone"]
 name_images = {}
 images = {}
@@ -24,7 +22,8 @@ class Tile(pygame.sprite.Sprite):
     def __init__(self, x, y, tile_type, screen):
         """ 
         x, y:  положение левого верхнего угла тайла
-        tile_type: тип тайла, возможные: "grass", "water", "bricks"
+        tile_type: тип тайла, возможные: "grass", "water", "bricks", "stone",
+        "sand", "ice"
         sreen: экран на котором будет отображаться танк
         """
         
@@ -32,6 +31,8 @@ class Tile(pygame.sprite.Sprite):
         self.screen = screen
         self.image = pygame.image.load(name_images[tile_type]).convert_alpha()
         self.corner = pos(x,y)
+        self.center = pos(x+a//2, y+a//2)
+        self.map_pos = pos(x//a, y//a)
         self.type = tile_type
         self.rect = self.image.get_rect()
             
@@ -83,29 +84,34 @@ class Map(pygame.sprite.Sprite):
     """По списку tiles_list формата (x, y, name_image) создает группу тайлов"""
     
     def __init__(self, map, screen):
+        tiles = pygame.sprite.Group()
+        tiles_array = []
+        
         for i in range(len(map)):
             tiles_array.append([])
             for j in range(len(map[i])):
                 tiles_array[i].append(Tile(map[i][j][0], map[i][j][1], map[i][j][2], screen))
                 tiles_array[i][j].add(tiles)
+               
+        self.tiles_array = tiles_array
+        self.tiles = tiles
             
     def draw(self, screen_center, tank_player):
-        for t in tiles:
-            if (t.corner.y - tank_player.center.y < screen_center.y and tank_player.center.y - t.corner.y - 20 < screen_center.y) and \
-                    (t.corner.x - tank_player.center.x < screen_center.x and tank_player.center.x - t.corner.x - 20 < screen_center.x):
+        for t in self.tiles:
+            if (t.corner.y - tank_player.center.y < screen_center.y and tank_player.center.y - t.corner.y - a < screen_center.y) and \
+                    (t.corner.x - tank_player.center.x < screen_center.x and tank_player.center.x - t.corner.x - a < screen_center.x):
                 t.corner_visible = pos(screen_center.x + t.corner.x - tank_player.center.x,
                                   screen_center.y + t.corner.y - tank_player.center.y)
                 t.draw()
     
-def return_tile_ower_pos(x, y):
+def return_tile_ower_pos(x, y, map):
     """Указываются координаты точки, возвращается тайл с данными координатами"""
     i = int(x / a)
     j = int(y / a)
-    if j >= 0 and j < len(tiles_array) and i >= 0 and i < len(tiles_array[0]):
-        return tiles_array[int(y // a)][int(x // a)]
-    return tiles_array[0][0]
+    if j >= 0 and j < len(map.tiles_array) and i >= 0 and i < len(map.tiles_array[0]):
+        return map.tiles_array[int(y // a)][int(x // a)]
+    return False
     
 
-map = Map([], 0)
     
             

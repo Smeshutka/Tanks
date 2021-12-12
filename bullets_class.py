@@ -60,7 +60,7 @@ class Bullets(pygame.sprite.Sprite):
         self.screen.blit(self.image, (screen_center.x + self.corner.x - tank_player.center.x,
                                       screen_center.y + self.corner.y - tank_player.center.y))
 
-    def tiles_near(self):
+    def tiles_near(self, map):
         """
         Возвращает группу тайлов, находящихся поблизости танка
         tiles_array[i][j]: i - номер строчки, j - номер столбца
@@ -68,13 +68,13 @@ class Bullets(pygame.sprite.Sprite):
         tiles_n = pygame.sprite.Group()
         x1, y1, x2, y2 = self.corner.x, self.corner.y, 2 * self.center.x - self.corner.x, 2 * self.center.y - self.corner.y
         x1 = max(int(x1) // a - 2, 0)
-        x2 = min(int(x2) // a + 2, len(tiles_array[0]) - 1)
+        x2 = min(int(x2) // a + 2, len(map.tiles_array[0]))
         y1 = max(int(y1) // a - 2, 0)
-        y2 = min(int(y2) // a + 2, len(tiles_array) - 1)
+        y2 = min(int(y2) // a + 2, len(map.tiles_array))
         for i in range(x1, x2):
             for j in range(y1, y2):
-                if j >= 0 and j < len(tiles_array) and i >= 0 and i < len(tiles_array[0]):
-                    tiles_array[j][i].add(tiles_n)
+                if j >= 0 and j <= len(map.tiles_array) and i >= 0 and i <= len(map.tiles_array[0]):
+                    map.tiles_array[j][i].add(tiles_n)
         return tiles_n
     
 #class Shell:

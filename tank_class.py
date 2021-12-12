@@ -171,7 +171,7 @@ class Tank(pygame.sprite.Sprite):
             self.turret_ang -= self.turret_rotate_speed * dt
 
 
-    def move(self):
+    def move(self, map):
         """
         Отвечает за перемещение и поворот всего танка
         args:
@@ -180,12 +180,12 @@ class Tank(pygame.sprite.Sprite):
         """
         global dt
 
-        def get_mu(self):
+        def get_mu(self, map):
             """Возвращает коэффициент трения тайла, находящегося в центре танка"""
-            tile = return_tile_ower_pos(self.center.x, self.center.y)
+            tile = return_tile_ower_pos(self.center.x, self.center.y, map)
             return tile.k1, tile.k2
         
-        def tiles_near(self):
+        def tiles_near(self, map):
             """
             Возвращает группу тайлов, находящихся поблизости танка
             tiles_array[i][j]: i - номер строчки, j - номер столбца
@@ -193,13 +193,13 @@ class Tank(pygame.sprite.Sprite):
             tiles_n = pygame.sprite.Group()
             x1, y1, x2, y2 = self.corner.x, self.corner.y, 2 * self.center.x - self.corner.x, 2 * self.center.y - self.corner.y
             x1 = max(int(x1) // a - 2, 0)
-            x2 = min(int(x2) // a + 2, len(tiles_array[0]))
+            x2 = min(int(x2) // a + 2, len(map.tiles_array[0]))
             y1 = max(int(y1) // a - 2, 0)
-            y2 = min(int(y2) // a + 2, len(tiles_array))
+            y2 = min(int(y2) // a + 2, len(map.tiles_array))
             for i in range(x1, x2):
                 for j in range(y1, y2):
-                    if j >= 0 and j <= len(tiles_array) and i >= 0 and i <= len(tiles_array[0]):
-                        tiles_array[j][i].add(tiles_n)
+                    if j >= 0 and j <= len(map.tiles_array) and i >= 0 and i <= len(map.tiles_array[0]):
+                        map.tiles_array[j][i].add(tiles_n)
             return tiles_n
 
         def check_move_tanks(self):
@@ -210,23 +210,23 @@ class Tank(pygame.sprite.Sprite):
                         return False
             return True
         
-        def check_move_tiles(self):
+        def check_move_tiles(self, map):
             """Проверка на то, может ли танк сюда сдвинутся (врезался ли он с тайлами)"""
-            for tile in tiles_near(self):
+            for tile in tiles_near(self, map):
                 if tile.type == "bricks" or tile.type == "water" or tile.type == "stone":
                     if meet(self, tile):
                         return False
             return True
 
-        def check_move(self):
+        def check_move(self, map):
             """Проверка на то, может ли танк сюда сдвинутся (врезался ли он с тайлами или танком)"""
-            return check_move_tanks(self) and check_move_tiles(self)
+            return check_move_tanks(self) and check_move_tiles(self, map)
 
-        def check_turn_turret(self):
+        def check_turn_turret(self, map):
             """Проверка на то, может ли танк повернуть свою башню"""
             
             obj = unnamed(self.turret_image, self.corner.x, self.corner.y) #Создается безымяный класс для проверки пересечения со стенками
-            for tile in tiles_near(self):
+            for tile in tiles_near(self, map):
                 if tile.type == "bricks":
                     if meet(obj, tile):
                         return False
@@ -243,7 +243,7 @@ class Tank(pygame.sprite.Sprite):
             self.rect = self.image.get_rect()
             update_mask(self) #Обновление маски танка
             
-        def turn_body(self):
+        def turn_body(self, map):
             body_ang = self.body_ang
             
             if self.fa == True and self.fd == False:
@@ -255,7 +255,7 @@ class Tank(pygame.sprite.Sprite):
 
             update_for_check(self)
 
-            if check_move(self):
+            if check_move(self, map):
                 pass
             else:
                 self.body_ang = body_ang
@@ -285,24 +285,25 @@ class Tank(pygame.sprite.Sprite):
                 
             #Ускорение за счёт работы двигателя:
             if self.fw == True and self.fs == False:
-                self.acceleration.x = self.engine_power * math.cos(an) / self.m
-                self.acceleration.y = -self.engine_power * math.sin(an) / self.m
+                self.acceleration.x = dt * self.engine_power * math.cos(an) / self.m
+                self.acceleration.y = dt *-self.engine_power * math.sin(an) / self.m
             elif self.fw == False and self.fs == True:
-                self.acceleration.x = -self.engine_power * math.cos(an) / self.m
-                self.acceleration.y = self.engine_power * math.sin(an) / self.m
+                self.acceleration.x = dt *-self.engine_power * math.cos(an) / self.m
+                self.acceleration.y = dt *self.engine_power * math.sin(an) / self.m
                             
             #Ускорение за счёт сопротивления среды:
-            if v < 15:
-                v = 15
+            #if v < 15:
+            #    v = 15
             self.v_ort = v * math.sin(self.vel_ang-an)
             self.v_par = v * math.cos(self.vel_ang-an)
-            self.acceleration.x -= k1 * abs(self.v_par*math.cos(an))* self.v_par*math.cos(an) / self.m
-            self.acceleration.y += k1 * abs(self.v_par*math.sin(an))* self.v_par*math.sin(an) / self.m
-            self.acceleration.x -= k2 * abs(self.v_ort*math.cos(math.pi/2+an))* self.v_ort*math.cos(math.pi/2+an) / self.m
-            self.acceleration.y += k2 * abs(self.v_ort*math.sin(math.pi/2+an))* self.v_ort*math.sin(math.pi/2+an) / self.m
-    
             
-        def update_options(self):
+            self.acceleration.x -= dt *k1 * abs(self.v_par*math.cos(an))* self.v_par*math.cos(an) / self.m
+            self.acceleration.y += dt *k1 * abs(self.v_par*math.sin(an))* self.v_par*math.sin(an) / self.m
+            self.acceleration.x -= dt *k2 * abs(self.v_ort*math.cos(math.pi/2+an))* self.v_ort*math.cos(math.pi/2+an) / self.m
+            self.acceleration.y += dt *k2 * abs(self.v_ort*math.sin(math.pi/2+an))* self.v_ort*math.sin(math.pi/2+an) / self.m
+            
+             
+        def update_options(self, map):
             """Движение танка (обновление координат, скоростей)"""
             vx = self.velocity.x 
             vy = self.velocity.y
@@ -315,15 +316,15 @@ class Tank(pygame.sprite.Sprite):
                 self.velocity.x = 0
                 self.velocity.y = 0
             else:
-                self.velocity.x += self.acceleration.x * dt
-                self.velocity.y += self.acceleration.y * dt
+                self.velocity.x += self.acceleration.x 
+                self.velocity.y += self.acceleration.y
                 
             self.center.x += self.velocity.x * dt
             self.center.y += self.velocity.y * dt
         
             update_for_check(self)
 
-            if check_move(self):
+            if check_move(self, map):
                 pass
             else:
                 self.center.x = x
@@ -333,14 +334,14 @@ class Tank(pygame.sprite.Sprite):
             
                 update_for_check(self)
                 
-        def main(self):
-            k1, k2 = get_mu(self)
-            turn_body(self) #Поворот тела танка
+        def main(self, map):
+            k1, k2 = get_mu(self, map)
+            turn_body(self, map) #Поворот тела танка
             self.turn_turret() #Поворот башни танка
             set_acceleration(self, k1, k2) #Расчет ускорений
-            update_options(self) #Движение танка
+            update_options(self, map) #Движение танка
 
-        main(self)
+        main(self, map)
             
     def draw(self, screen_center, tank_player):
         self.center_visible = pos(screen_center.x + self.center.x - tank_player.center.x,

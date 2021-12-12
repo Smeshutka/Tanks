@@ -11,10 +11,10 @@ clock = pygame.time.Clock()
 finished = False
 
 w, h, = 600, 600
-map_ar = file_reader("map_maker/maps/1.txt")[2]
 screen_center = pos(w//2, h//2)
 screen = pygame.display.set_mode((w, h))
-map = Map(map_ar, screen)
+
+map = Map(file_reader("map_maker/maps/1.txt"), screen)
 
 tank_bots = []
 tank_player = Tank(250, 250, 0, "light",screen, screen_center)
@@ -78,13 +78,13 @@ while not finished:
         move_AI(tank)
 
     for tank in tanks:
-        tank.move()
+        tank.move(map)
         tank.fire_gun()
         tank.update_cooldawn()
     
     for bul in bullets:
         bul.move()
-        for tile in bul.tiles_near():
+        for tile in bul.tiles_near(map):
             tile.meet_with_bullet(bul)
 
         for tank in tanks:

@@ -26,7 +26,7 @@ def map_maker(map):
             elif map[i][j] == 'i':
                map[i][j] = ([a * j, a * i, 'ice']) 
             
-    return (screen_width, screen_height, map)
+    return map
 
 def file_reader(input_filename):
     """Cчитывает данные о карте из файла
