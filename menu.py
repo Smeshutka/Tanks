@@ -1,4 +1,7 @@
-from pygame import *
+from helper import *
+from pygame import*
+from map_maker.tiles import*
+from map_maker.map_input import*
 
 init()
 size = (800, 600)
@@ -38,7 +41,7 @@ class Menu():
 
 ARIAL_50.render("Back", True, (255, 255, 255))
 
-def forsettings():
+def opensettings():
         menu._option_surfaces=[]
         menu._callbacks=[]
         menu._current_option_index=0
@@ -49,7 +52,7 @@ def back():
     menu._option_surfaces=[]
     menu._callbacks=[]
     menu.append_option('singleplayer', lambda: exec(open('game.py').read()))
-    menu.append_option('settings', lambda: forsettings())
+    menu.append_option('settings', lambda: opensettings())
     menu.append_option('Quit', quit)
 
 
@@ -58,7 +61,8 @@ def back():
 
 menu = Menu()
 menu.append_option('singleplayer', lambda: exec(open('game.py').read()))
-menu.append_option('settings', lambda: forsettings())
+menu.append_option('level_constructor', lambda: exec(open('level_constructor.py').read()))
+menu.append_option('settings', lambda: opensettings())
 menu.append_option('Quit', lambda: exit())
 
 running = True

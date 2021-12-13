@@ -4,6 +4,7 @@ from map_maker.tiles import*
 from map_maker.map_input import*
 import tkinter
 from tkinter.filedialog import *
+
 '''
 Этот модуль позволяет создавать карту
 управление: wasd - перемещение выделенного тайла
@@ -18,9 +19,9 @@ p - вызов диалогового окна для сохранения ка�
 '''
 
 class Tiles_menu:
-    def __init__(self,screen, w,h, chosen_type = 'stone'):
+    def __init__(self, screen, w, h, chosen_type = 'stone'):
         self.screen = screen
-        self.screen_size = pos(w,h)
+        self.screen_size = pos(w, h)
         self.k = 5
         self.chosen_type = chosen_type
         self.y0 = 0
