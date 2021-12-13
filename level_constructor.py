@@ -62,7 +62,7 @@ class Tiles_menu:
         
     def check_pressed(self):
         mx,my = pygame.mouse.get_pos()
-        if mx>=self.screen_size.x - a*self.k + a and mx<=self.screen_size.x - a*self.k + (self.k-2)*a:
+        if mx>=self.screen_size.x - a*self.k + a and mx<=self.screen_size.x - a:
             for i in range(len(self.all_types)):
                 if my+self.y0<=(self.k-1)*a+a*i*(self.k-1) and my+self.y0>= a+a*i*(self.k-1):
                     return self.all_types[i]
@@ -131,7 +131,7 @@ screen = pygame.display.set_mode((w, h))
 clock = pygame.time.Clock()
 
 finished = False
-changes = False
+mouse_pressed = False
 
 #lt = list of tiles
 lt = []
@@ -144,6 +144,7 @@ map = Map(map_maker(lt), screen)
 chosen_tile = Tile(a*0,a*0,"stone",screen)
 
 menu = Tiles_menu(screen, w,h)
+
 
 while not finished:
     screen.fill((0,0,0))
@@ -181,13 +182,32 @@ while not finished:
                 save_map()
             if event.key == pygame.K_o:
                 map = open_map()
-        elif event.type == pygame.MOUSEBUTTONUP:
+        elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
                 if menu.check_pressed()!= '':
                     menu.chosen_type = menu.check_pressed()
                 else:
-                    ma,mb = calculate_map_pressed(map)
-                    if ma!=-1 and mb!=-1:
-                        map.tiles_array[mb][ma].update_tile(menu.chosen_type)
+                    ma_start,mb_start = calculate_map_pressed(map)
+                    if ma_start!=-1 and mb_start!=-1:
+                        mouse_pressed = True
+                        #map.tiles_array[mb][ma].update_tile(menu.chosen_type)
+                        
+        elif event.type == pygame.MOUSEBUTTONUP:
+            if event.button == 1:
+                if mouse_pressed:
+                    mouse_pressed = False
+                    ma_end,mb_end = calculate_map_pressed(map)
+                    if ma_end != -1 and mb_end != -1:
+                        mb_end += 1
+                        ma_end += 1
+                        for i in range(abs(mb_end-mb_start)):
+                            for j in range(abs(ma_end-ma_start)):
+                                if ma_end < ma_start:
+                                    ma_end, ma_start = ma_start, ma_end
+                                if mb_end < mb_start:
+                                    mb_end, mb_start = mb_start, mb_end
+                                map.tiles_array[mb_start+i][ma_start+j].update_tile(menu.chosen_type)
+                    
+                    
         
 pygame.quit()
