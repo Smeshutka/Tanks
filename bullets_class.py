@@ -1,7 +1,7 @@
 from helper import*
 from  map_maker.tiles import*
 
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
+screen = pygame.display.set_mode((w, h))
 
 bullets_type = ["bullet"]
 name_images = {}
@@ -54,11 +54,11 @@ class Bullets(pygame.sprite.Sprite):
         self.center.x += self.velocity.x
         self.center.y += self.velocity.y
 
-    def draw(self, screen_center, tank_player):
+    def draw(self, observating_point):
         self.image = pygame.transform.rotate(self.image_start, self.ang*180/math.pi)
         update_corner(self)
-        self.screen.blit(self.image, (screen_center.x + self.corner.x - tank_player.center.x,
-                                      screen_center.y + self.corner.y - tank_player.center.y))
+        self.screen.blit(self.image, (screen_center.x + self.corner.x - observating_point.x,
+                                      screen_center.y + self.corner.y - observating_point.y))
 
     def tiles_near(self, map):
         """

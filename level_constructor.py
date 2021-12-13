@@ -69,7 +69,7 @@ class Tiles_menu:
         return ''
         
 
-def draw_chosen(chosen_tile, screen_center):
+def draw_chosen(chosen_tile):
     sur = pygame.Surface((a,a), pygame.SRCALPHA)
     pygame.draw.rect(sur, (255,255,255), (a/4,a/4,a/2,a/2))
     
@@ -127,9 +127,7 @@ def save_map():
     
     
 pygame.init()
-w, h, = 600, 600
 screen = pygame.display.set_mode((w, h))
-screen_center = pos(w//2, h//2)
 clock = pygame.time.Clock()
 
 finished = False
@@ -149,8 +147,8 @@ menu = Tiles_menu(screen, w,h)
 
 while not finished:
     screen.fill((0,0,0))
-    map.draw(screen_center, chosen_tile, 1)
-    draw_chosen(chosen_tile,screen_center)
+    map.draw(chosen_tile.center)
+    draw_chosen(chosen_tile)
     menu.draw()
     pygame.display.update()
     clock.tick(FPS)

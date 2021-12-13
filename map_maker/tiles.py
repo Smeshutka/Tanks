@@ -12,7 +12,7 @@ tiles_type = ["grass", "water", "bricks", "ice", "sand", "stone"]
 name_images = {}
 images = {}
 masks = {}
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
+screen = pygame.display.set_mode((w, h))
 for tile in tiles_type:
     name_images[tile] = "map_maker/images/" + tile + ".png"
     images[tile] = pygame.image.load(name_images[tile]).convert_alpha()
@@ -67,7 +67,7 @@ class Tile(pygame.sprite.Sprite):
         self.type = tile_type
         self.image = pygame.image.load(name_images[tile_type]).convert_alpha()
 
-    def draw(self, k):
+    def draw(self, k=1):
         self.screen.blit(update_image(self.image, k, k), (self.corner_visible.x, self.corner_visible.y))
 
     def meet_with_bullet(tile, bul):
@@ -96,12 +96,12 @@ class Map(pygame.sprite.Sprite):
         self.tiles_array = tiles_array
         self.tiles = tiles
             
-    def draw(self, screen_center, tank_player,k):
+    def draw(self, observating_point, k=1):
         for t in self.tiles:
-            if (t.corner.y - tank_player.center.y < screen_center.y and tank_player.center.y - t.corner.y - a < screen_center.y) and \
-                    (t.corner.x - tank_player.center.x < screen_center.x and tank_player.center.x - t.corner.x - a < screen_center.x):
-                t.corner_visible = pos(screen_center.x + t.corner.x - tank_player.center.x,
-                                  screen_center.y + t.corner.y - tank_player.center.y)
+            if (t.corner.y - observating_point.y < screen_center.y and observating_point.y - t.corner.y - a < screen_center.y) and \
+                    (t.corner.x - observating_point.x < screen_center.x and observating_point.x - t.corner.x - a < screen_center.x):
+                t.corner_visible = pos(screen_center.x + t.corner.x - observating_point.x,
+                                  screen_center.y + t.corner.y - observating_point.y)
                 t.draw(k)
     
 def return_tile_ower_pos(x, y, map):

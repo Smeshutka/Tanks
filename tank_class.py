@@ -26,7 +26,7 @@ def update_image_for_tank(self):
 
 class Tank(pygame.sprite.Sprite):
 
-    def __init__(self, x, y, angle, tank_type, screen, screen_center):
+    def __init__(self, x, y, angle, tank_type, screen):
         """
         x,y - положение центра танка
         tank_type - тип танка, возможные: "light", "middle", "heavy"
@@ -347,11 +347,11 @@ class Tank(pygame.sprite.Sprite):
 
         main(self, map)
             
-    def draw(self, screen_center, tank_player):
-        self.center_visible = pos(screen_center.x + self.center.x - tank_player.center.x,
-                                  screen_center.y + self.center.y - tank_player.center.y)
-        self.corner_visible = pos(screen_center.x + self.corner.x - tank_player.center.x,
-                                  screen_center.y + self.corner.y - tank_player.center.y)
+    def draw(self, observating_point):
+        self.center_visible = pos(screen_center.x + self.center.x - observating_point.x,
+                                  screen_center.y + self.center.y - observating_point.y)
+        self.corner_visible = pos(screen_center.x + self.corner.x - observating_point.x,
+                                  screen_center.y + self.corner.y - observating_point.y)
         #Рисование тела танка:
         self.screen.blit(self.body_image, (self.corner_visible.x, self.corner_visible.y))
 
@@ -370,7 +370,7 @@ class Tank(pygame.sprite.Sprite):
         for i in range(self.hp):
             self.screen.blit(sub, (self.center_visible.x-50+25*i, self.center_visible.y-b/2-30))
 
-    def draw_turret(self, screen_center, tank_player):
+    def draw_turret(self):
         # Рисование башни танка:
         self.turret_image = pygame.transform.rotate(self.turret_image_start, self.turret_ang * 180 / math.pi)
         a, b = self.turret_image.get_size()

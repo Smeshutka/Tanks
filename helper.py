@@ -48,7 +48,6 @@ def update_image(image, w, h):
     Меняет исходные размеры картинки
     w, h: новые размеры картинки в размерах тайла (у.е.)
     """
-
     image = pygame.transform.scale(image, (int(w * a), int(h * a)))
     return image
 
@@ -68,4 +67,4 @@ class unnamed(pygame.sprite.Sprite):
         update_mask(self)
         self.rect = self.image.get_rect()
 
-
+screen_center = pos(w//2, h//2)
