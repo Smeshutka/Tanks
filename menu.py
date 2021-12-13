@@ -56,14 +56,15 @@ def back():
     menu.append_option('Quit', quit)
 
 
-
-
+def vyuhod():
+    global running
+    running=False
 
 menu = Menu()
 menu.append_option('singleplayer', lambda: exec(open('game.py').read()))
 menu.append_option('level_constructor', lambda: exec(open('level_constructor.py').read()))
 menu.append_option('settings', lambda: opensettings())
-menu.append_option('Quit', lambda: exit())
+menu.append_option('Quit', lambda: vyuhod())
 
 running = True
 while running:
