@@ -14,7 +14,6 @@ screen = pygame.display.set_mode((w, h))
 
 map = Map(file_reader("map_maker/maps/1.txt"), screen)
 
-tank_bots = []
 tank_player = Tank(250, 250, 0, "light", screen)
 tank_enemy = Tank(400, 400, 0, "heavy", screen) # Пробный вариант танка противника
 tank_enemy.add(tanks_bots)
@@ -37,9 +36,6 @@ while not finished:
         meet_with_tank(tank, tank_player)
 
     for tank in tanks:
-        tank.draw_turret()
-
-    for tank in tanks_bots:
         tank.draw_turret()
         
     for bul in bullets:
