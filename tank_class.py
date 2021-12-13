@@ -72,7 +72,7 @@ class Tank(pygame.sprite.Sprite):
             self.cooldawn = 1
             self.time_cooldawn = 0
             self.hp = 3
-            self.ai = 3
+            self.ai = 1
             self.k_turret_draw = 0.0
             self.width_in_tiles = 3.5
             
@@ -87,7 +87,7 @@ class Tank(pygame.sprite.Sprite):
             self.cooldawn = 1
             self.time_cooldawn = 0
             self.hp = 3
-            self.ai = 3
+            self.ai = 2
             self.k_turret_draw = 0.0
             self.width_in_tiles = 3.5
             

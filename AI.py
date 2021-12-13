@@ -123,10 +123,10 @@ def meet_with_tank(tank, tank_pl):
     
     if meet(tank.vis, tank_pl):
         #Стрельба:
-        tank.update_pos_mouse_for_AI(tank_pl.center.x, tank_pl.center.y)
+        tank.update_pos_mouse_for_AI(w // 2, h // 2)
 
         #Проверка на то, нужно ли стрелять во врага:
-        tx, ty = tank.mouse.x, tank.mouse.y
+        tx, ty = tank_pl.center.x, tank_pl.center.y
 
         
         if tx > tank.center.x:
