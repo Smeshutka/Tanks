@@ -72,7 +72,7 @@ class Tank(pygame.sprite.Sprite):
             self.cooldawn = 1
             self.time_cooldawn = 0
             self.hp = 3
-            self.ai = 1
+            self.ai = 3
             self.k_turret_draw = 0.0
             self.width_in_tiles = 3.5
             
@@ -87,7 +87,7 @@ class Tank(pygame.sprite.Sprite):
             self.cooldawn = 1
             self.time_cooldawn = 0
             self.hp = 3
-            self.ai = 2
+            self.ai = 3
             self.k_turret_draw = 0.0
             self.width_in_tiles = 3.5
             
@@ -374,10 +374,8 @@ class Tank(pygame.sprite.Sprite):
         # Рисование башни танка:
         self.turret_image = pygame.transform.rotate(self.turret_image_start, self.turret_ang * 180 / math.pi)
         a, b = self.turret_image.get_size()
-        a_body, b_body = self.body_image_start.get_size()
-        k = self.k_turret_draw
-        s = b_body * k
-        self.screen.blit(self.turret_image, (self.center_visible.x - a / 2 - s * math.cos(self.body_ang), self.center_visible.y - b / 2 + s * math.sin(self.body_ang) ))
+
+        self.screen.blit(self.turret_image, (self.center_visible.x - a / 2 - self.s * math.cos(self.body_ang), self.center_visible.y - b / 2 + self.s * math.sin(self.body_ang) ))
 
     def reload_left(self):
         self.flpk = 1
@@ -389,8 +387,8 @@ class Tank(pygame.sprite.Sprite):
         if self.flpk == 1 and self.time_cooldawn == 0:
             a, b = self.turret_image_start.get_size()     
             
-            x = self.center.x + a / 2 * math.cos(self.turret_ang) - self.s * math.cos(self.body_ang)
-            y = self.center.y - a / 2 * math.sin(self.turret_ang) - self.s * math.sin(self.body_ang)
+            x = self.center.x + a / 2 * math.cos(self.turret_ang) - self.s * math.cos(self.body_ang) 
+            y = self.center.y - a / 2 * math.sin(self.turret_ang) + self.s * math.sin(self.body_ang) 
             bullet = Bullets(self.screen, "bullet", x, y, self.turret_ang, self)
             bullet.add(bullets)
             self.time_cooldawn = self.cooldawn

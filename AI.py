@@ -33,7 +33,7 @@ def Go_to_dot(dot,tank):
         ang += 2*math.pi
     elif ang > math.pi:
         ang -= 2*math.pi
-    
+
     if abs(ang) < math.pi/3:
         tank.fw = 1 
     elif abs(ang) > math.pi/3:
