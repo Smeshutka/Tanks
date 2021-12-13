@@ -90,6 +90,7 @@ class Tank(pygame.sprite.Sprite):
             self.ai = 2
             self.k_turret_draw = 0.0
             self.width_in_tiles = 3.5
+            
         elif tank_type == "heavy":
             self.hp = 5
             self.size = pos(134,82)
@@ -101,7 +102,7 @@ class Tank(pygame.sprite.Sprite):
             self.cooldawn = 1
             self.time_cooldawn = 0
             self.hp = 3
-            self.ai = 1
+            self.ai = 3
             self.k_turret_draw = 0.3
             self.width_in_tiles = 3.5
             
@@ -114,6 +115,9 @@ class Tank(pygame.sprite.Sprite):
         update_mask(self)
         self.rect = self.image.get_rect()
         self.add(tanks)
+        
+        a_body, b_body = self.body_image_start.get_size()
+        self.s =  b_body * self.k_turret_draw
         
     def update_list_dot(self, list_dot):
         """
@@ -151,10 +155,10 @@ class Tank(pygame.sprite.Sprite):
     def turn_turret(self):
         tx, ty = self.mouse.x, self.mouse.y
 
-        if tx > self.center_visible.x:
-            self.wanted_turret_ang = -math.atan((ty-self.center_visible.y) / (tx-self.center_visible.x))
-        elif tx < self.center_visible.x:
-            self.wanted_turret_ang = -math.atan((ty-self.center_visible.y) / (tx-self.center_visible.x))+math.pi
+        if tx > self.center_visible.x - self.s * math.cos(self.body_ang):
+            self.wanted_turret_ang = -math.atan((ty-self.center_visible.y - self.s * math.sin(self.body_ang)) / (tx-self.center_visible.x + self.s * math.cos(self.body_ang)))
+        elif tx < self.center_visible.x - self.s * math.cos(self.body_ang):
+            self.wanted_turret_ang = -math.atan((ty-self.center_visible.y - self.s * math.sin(self.body_ang)) / (tx-self.center_visible.x + self.s * math.cos(self.body_ang)))+math.pi
         else:
             self.wanted_turret_ang = convert_ang(self.body_ang)
             
@@ -380,15 +384,17 @@ class Tank(pygame.sprite.Sprite):
 
     def reload_right(self):
         self.frpk = 1
-
+                                                                                                
     def fire_gun(self):
         if self.flpk == 1 and self.time_cooldawn == 0:
-            a, b = self.turret_image_start.get_size()
-            x = self.center.x + a / 2 * math.cos(self.turret_ang)
-            y = self.center.y - a / 2 * math.sin(self.turret_ang)
+            a, b = self.turret_image_start.get_size()     
+            
+            x = self.center.x + a / 2 * math.cos(self.turret_ang) - self.s * math.cos(self.body_ang)
+            y = self.center.y - a / 2 * math.sin(self.turret_ang) - self.s * math.sin(self.body_ang)
             bullet = Bullets(self.screen, "bullet", x, y, self.turret_ang, self)
             bullet.add(bullets)
             self.time_cooldawn = self.cooldawn
+            
         self.flpk = 0
 
           

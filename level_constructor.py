@@ -2,7 +2,9 @@ from helper import *
 from tank_class import*
 from map_maker.tiles import*
 from map_maker.map_input import*
+import tkinter
 from tkinter.filedialog import *
+
 '''
 Этот модуль позволяет создавать карту
 управление: wasd - перемещение выделенного тайла
@@ -34,9 +36,8 @@ def change_chosen_type(chosen_tile, tile, new_type):
     tile.update_tile(new_type)
     
 def open_map():
-    #global lt, tiles_array, map
     
-    root = Tk()
+    root = tkinter.Tk()
     
     new_map = askopenfilename(filetypes=(("Text file", ".txt"),))
     root.destroy()
@@ -45,7 +46,7 @@ def open_map():
     return map
     
 def save_map():
-    root = Tk()
+    root = tkinter.Tk()
     file = asksaveasfilename(filetypes=(("Text file", ".txt"),))
     root.destroy()
     with open(file, 'w') as file:

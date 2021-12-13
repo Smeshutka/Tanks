@@ -128,6 +128,7 @@ def meet_with_tank(tank, tank_pl):
         #Проверка на то, нужно ли стрелять во врага:
         tx, ty = tank.mouse.x, tank.mouse.y
 
+        
         if tx > tank.center.x:
             tank.wanted_turret_ang = -math.atan((ty-tank.center.y) / (tx-tank.center.x))
         elif tx < tank.center.x:
