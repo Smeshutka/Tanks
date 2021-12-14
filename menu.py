@@ -1,7 +1,7 @@
 from helper import *
-from tank_class import*
-from map_maker.tiles import*
-from map_maker.map_input import*
+from tank_class import *
+from map_maker.tiles import *
+from map_maker.map_input import *
 import tkinter
 from tkinter.filedialog import *
 from pygame import *
@@ -44,23 +44,21 @@ class Menu():
 
 ARIAL_50.render("Back", True, (255, 255, 255))
 
+
 def forsettings():
-        menu._option_surfaces=[]
-        menu._callbacks=[]
-        menu._current_option_index=0
-        menu.append_option('Back', lambda: back())
+    menu._option_surfaces = []
+    menu._callbacks = []
+    menu._current_option_index = 0
+    menu.append_option('Back', lambda: back())
 
 
 def back():
-    menu._option_surfaces=[]
-    menu._callbacks=[]
+    menu._option_surfaces = []
+    menu._callbacks = []
     menu.append_option('singleplayer', lambda: exec(open('game.py').read()))
     menu.append_option('Level constructor', lambda: exec(open('level_constructor.py').read()))
     menu.append_option('settings', lambda: forsettings())
     menu.append_option('Quit', quit)
-
-
-
 
 
 menu = Menu()

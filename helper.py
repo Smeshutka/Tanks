@@ -1,10 +1,11 @@
 import pygame
 import math
-from constans import*
+from constans import *
 
 
 class pos():
     """Класс точка"""
+
     def __init__(self, x, y):
         self.x = x
         self.y = y
@@ -16,27 +17,26 @@ def pos_tile_to_pos_map(dot):
 
 def update_mask(self):
     """Обновляет маску объекта"""
-    
+
     self.mask = pygame.mask.from_surface(self.image)
 
 
 def update_corner(self):
     """Обновляет положение угла объекта self"""
-    
+
     a, b = self.image.get_size()
     self.corner = pos(self.center.x - a / 2, self.center.y - b / 2)
 
 
 def meet(self, obj):
     """Проверка на то, встретились ли объект self и объект obj"""
-        
 
-    #self.rect = self.image.get_rect()
+    # self.rect = self.image.get_rect()
     self.rect.x, self.rect.y = self.corner.x, self.corner.y
-   
-    #obj.rect = obj.image.get_rect()
+
+    # obj.rect = obj.image.get_rect()
     obj.rect.x, obj.rect.y = obj.corner.x, obj.corner.y
-   
+
     if pygame.sprite.collide_rect(self, obj):
         if pygame.sprite.collide_mask(self, obj):
             return True
@@ -54,7 +54,7 @@ def update_image(image, w, h):
 
 def convert_ang(ang):
     """Перевод угла ang(в радианах) в полуинтервал [0,2pi)"""
-    return ang % (2*math.pi)
+    return ang % (2 * math.pi)
 
 
 class unnamed(pygame.sprite.Sprite):
@@ -67,4 +67,5 @@ class unnamed(pygame.sprite.Sprite):
         update_mask(self)
         self.rect = self.image.get_rect()
 
-screen_center = pos(w//2, h//2)
+
+screen_center = pos(w // 2, h // 2)

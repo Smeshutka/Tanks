@@ -1,5 +1,5 @@
-from helper import*
-from  map_maker.tiles import*
+from helper import *
+from map_maker.tiles import *
 
 screen = pygame.display.set_mode((w, h))
 
@@ -22,19 +22,19 @@ class Bullets(pygame.sprite.Sprite):
         sreen: экран на котором будет отображаться танк
         ang: Угол между направлением вектора скорости снаряда и горизонтом
         """
-        
+
         pygame.sprite.Sprite.__init__(self)
         self.screen = screen
-        self.center = pos(x,y)
+        self.center = pos(x, y)
         self.ang = ang
-        self.image_start = pygame.image.load(name_images[bullet_type]).convert_alpha() 
+        self.image_start = pygame.image.load(name_images[bullet_type]).convert_alpha()
         self.image = self.image_start
         update_corner(self)
         self.mask = masks[bul]
         self.rect = self.image.get_rect()
         self.damage = 1
         self.owner = owner
-        
+
         if bullet_type == "bullet":
             self.v = 10
         elif bullet_type == "shell":
@@ -42,20 +42,20 @@ class Bullets(pygame.sprite.Sprite):
 
         vx = self.v * math.cos(self.ang)
         vy = self.v * math.sin(-self.ang)
-        self.velocity = pos(vx,vy)
-        
+        self.velocity = pos(vx, vy)
+
     def check_board(self, WIDTH, HEIGHT):
         if self.x > WIDTH or self.x < 0 or self.y > HEIGHT or self.y < 0:
             return True
         else:
             return False
-      
+
     def move(self):
         self.center.x += self.velocity.x
         self.center.y += self.velocity.y
 
     def draw(self, observating_point):
-        self.image = pygame.transform.rotate(self.image_start, self.ang*180/math.pi)
+        self.image = pygame.transform.rotate(self.image_start, self.ang * 180 / math.pi)
         update_corner(self)
         self.screen.blit(self.image, (screen_center.x + self.corner.x - observating_point.x,
                                       screen_center.y + self.corner.y - observating_point.y))
@@ -76,6 +76,6 @@ class Bullets(pygame.sprite.Sprite):
                 if j >= 0 and j <= len(map.tiles_array) and i >= 0 and i <= len(map.tiles_array[0]):
                     map.tiles_array[j][i].add(tiles_n)
         return tiles_n
-    
-#class Shell:
-#class Bullet:
+
+# class Shell:
+# class Bullet:

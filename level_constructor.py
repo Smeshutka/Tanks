@@ -262,7 +262,7 @@ while not finished:
             if event.button == 1:
                 if mouse_pressed:
                     mouse_pressed = False
-                    ma_end,mb_end = calculate_map_pressed(map)
+                    ma_end, mb_end = calculate_map_pressed(map)
                     if ma_end != -1 and mb_end != -1:
                         mb_end += 1
                         ma_end += 1
