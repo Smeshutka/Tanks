@@ -1,10 +1,11 @@
-import random
 import os
+import random
 import sys
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..\..')))
-from Tanks.helper import*
-from Tanks.constans import*
+from Tanks.helper import *
+from Tanks.constans import *
+
 
 def map_maker(map):
     screen_width = a * len(map[0])
@@ -18,15 +19,16 @@ def map_maker(map):
             elif map[i][j] == 'w':
                 map[i][j] = ([a * j, a * i, 'water'])
             elif map[i][j] == 'b':
-               map[i][j] = ([a * j, a * i, 'bricks'])
+                map[i][j] = ([a * j, a * i, 'bricks'])
             elif map[i][j] == 'S':
-               map[i][j] = ([a * j, a * i, 'stone']) 
+                map[i][j] = ([a * j, a * i, 'stone'])
             elif map[i][j] == 's':
-               map[i][j] = ([a * j, a * i, 'sand']) 
+                map[i][j] = ([a * j, a * i, 'sand'])
             elif map[i][j] == 'i':
-               map[i][j] = ([a * j, a * i, 'ice']) 
-            
+                map[i][j] = ([a * j, a * i, 'ice'])
+
     return map
+
 
 def file_reader(input_filename):
     """Cчитывает данные о карте из файла
@@ -55,6 +57,7 @@ def file_reader(input_filename):
 
     return map_maker(map)
 
+
 def map_generator(a, b):
     """Генерирует карту размером a * b тайлов.
 
@@ -67,17 +70,17 @@ def map_generator(a, b):
     """
     map = [['g' for i in range(b)] for j in range(a)]
 
-    m, n = random.randint(0, a-1), random.randint(0, b-1)
-    for i in range(a*b):
+    m, n = random.randint(0, a - 1), random.randint(0, b - 1)
+    for i in range(a * b):
         x = random.randint(0, 3)
         if x == 0:
-            if m < a-1:
+            if m < a - 1:
                 m += 1
         elif x == 1:
             if m > 0:
                 m -= 1
         elif x == 2:
-            if n < b-1:
+            if n < b - 1:
                 n += 1
         elif x == 3:
             if n > 0:
@@ -85,16 +88,16 @@ def map_generator(a, b):
         map[m][n] = 'w'
 
     m, n = random.randint(0, a - 1), random.randint(0, b - 1)
-    for i in range(a*b//10):
+    for i in range(a * b // 10):
         x = random.randint(0, 3)
         if x == 0:
-            if m < a-1:
+            if m < a - 1:
                 m += 1
         elif x == 1:
             if m > 0:
                 m -= 1
         elif x == 2:
-            if n < b-1:
+            if n < b - 1:
                 n += 1
         elif x == 3:
             if n > 0:
