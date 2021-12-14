@@ -17,37 +17,39 @@ from tkinter.filedialog import *
 o - вызов диалогового окна для открытия файла карты
 p - вызов диалогового окна для сохранения карты в файл, необходимо прописывать расширение .txt
 '''
+def call_n_for_fast_save():
+    return int(input())
+
 class Button:
-    def __init__(self, screen, x0, y0, a, b, text):
+    def __init__(self, screen, x0, y0, a, b, image):
         self.screen = screen
         self.size = pos(a,b)
         self.pos = pos(x0,y0)
-        self.text = text
-    def draw(self):
-        pygame.draw.rect(self.screen, (255,255,255), (x0,y0,a,b))
-        f = pygame.font.Font(None, 36)
-        text = f.render(self.text, 1, (180, 0, 0))
-        self.screen.blit(text, (250, 20))
-        
-class Rotate_button(Button):
-    def __init__(self, screen, x0, y0, a, b, inverse):
-        self.screen = screen
-        self.size = pos(a,b)
-        self.pos = pos(x0,y0)
-        self.image = pygame.image.load('textures/rotate_icon.png').convert_alpha()
-        self.inverse = inverse
+        self.image = pygame.image.load('textures/'+image+'.png').convert_alpha()
         
     def draw(self,k):
-        pygame.draw.rect(self.screen, (255,255,255), (self.pos.x,self.pos.y,self.size.x,self.size.y))
-        self.screen.blit(update_image(pygame.transform.flip(self.image,self.inverse,False), k, k), (self.pos.x, self.pos.y))
-    
+        x0,y0 = self.pos.x, self.pos.y
+        a,b = self.size.x, self.size.y
+        pygame.draw.rect(self.screen, (255,255,255), (x0,y0,a,b))
+        self.screen.blit(update_image(self.image,k,k), (self.pos.x, self.pos.y))
+        
     def check_pressed(self):
         mx,my = pygame.mouse.get_pos()
         x0, y0 = self.pos.x, self.pos.y
         a,b = self.size.x, self.size.y
         if mx >= x0 and my >= y0 and mx <= x0+a and my <= y0+b:
             return True
-        else: return False
+        else:
+            return False
+        
+class Rotate_button(Button):
+    def __init__(self, screen, x0, y0, a, b, image, inverse):
+        Button.__init__(self,screen, x0, y0, a, b, image)
+        self.inverse = inverse
+        
+    def draw(self,k):
+        pygame.draw.rect(self.screen, (255,255,255), (self.pos.x,self.pos.y,self.size.x,self.size.y))
+        self.screen.blit(update_image(pygame.transform.flip(self.image,self.inverse,False), k, k), (self.pos.x, self.pos.y))
         
     def rotate_map(self, map):
         ar = map.tiles_array
@@ -65,6 +67,45 @@ class Rotate_button(Button):
                 else:
                     ar[i][j] = tile.type[0]
         return Map(map_maker(ar),self.screen)
+    
+class SaveLoad_Button(Button):
+    def load_map(self):
+        #global lt, tiles_array, map
+        root = tkinter.Tk()
+        new_map = askopenfilename(filetypes=(("Text file", ".txt"),))
+        root.destroy()
+        chosen_tile = Tile(a*0,a*0,"stone",screen)
+        map = Map(file_reader(new_map), screen)
+        return map
+        
+    def save_map(self, map):
+        root = tkinter.Tk()
+        file = asksaveasfilename(filetypes=(("Text file", ".txt"),))
+        root.destroy()
+        with open(file, 'w') as file:
+            for i in range(len(map.tiles_array)):
+                for j in range(len(map.tiles_array[0])):
+                    tile = map.tiles_array[i][j]
+                    if tile.type == 'stone':
+                        text = 'S'
+                    else:
+                        text = tile.type[0]
+                    file.write(text)
+                file.write('\n')
+        
+    def fast_save(self, n, map):
+        name = 'map_maker/templates/' + str(n) + '.txt'
+        file = open(name, 'w')
+        for i in range(len(map.tiles_array)):
+            for j in range(len(map.tiles_array[0])):
+                tile = map.tiles_array[i][j]
+                if tile.type == 'stone':
+                    text = 'S'
+                else:
+                    text = tile.type[0]
+                file.write(text)
+            file.write('\n')
+        file.close()
 
 class Tiles_menu:
     def __init__(self, screen, w, h, chosen_type = 'stone'):
@@ -157,33 +198,9 @@ def draw_highlighting(ma_start, mb_start, screen,map):
         my, y0 = y0, my
     pygame.draw.rect(screen, (0,0,0), (x0,y0,mx-x0,my-y0), 2)
 
-def open_map():
-    #global lt, tiles_array, map
-    
-    root = tkinter.Tk()
-    
-    new_map = askopenfilename(filetypes=(("Text file", ".txt"),))
-    root.destroy()
-    chosen_tile = Tile(a*0,a*0,"stone",screen)
-    map = Map(file_reader(new_map), screen)
-    return map
-    
-def save_map():
-    root = tkinter.Tk()
-    file = asksaveasfilename(filetypes=(("Text file", ".txt"),))
-    root.destroy()
-    with open(file, 'w') as file:
-        for i in range(len(map.tiles_array)):
-            for j in range(len(map.tiles_array[0])):
-                tile = map.tiles_array[i][j]
-                if tile.type == 'stone':
-                    text = 'S'
-                else:
-                    text = tile.type[0]
-                file.write(text)
-            file.write('\n')
-    
-    
+print('Please, print start number')
+n = call_n_for_fast_save()
+
 pygame.init()
 screen = pygame.display.set_mode((w, h))
 clock = pygame.time.Clock()
@@ -202,20 +219,31 @@ for i in range(10):
 map = Map(map_maker(lt), screen)
 chosen_tile = Tile(a*0,a*0,"stone",screen)
 
-menu = Tiles_menu(screen, w,h)
-rotate_clockwise_button = Rotate_button(screen, w-a*menu.k-a*2, 0, a*2, a*2, False)
-rotate_counterclockwise_button = Rotate_button(screen, w-a*menu.k-a*4, 0, a*2, a*2, True)
+tiles_menu = Tiles_menu(screen, w,h)
+rotate_clockwise_button = Rotate_button(screen, w-a*tiles_menu.k-a*2, 0, a*2, a*2, 'rotate_icon', False)
+rotate_counterclockwise_button = Rotate_button(screen, w-a*tiles_menu.k-a*4, 0, a*2, a*2, 'rotate_icon', True)
+save_button = SaveLoad_Button(screen, w-a*tiles_menu.k-a*6, 0, a*2, a*2, 'save')
+load_button = SaveLoad_Button(screen, w-a*tiles_menu.k-a*8, 0, a*2, a*2, 'load')
+
+#временный код для быстрого создания шаблонов
+
+fast_save_button = SaveLoad_Button(screen, 0, 0, a*2,a*2, 'save')
+#конец куска кода
 
 while not finished:
     screen.fill((0,0,0))
     map.draw(chosen_tile.center)
     draw_chosen(chosen_tile)
-    menu.draw()
+    tiles_menu.draw()
     if mouse_pressed:
         draw_highlighting(ma_start, mb_start, screen,map)
     rotate_clockwise_button.draw(2)
     rotate_counterclockwise_button.draw(2)
+    save_button.draw(2)
+    load_button.draw(2)
+    fast_save_button.draw(2)
     pygame.display.update()
+    
     clock.tick(FPS)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -230,30 +258,40 @@ while not finished:
             if event.key == pygame.K_d or event.key == pygame.K_RIGHT:
                 change_pos_chosen(chosen_tile, 1, 0)
             if event.key == pygame.K_1:
-                change_chosen_type(chosen_tile, map.tiles_array[chosen_tile.map_pos.y][chosen_tile.map_pos.x], 'grass',menu)
+                change_chosen_type(chosen_tile, map.tiles_array[chosen_tile.map_pos.y][chosen_tile.map_pos.x], 'grass',tiles_menu)
             if event.key == pygame.K_2:
-                change_chosen_type(chosen_tile, map.tiles_array[chosen_tile.map_pos.y][chosen_tile.map_pos.x], 'water',menu)
+                change_chosen_type(chosen_tile, map.tiles_array[chosen_tile.map_pos.y][chosen_tile.map_pos.x], 'water',tiles_menu)
             if event.key == pygame.K_3:
-                change_chosen_type(chosen_tile, map.tiles_array[chosen_tile.map_pos.y][chosen_tile.map_pos.x], 'bricks',menu)
+                change_chosen_type(chosen_tile, map.tiles_array[chosen_tile.map_pos.y][chosen_tile.map_pos.x], 'bricks',tiles_menu)
             if event.key == pygame.K_4:
-                change_chosen_type(chosen_tile, map.tiles_array[chosen_tile.map_pos.y][chosen_tile.map_pos.x], 'stone',menu)
+                change_chosen_type(chosen_tile, map.tiles_array[chosen_tile.map_pos.y][chosen_tile.map_pos.x], 'stone',tiles_menu)
             if event.key == pygame.K_5:
-                change_chosen_type(chosen_tile, map.tiles_array[chosen_tile.map_pos.y][chosen_tile.map_pos.x], 'sand',menu)
+                change_chosen_type(chosen_tile, map.tiles_array[chosen_tile.map_pos.y][chosen_tile.map_pos.x], 'sand',tiles_menu)
             if event.key == pygame.K_6:
-                change_chosen_type(chosen_tile, map.tiles_array[chosen_tile.map_pos.y][chosen_tile.map_pos.x], 'ice',menu)
+                change_chosen_type(chosen_tile, map.tiles_array[chosen_tile.map_pos.y][chosen_tile.map_pos.x], 'ice',tiles_menu)
+            if event.key == pygame.K_s and event.key == pygame.K_LCTRL:
+                save_button.save_map(map)
+            if event.key == pygame.K_o and event.key == pygame.K_LCTRL:
+                map = load_button.load_map
+            if event.key == pygame.K_f:
+                fast_save_button.fast_save(n, map)
+                n += 1
             
-            if event.key == pygame.K_p:
-                save_map()
-            if event.key == pygame.K_o:
-                map = open_map()
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
-                if menu.check_pressed()!= '':
-                    menu.chosen_type = menu.check_pressed()
+                if tiles_menu.check_pressed()!= '':
+                    tiles_menu.chosen_type = tiles_menu.check_pressed()
                 elif rotate_clockwise_button.check_pressed():
                     map = rotate_clockwise_button.rotate_map(map)
                 elif rotate_counterclockwise_button.check_pressed():
                     map = rotate_counterclockwise_button.rotate_map(map)
+                elif save_button.check_pressed():
+                    save_button.save_map(map)
+                elif load_button.check_pressed():
+                    map = load_button.load_map()
+                elif fast_save_button.check_pressed():
+                    fast_save_button.fast_save(n, map)
+                    n += 1
                 else:
                     ma_start,mb_start = calculate_map_pressed(map)
                     if ma_start!=-1 and mb_start!=-1:
@@ -265,14 +303,14 @@ while not finished:
                     mouse_pressed = False
                     ma_end, mb_end = calculate_map_pressed(map)
                     if ma_end != -1 and mb_end != -1:
+                        if ma_end < ma_start:
+                            ma_end, ma_start = ma_start, ma_end
+                        if mb_end < mb_start:
+                            mb_end, mb_start = mb_start, mb_end
                         mb_end += 1
                         ma_end += 1
                         for i in range(abs(mb_end-mb_start)):
                             for j in range(abs(ma_end-ma_start)):
-                                if ma_end < ma_start:
-                                    ma_end, ma_start = ma_start, ma_end
-                                if mb_end < mb_start:
-                                    mb_end, mb_start = mb_start, mb_end
-                                map.tiles_array[mb_start+i][ma_start+j].update_tile(menu.chosen_type)
+                                map.tiles_array[mb_start+i][ma_start+j].update_tile(tiles_menu.chosen_type)
                     
                     
