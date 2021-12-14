@@ -268,9 +268,9 @@ while not finished:
                 change_chosen_type(chosen_tile, map.tiles_array[chosen_tile.map_pos.y][chosen_tile.map_pos.x], 'sand',tiles_menu)
             if event.key == pygame.K_6:
                 change_chosen_type(chosen_tile, map.tiles_array[chosen_tile.map_pos.y][chosen_tile.map_pos.x], 'ice',tiles_menu)
-            if event.key == pygame.K_s and event.key == pygame.LCTRL:
+            if event.key == pygame.K_s and event.key == pygame.K_LCTRL:
                 save_button.save_map(map)
-            if event.key == pygame.K_o and event.key == pygame.LCTRL:
+            if event.key == pygame.K_o and event.key == pygame.K_LCTRL:
                 map = load_button.load_map
             if event.key == pygame.K_f:
                 fast_save_button.fast_save(n, map)
