@@ -99,12 +99,13 @@ class Map(pygame.sprite.Sprite):
 
     def draw(self, observating_point, k=1):
         for t in self.tiles:
-            if (
-                    t.corner.y - observating_point.y < screen_center.y and observating_point.y - t.corner.y - a < screen_center.y) and \
-                    (
-                            t.corner.x - observating_point.x < screen_center.x and observating_point.x - t.corner.x - a < screen_center.x):
-                t.corner_visible = pos(screen_center.x + t.corner.x - observating_point.x,
-                                       screen_center.y + t.corner.y - observating_point.y)
+            usl1 = (t.corner.y - observating_point.y)*k < screen_center.y
+            usl2 = (observating_point.y - t.corner.y - a)*k < screen_center.y
+            usl3 = (t.corner.x - observating_point.x)*k < screen_center.x
+            usl4 = (observating_point.x - t.corner.x - a)*k < screen_center.x
+            if usl1 and usl2 and usl3 and usl4:
+                t.corner_visible = pos(screen_center.x + t.corner.x*k - observating_point.x*k,
+                                       screen_center.y + t.corner.y*k - observating_point.y*k)
                 t.draw(k)
 
 
