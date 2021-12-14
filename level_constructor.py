@@ -264,14 +264,14 @@ while not finished:
                     mouse_pressed = False
                     ma_end, mb_end = calculate_map_pressed(map)
                     if ma_end != -1 and mb_end != -1:
+                        if ma_end < ma_start:
+                            ma_end, ma_start = ma_start, ma_end
+                        if mb_end < mb_start:
+                            mb_end, mb_start = mb_start, mb_end
                         mb_end += 1
                         ma_end += 1
                         for i in range(abs(mb_end-mb_start)):
                             for j in range(abs(ma_end-ma_start)):
-                                if ma_end < ma_start:
-                                    ma_end, ma_start = ma_start, ma_end
-                                if mb_end < mb_start:
-                                    mb_end, mb_start = mb_start, mb_end
                                 map.tiles_array[mb_start+i][ma_start+j].update_tile(tiles_menu.chosen_type)
                     
                     
