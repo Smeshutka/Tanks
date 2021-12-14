@@ -92,8 +92,8 @@ class SaveLoad_Button(Button):
                     file.write(text)
                 file.write('\n')
         
-    def fast_save(self, n):
-        name = str(n) + '.txt'
+    def fast_save(self, n, map):
+        name = 'map_maker/templates/' + str(n) + '.txt'
         file = open(name, 'w')
         for i in range(len(map.tiles_array)):
             for j in range(len(map.tiles_array[0])):
@@ -197,9 +197,9 @@ def draw_highlighting(ma_start, mb_start, screen,map):
         my, y0 = y0, my
     pygame.draw.rect(screen, (0,0,0), (x0,y0,mx-x0,my-y0), 2)
 
+print('Please, print start number')
+n = call_n_for_fast_save()
 
-    
-    
 pygame.init()
 screen = pygame.display.set_mode((w, h))
 clock = pygame.time.Clock()
@@ -225,8 +225,8 @@ save_button = SaveLoad_Button(screen, w-a*tiles_menu.k-a*6, 0, a*2, a*2, 'save')
 load_button = SaveLoad_Button(screen, w-a*tiles_menu.k-a*8, 0, a*2, a*2, 'load')
 
 #временный код для быстрого создания шаблонов
-n = call_n_for_fast_save()
-fast_save_button = SaveLoadButton(screen, 0, 0, a*2,a*2, 'save')
+
+fast_save_button = SaveLoad_Button(screen, 0, 0, a*2,a*2, 'save')
 #конец куска кода
 
 while not finished:
@@ -240,6 +240,7 @@ while not finished:
     rotate_counterclockwise_button.draw(2)
     save_button.draw(2)
     load_button.draw(2)
+    fast_save_button.draw(2)
     pygame.display.update()
     
     clock.tick(FPS)
@@ -271,6 +272,9 @@ while not finished:
                 save_button.save_map(map)
             if event.key == pygame.K_o and event.key == pygame.LCTRL:
                 map = load_button.load_map
+            if event.key == pygame.K_f:
+                fast_save_button.fast_save(n, map)
+                n += 1
             
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
@@ -285,7 +289,8 @@ while not finished:
                 elif load_button.check_pressed():
                     map = load_button.load_map()
                 elif fast_save_button.check_pressed():
-                    fast_save_button.fast_save()
+                    fast_save_button.fast_save(n, map)
+                    n += 1
                 else:
                     ma_start,mb_start = calculate_map_pressed(map)
                     if ma_start!=-1 and mb_start!=-1:
