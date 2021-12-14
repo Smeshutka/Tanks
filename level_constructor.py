@@ -4,7 +4,6 @@ from map_maker.tiles import*
 from map_maker.map_input import*
 import tkinter
 from tkinter.filedialog import *
-
 '''
 Этот модуль позволяет создавать карту
 управление: wasd - быстрое перемещение выделенного тайла
@@ -121,15 +120,11 @@ class SaveLoad_Button(Button):
         file.close()
 
 class Tiles_menu:
-<<<<<<< HEAD
     '''Меню на котором отображаются все имеющиеся виды тайлов слева,
     хранит выбранный тип тайлов, и визуально отмечает его'''
     def __init__(self,screen, w,h, chosen_type = 'stone'):
-=======
-    def __init__(self, screen, w, h, chosen_type = 'stone'):
->>>>>>> 55902c641201b4c8a4e3f784f8eb99fb57786ffb
         self.screen = screen
-        self.screen_size = pos(w, h)
+        self.screen_size = pos(w,h)
         self.k = 5
         self.chosen_type = chosen_type
         self.y0 = 0
