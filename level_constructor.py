@@ -167,7 +167,7 @@ def open_map():
     map = Map(file_reader(new_map), screen)
     return map
     
-def save_map():
+def save_map(map):
     root = tkinter.Tk()
     file = asksaveasfilename(filetypes=(("Text file", ".txt"),))
     root.destroy()
@@ -201,15 +201,15 @@ for i in range(10):
 map = Map(map_maker(lt), screen)
 chosen_tile = Tile(a*0,a*0,"stone",screen)
 
-menu = Tiles_menu(screen, w,h)
-rotate_clockwise_button = Rotate_button(screen, w-a*menu.k-a*2, 0, a*2, a*2, False)
-rotate_counterclockwise_button = Rotate_button(screen, w-a*menu.k-a*4, 0, a*2, a*2, True)
+tiles_menu = Tiles_menu(screen, w,h)
+rotate_clockwise_button = Rotate_button(screen, w-a*tiles_menu.k-a*2, 0, a*2, a*2, False)
+rotate_counterclockwise_button = Rotate_button(screen, w-a*tiles_menu.k-a*4, 0, a*2, a*2, True)
 
 while not finished:
     screen.fill((0,0,0))
     map.draw(chosen_tile.center)
     draw_chosen(chosen_tile)
-    menu.draw()
+    tiles_menu.draw()
     if mouse_pressed:
         draw_highlighting(ma_start, mb_start, screen,map)
     rotate_clockwise_button.draw(2)
@@ -229,26 +229,26 @@ while not finished:
             if event.key == pygame.K_d or event.key == pygame.K_RIGHT:
                 change_pos_chosen(chosen_tile, 1, 0)
             if event.key == pygame.K_1:
-                change_chosen_type(chosen_tile, map.tiles_array[chosen_tile.map_pos.y][chosen_tile.map_pos.x], 'grass',menu)
+                change_chosen_type(chosen_tile, map.tiles_array[chosen_tile.map_pos.y][chosen_tile.map_pos.x], 'grass',tiles_menu)
             if event.key == pygame.K_2:
-                change_chosen_type(chosen_tile, map.tiles_array[chosen_tile.map_pos.y][chosen_tile.map_pos.x], 'water',menu)
+                change_chosen_type(chosen_tile, map.tiles_array[chosen_tile.map_pos.y][chosen_tile.map_pos.x], 'water',tiles_menu)
             if event.key == pygame.K_3:
-                change_chosen_type(chosen_tile, map.tiles_array[chosen_tile.map_pos.y][chosen_tile.map_pos.x], 'bricks',menu)
+                change_chosen_type(chosen_tile, map.tiles_array[chosen_tile.map_pos.y][chosen_tile.map_pos.x], 'bricks',tiles_menu)
             if event.key == pygame.K_4:
-                change_chosen_type(chosen_tile, map.tiles_array[chosen_tile.map_pos.y][chosen_tile.map_pos.x], 'stone',menu)
+                change_chosen_type(chosen_tile, map.tiles_array[chosen_tile.map_pos.y][chosen_tile.map_pos.x], 'stone',tiles_menu)
             if event.key == pygame.K_5:
-                change_chosen_type(chosen_tile, map.tiles_array[chosen_tile.map_pos.y][chosen_tile.map_pos.x], 'sand',menu)
+                change_chosen_type(chosen_tile, map.tiles_array[chosen_tile.map_pos.y][chosen_tile.map_pos.x], 'sand',tiles_menu)
             if event.key == pygame.K_6:
-                change_chosen_type(chosen_tile, map.tiles_array[chosen_tile.map_pos.y][chosen_tile.map_pos.x], 'ice',menu)
+                change_chosen_type(chosen_tile, map.tiles_array[chosen_tile.map_pos.y][chosen_tile.map_pos.x], 'ice',tiles_menu)
             
             if event.key == pygame.K_p:
-                save_map()
+                save_map(map)
             if event.key == pygame.K_o:
                 map = open_map()
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
-                if menu.check_pressed()!= '':
-                    menu.chosen_type = menu.check_pressed()
+                if tiles_menu.check_pressed()!= '':
+                    tiles_menu.chosen_type = tiles_menu.check_pressed()
                 elif rotate_clockwise_button.check_pressed():
                     map = rotate_clockwise_button.rotate_map(map)
                 elif rotate_counterclockwise_button.check_pressed():
@@ -272,6 +272,6 @@ while not finished:
                                     ma_end, ma_start = ma_start, ma_end
                                 if mb_end < mb_start:
                                     mb_end, mb_start = mb_start, mb_end
-                                map.tiles_array[mb_start+i][ma_start+j].update_tile(menu.chosen_type)
+                                map.tiles_array[mb_start+i][ma_start+j].update_tile(tiles_menu.chosen_type)
                     
                     
