@@ -6,21 +6,30 @@ import tkinter
 from tkinter.filedialog import *
 '''
 Этот модуль позволяет создавать карту
-управление: wasd - перемещение выделенного тайла
+управление: wasd - быстрое перемещение выделенного тайла
+на стрелочки - медленное перемещение
 1 - замена выделенного тайла на траву
 2 - на воду
 3 - на кирпич
 4 - на камень
 5 - на песок
 6 - на лёд
-o - вызов диалогового окна для открытия файла карты
-p - вызов диалогового окна для сохранения карты в файл, необходимо прописывать расширение .txt
+left_ctrl + o - вызов диалогового окна для открытия файла карты
+left_ctrl + s - вызов диалогового окна для сохранения карты в файл,
+                                необходимо прописывать расширение .txt
+масштабирование карты по колёсику мыши
+также поддерживает работу с мышкой
 '''
-def call_n_for_fast_save():
-    return int(input())
+#def call_n_for_fast_save():
+#    return int(input())
 
 class Button:
+    '''класс кнопок'''
     def __init__(self, screen, x0, y0, a, b, image):
+        '''screen: pygame.display
+        x0,y0 - координаты левого верхнего угла относительно экрана
+        a,b - размеры окна по x,y соотв.
+        image - название файла в папке textures формата png'''
         self.screen = screen
         self.size = pos(a,b)
         self.pos = pos(x0,y0)
@@ -42,6 +51,7 @@ class Button:
             return False
         
 class Rotate_button(Button):
+    '''класс кнопок для поворота карты при редактировании'''
     def __init__(self, screen, x0, y0, a, b, image, inverse):
         Button.__init__(self,screen, x0, y0, a, b, image)
         self.inverse = inverse
@@ -68,6 +78,9 @@ class Rotate_button(Button):
         return Map(map_maker(ar),self.screen)
     
 class SaveLoad_Button(Button):
+    '''класс кнопок для сохранения или загрузки карт,
+    fast_save - функция для сохранения без диалогового окна внуть папки map_maker/templates
+    была создана для облегчения создания шаблонов'''
     def load_map(self):
         #global lt, tiles_array, map
         root = tkinter.Tk()
@@ -107,6 +120,8 @@ class SaveLoad_Button(Button):
         file.close()
 
 class Tiles_menu:
+    '''Меню на котором отображаются все имеющиеся виды тайлов слева,
+    хранит выбранный тип тайлов, и визуально отмечает его'''
     def __init__(self,screen, w,h, chosen_type = 'stone'):
         self.screen = screen
         self.screen_size = pos(w,h)
@@ -158,47 +173,60 @@ class Tiles_menu:
         return ''
         
 
-def draw_chosen(chosen_tile):
-    sur = pygame.Surface((a,a), pygame.SRCALPHA)
-    pygame.draw.rect(sur, (255,255,255), (a/4,a/4,a/2,a/2))
+def draw_chosen(chosen_tile, k):
+    '''рисует прямоугольник на месте выбранного тайла и
+    рассчитывает его координаты для корректного центрирования вида на нём'''
+    sur = pygame.Surface((a*k,a*k), pygame.SRCALPHA)
+    pygame.draw.rect(sur, (255,255,255), (a*k/4,a*k/4,a*k/2,a*k/2))
     
-    chosen_tile.corner_visible = pos(screen_center.x + chosen_tile.corner.x - chosen_tile.center.x,
-                                  screen_center.y + chosen_tile.corner.y - chosen_tile.center.y)
-    chosen_tile.screen.blit(sur,(chosen_tile.corner_visible.x, chosen_tile.corner_visible.y))
+    chosen_tile.corner_visible = pos(w // 2, h // 2)
+    chosen_tile.screen.blit(sur,(chosen_tile.corner_visible.x- a*k/2, chosen_tile.corner_visible.y-a*k/2))
 
-def change_pos_chosen(chosen_tile, cx, cy):
-    '''cx,cy - на сколько тайлов переместить по x,y. Может быть -1,0,1'''
+def change_pos_chosen(chosen_tile, cx, cy,k):
+    '''Меняет положение выбранного тайла
+    cx,cy - на сколько тайлов переместить по x,y. Может быть -1,0,1'''
     chosen_tile.corner.x += cx*a
     chosen_tile.corner.y += cy*a
     chosen_tile.center = pos(chosen_tile.corner.x+a//2, chosen_tile.corner.y+a//2)
     chosen_tile.map_pos = pos(chosen_tile.corner.x//a, chosen_tile.corner.y//a)
 
 def change_chosen_type(chosen_tile, tile, new_type,menu):
+    '''изменяет тип выбранного файла'''
     tile.update_tile(new_type)
     #chosen_tile.type = new_type
     menu.chosen_type = new_type
     
-def calculate_map_pressed(map):
+def calculate_map_pressed(map, chosen_tile, k):
+    '''Возвращает координаты тайла на карте при щелчке мыши'''
     mx,my = pygame.mouse.get_pos()
     map_b = len(map.tiles_array)
     map_a = len(map.tiles_array[0])
-    ma = (mx - map.tiles_array[0][0].corner_visible.x)//a
-    mb = (my - map.tiles_array[0][0].corner_visible.y)//a
+    
+    ma = (mx + chosen_tile.center.x * k - w // 2) / a / k
+    mb = (my + chosen_tile.center.y * k - h // 2) / a / k
+    ma = int(ma)
+    mb = int(mb)
+    
+    print(ma,' ',mb)
     if ma< map_a and ma>=0 and mb< map_b and mb>=0:
         return ma, mb
     else: return -1, -1
 
-def draw_highlighting(ma_start, mb_start, screen,map):
+def draw_highlighting(ma_start, mb_start, screen,map,k):
+    '''рисует рамочку выделения выбранных тайлов при зажатии мыши
+    из центра начального выбранного тайла до положения мыши'''
     mx,my = pygame.mouse.get_pos()
-    x0,y0 = map.tiles_array[mb_start][ma_start].corner_visible.x + a//2, map.tiles_array[mb_start][ma_start].corner_visible.y + a//2
+    x0,y0 = map.tiles_array[mb_start][ma_start].corner_visible.x + k * a/2, map.tiles_array[mb_start][ma_start].corner_visible.y + k * a/2
+    x0 = int(x0)
+    y0 = int(y0)
     if mx < x0:
         mx, x0 = x0, mx
     if my < y0:
         my, y0 = y0, my
     pygame.draw.rect(screen, (0,0,0), (x0,y0,mx-x0,my-y0), 2)
 
-print('Please, print start number')
-n = call_n_for_fast_save()
+#print('Please, print start number')
+#n = call_n_for_fast_save()
 
 pygame.init()
 screen = pygame.display.set_mode((w, h))
@@ -207,7 +235,8 @@ clock = pygame.time.Clock()
 finished = False
 mouse_pressed = False
 
-
+fa,fw,fs,fd = 0,0,0,0
+scale = 1
 #lt = list of tiles
 lt = []
 for i in range(10):
@@ -224,23 +253,22 @@ rotate_counterclockwise_button = Rotate_button(screen, w-a*tiles_menu.k-a*4, 0, 
 save_button = SaveLoad_Button(screen, w-a*tiles_menu.k-a*6, 0, a*2, a*2, 'save')
 load_button = SaveLoad_Button(screen, w-a*tiles_menu.k-a*8, 0, a*2, a*2, 'load')
 
-#временный код для быстрого создания шаблонов
 
-fast_save_button = SaveLoad_Button(screen, 0, 0, a*2,a*2, 'save')
-#конец куска кода
+#fast_save_button = SaveLoad_Button(screen, 0, 0, a*2,a*2, 'save')
+
 
 while not finished:
     screen.fill((0,0,0))
-    map.draw(chosen_tile.center)
-    draw_chosen(chosen_tile)
+    map.draw(chosen_tile.center, scale)
+    draw_chosen(chosen_tile, scale)
     tiles_menu.draw()
     if mouse_pressed:
-        draw_highlighting(ma_start, mb_start, screen,map)
+        draw_highlighting(ma_start, mb_start, screen,map,scale)
     rotate_clockwise_button.draw(2)
     rotate_counterclockwise_button.draw(2)
     save_button.draw(2)
     load_button.draw(2)
-    fast_save_button.draw(2)
+    #fast_save_button.draw(2)
     pygame.display.update()
     
     clock.tick(FPS)
@@ -248,14 +276,22 @@ while not finished:
         if event.type == pygame.QUIT:
             finished = True
         elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_w or event.key == pygame.K_UP:
-                change_pos_chosen(chosen_tile, 0, -1)
-            if event.key == pygame.K_a or event.key == pygame.K_LEFT:
-                change_pos_chosen(chosen_tile, -1, 0)
-            if event.key == pygame.K_s or event.key == pygame.K_DOWN:
-                change_pos_chosen(chosen_tile, 0, 1)
-            if event.key == pygame.K_d or event.key == pygame.K_RIGHT:
-                change_pos_chosen(chosen_tile, 1, 0)
+            if event.key == pygame.K_w:
+                fw = 1
+            if event.key == pygame.K_a:
+                fa = 1
+            if event.key == pygame.K_s:
+                fs = 1
+            if event.key == pygame.K_d:
+                fd = 1
+            if event.key == pygame.K_UP:
+                change_pos_chosen(chosen_tile, 0, -1, scale)
+            if event.key == pygame.K_LEFT:
+                change_pos_chosen(chosen_tile, -1, 0, scale)
+            if event.key == pygame.K_DOWN:
+                change_pos_chosen(chosen_tile, 0, 1, scale)
+            if event.key == pygame.K_RIGHT:
+                change_pos_chosen(chosen_tile, 1, 0, scale)
             if event.key == pygame.K_1:
                 change_chosen_type(chosen_tile, map.tiles_array[chosen_tile.map_pos.y][chosen_tile.map_pos.x], 'grass',tiles_menu)
             if event.key == pygame.K_2:
@@ -272,10 +308,18 @@ while not finished:
                 save_button.save_map(map)
             if event.key == pygame.K_o and event.key == pygame.K_LCTRL:
                 map = load_button.load_map
-            if event.key == pygame.K_f:
-                fast_save_button.fast_save(n, map)
-                n += 1
-            
+            #if event.key == pygame.K_f:
+                #fast_save_button.fast_save(n, map)
+                #n += 1
+        elif event.type == pygame.KEYUP:
+            if event.key == pygame.K_w:
+                fw = 0
+            if event.key == pygame.K_a:
+                fa = 0
+            if event.key == pygame.K_s:
+                fs = 0
+            if event.key == pygame.K_d:
+                fd = 0
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
                 if tiles_menu.check_pressed()!= '':
@@ -288,19 +332,23 @@ while not finished:
                     save_button.save_map(map)
                 elif load_button.check_pressed():
                     map = load_button.load_map()
-                elif fast_save_button.check_pressed():
-                    fast_save_button.fast_save(n, map)
-                    n += 1
+#                elif fast_save_button.check_pressed():
+#                    fast_save_button.fast_save(n, map)
+#                    n += 1
                 else:
-                    ma_start,mb_start = calculate_map_pressed(map)
+                    ma_start,mb_start = calculate_map_pressed(map, chosen_tile, scale)
                     if ma_start!=-1 and mb_start!=-1:
                         mouse_pressed = True
-                        
+            if event.button == 4:
+                scale += 0.3
+            if event.button == 5 and scale > 0.3:
+                scale -= 0.3
+                
         elif event.type == pygame.MOUSEBUTTONUP:
             if event.button == 1:
                 if mouse_pressed:
                     mouse_pressed = False
-                    ma_end, mb_end = calculate_map_pressed(map)
+                    ma_end, mb_end = calculate_map_pressed(map, chosen_tile, scale)
                     if ma_end != -1 and mb_end != -1:
                         if ma_end < ma_start:
                             ma_end, ma_start = ma_start, ma_end
@@ -311,5 +359,12 @@ while not finished:
                         for i in range(abs(mb_end-mb_start)):
                             for j in range(abs(ma_end-ma_start)):
                                 map.tiles_array[mb_start+i][ma_start+j].update_tile(tiles_menu.chosen_type)
-                    
-                    
+    
+    if fa == 1 and fd == 0:
+        change_pos_chosen(chosen_tile, -1, 0, scale)
+    elif fa == 0 and fd == 1:
+        change_pos_chosen(chosen_tile, 1, 0, scale)
+    if fw == 1 and fs == 0:
+        change_pos_chosen(chosen_tile, 0, -1, scale)
+    elif fw == 0 and fs == 1:
+        change_pos_chosen(chosen_tile, 0, 1, scale)
