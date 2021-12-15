@@ -14,7 +14,7 @@ screen = pygame.display.set_mode((w, h))
 
 #key_maker()
 #map = Map((map_from_jigsaw(jigsaw_generator(key_reader()))), screen)
-map = Map(file_reader("map_maker/maps/1.txt"), screen)
+map = Map(map_maker(file_reader("map_maker/maps/1.txt")), screen)
 tank_player = Tank(250, 250, 0, "light", screen)
 tank_enemy = Tank(400, 400, 0, "heavy", screen)  # Пробный вариант танка противника
 tank_enemy.add(tanks_bots)
