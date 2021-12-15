@@ -17,6 +17,7 @@ from tkinter.filedialog import *
 left_ctrl + o - вызов диалогового окна для открытия файла карты
 left_ctrl + s - вызов диалогового окна для сохранения карты в файл,
                                 необходимо прописывать расширение .txt
+Backspace - возвращение в левый верхний угол карты
 масштабирование карты по колёсику мыши
 также поддерживает работу с мышкой
 '''
@@ -86,24 +87,28 @@ class SaveLoad_Button(Button):
         root = tkinter.Tk()
         new_map = askopenfilename(filetypes=(("Text file", ".txt"),))
         root.destroy()
-        chosen_tile = Tile(a*0,a*0,"stone",screen)
-        map = Map(file_reader(new_map), screen)
-        return map
+        if new_map != '':
+            chosen_tile = Tile(a*0,a*0,"stone",screen)
+            map = Map(file_reader(new_map), screen)
+            return map
+        else:
+            return ''
         
     def save_map(self, map):
         root = tkinter.Tk()
         file = asksaveasfilename(filetypes=(("Text file", ".txt"),))
         root.destroy()
-        with open(file, 'w') as file:
-            for i in range(len(map.tiles_array)):
-                for j in range(len(map.tiles_array[0])):
-                    tile = map.tiles_array[i][j]
-                    if tile.type == 'stone':
-                        text = 'S'
-                    else:
-                        text = tile.type[0]
-                    file.write(text)
-                file.write('\n')
+        if file != '':
+            with open(file, 'w') as file:
+                for i in range(len(map.tiles_array)):
+                    for j in range(len(map.tiles_array[0])):
+                        tile = map.tiles_array[i][j]
+                        if tile.type == 'stone':
+                            text = 'S'
+                        else:
+                            text = tile.type[0]
+                        file.write(text)
+                    file.write('\n')
         
     def fast_save(self, n, map):
         name = 'map_maker/templates/' + str(n) + '.txt'
@@ -190,11 +195,17 @@ def change_pos_chosen(chosen_tile, cx, cy,k):
     chosen_tile.center = pos(chosen_tile.corner.x+a//2, chosen_tile.corner.y+a//2)
     chosen_tile.map_pos = pos(chosen_tile.corner.x//a, chosen_tile.corner.y//a)
 
-def change_chosen_type(chosen_tile, tile, new_type,menu):
+def change_chosen_type(chosen_tile, map, new_type,menu):
     '''изменяет тип выбранного файла'''
-    tile.update_tile(new_type)
-    #chosen_tile.type = new_type
-    menu.chosen_type = new_type
+    
+    ca, cb = chosen_tile.map_pos.x, chosen_tile.map_pos.y
+    map_b = len(map.tiles_array)
+    map_a = len(map.tiles_array[0])
+    if ca >= 0 and ca < map_a and cb >= 0 and cb < map_b:
+        tile = map.tiles_array[chosen_tile.map_pos.y][chosen_tile.map_pos.x]
+        tile.update_tile(new_type)
+        #chosen_tile.type = new_type
+        menu.chosen_type = new_type
     
 def calculate_map_pressed(map, chosen_tile, k):
     '''Возвращает координаты тайла на карте при щелчке мыши'''
@@ -207,7 +218,6 @@ def calculate_map_pressed(map, chosen_tile, k):
     ma = int(ma)
     mb = int(mb)
     
-    print(ma,' ',mb)
     if ma< map_a and ma>=0 and mb< map_b and mb>=0:
         return ma, mb
     else: return -1, -1
@@ -225,6 +235,44 @@ def draw_highlighting(ma_start, mb_start, screen,map,k):
         my, y0 = y0, my
     pygame.draw.rect(screen, (0,0,0), (x0,y0,mx-x0,my-y0), 2)
 
+def create_dialog_window():
+    import tkinter as tk
+     
+    def increase():
+        value = int(lbl_value["text"])
+        lbl_value["text"] = f"{value + 1}"
+     
+     
+    def decrease():
+        value = int(lbl_value["text"])
+        lbl_value["text"] = f"{value - 1}"
+     
+    window = tk.Tk()
+     
+    window.rowconfigure(0, minsize=50, weight=1)
+    window.columnconfigure([0, 1, 2], minsize=50, weight=1)
+     
+    btn_decrease = tk.Button(
+        master=window,
+        text="-",
+        command=decrease
+    )
+     
+    btn_decrease.grid(row=0, column=0, sticky="nsew")
+     
+    lbl_value = tk.Label(master=window, text="0")
+    lbl_value.grid(row=0, column=1)
+     
+    btn_increase = tk.Button(
+        master=window,
+        text="+",
+        command=increase
+    )
+     
+    btn_increase.grid(row=0, column=2, sticky="nsew")
+     
+    window.mainloop()
+
 #print('Please, print start number')
 #n = call_n_for_fast_save()
 
@@ -235,7 +283,7 @@ clock = pygame.time.Clock()
 finished = False
 mouse_pressed = False
 
-fa,fw,fs,fd = 0,0,0,0
+fa,fw,fs,fd,fo,f_ctrl = 0,0,0,0,0,0
 scale = 1
 #lt = list of tiles
 lt = []
@@ -253,13 +301,11 @@ rotate_counterclockwise_button = Rotate_button(screen, w-a*tiles_menu.k-a*4, 0, 
 save_button = SaveLoad_Button(screen, w-a*tiles_menu.k-a*6, 0, a*2, a*2, 'save')
 load_button = SaveLoad_Button(screen, w-a*tiles_menu.k-a*8, 0, a*2, a*2, 'load')
 
-
 #fast_save_button = SaveLoad_Button(screen, 0, 0, a*2,a*2, 'save')
-
 
 while not finished:
     screen.fill((0,0,0))
-    map.draw(chosen_tile.center, scale)
+    map.draw_level_constructor(chosen_tile.center, scale)
     draw_chosen(chosen_tile, scale)
     tiles_menu.draw()
     if mouse_pressed:
@@ -278,48 +324,56 @@ while not finished:
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_w:
                 fw = 1
-            if event.key == pygame.K_a:
+            elif event.key == pygame.K_a:
                 fa = 1
-            if event.key == pygame.K_s:
+            elif event.key == pygame.K_s:
                 fs = 1
-            if event.key == pygame.K_d:
+            elif event.key == pygame.K_d:
                 fd = 1
-            if event.key == pygame.K_UP:
+            elif event.key == pygame.K_o:
+                fo = 1
+            elif event.key == pygame.K_LCTRL:
+                f_ctrl = 1
+            elif event.key == pygame.K_RCTRL:
+                create_dialog_window()
+            elif event.key == pygame.K_BACKSPACE:
+                change_pos_chosen(chosen_tile, -chosen_tile.map_pos.x, -chosen_tile.map_pos.y,scale)
+            elif event.key == pygame.K_UP:
                 change_pos_chosen(chosen_tile, 0, -1, scale)
-            if event.key == pygame.K_LEFT:
+            elif event.key == pygame.K_LEFT:
                 change_pos_chosen(chosen_tile, -1, 0, scale)
-            if event.key == pygame.K_DOWN:
+            elif event.key == pygame.K_DOWN:
                 change_pos_chosen(chosen_tile, 0, 1, scale)
-            if event.key == pygame.K_RIGHT:
+            elif event.key == pygame.K_RIGHT:
                 change_pos_chosen(chosen_tile, 1, 0, scale)
-            if event.key == pygame.K_1:
-                change_chosen_type(chosen_tile, map.tiles_array[chosen_tile.map_pos.y][chosen_tile.map_pos.x], 'grass',tiles_menu)
-            if event.key == pygame.K_2:
-                change_chosen_type(chosen_tile, map.tiles_array[chosen_tile.map_pos.y][chosen_tile.map_pos.x], 'water',tiles_menu)
-            if event.key == pygame.K_3:
-                change_chosen_type(chosen_tile, map.tiles_array[chosen_tile.map_pos.y][chosen_tile.map_pos.x], 'bricks',tiles_menu)
-            if event.key == pygame.K_4:
-                change_chosen_type(chosen_tile, map.tiles_array[chosen_tile.map_pos.y][chosen_tile.map_pos.x], 'stone',tiles_menu)
-            if event.key == pygame.K_5:
-                change_chosen_type(chosen_tile, map.tiles_array[chosen_tile.map_pos.y][chosen_tile.map_pos.x], 'sand',tiles_menu)
-            if event.key == pygame.K_6:
-                change_chosen_type(chosen_tile, map.tiles_array[chosen_tile.map_pos.y][chosen_tile.map_pos.x], 'ice',tiles_menu)
-            if event.key == pygame.K_s and event.key == pygame.K_LCTRL:
-                save_button.save_map(map)
-            if event.key == pygame.K_o and event.key == pygame.K_LCTRL:
-                map = load_button.load_map
+            elif event.key == pygame.K_1:
+                change_chosen_type(chosen_tile, map, 'grass',tiles_menu)
+            elif event.key == pygame.K_2:
+                change_chosen_type(chosen_tile, map, 'water',tiles_menu)
+            elif event.key == pygame.K_3:
+                change_chosen_type(chosen_tile, map, 'bricks',tiles_menu)
+            elif event.key == pygame.K_4:
+                change_chosen_type(chosen_tile, map, 'stone',tiles_menu)
+            elif event.key == pygame.K_5:
+                change_chosen_type(chosen_tile, map, 'sand',tiles_menu)
+            elif event.key == pygame.K_6:
+                change_chosen_type(chosen_tile, map, 'ice',tiles_menu)
             #if event.key == pygame.K_f:
                 #fast_save_button.fast_save(n, map)
                 #n += 1
         elif event.type == pygame.KEYUP:
             if event.key == pygame.K_w:
                 fw = 0
-            if event.key == pygame.K_a:
+            elif event.key == pygame.K_a:
                 fa = 0
-            if event.key == pygame.K_s:
+            elif event.key == pygame.K_s:
                 fs = 0
-            if event.key == pygame.K_d:
+            elif event.key == pygame.K_d:
                 fd = 0
+            elif event.key == pygame.K_o:
+                fo = 1
+            elif event.key == pygame.K_LCTRL:
+                f_ctrl = 0
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
                 if tiles_menu.check_pressed()!= '':
@@ -331,7 +385,9 @@ while not finished:
                 elif save_button.check_pressed():
                     save_button.save_map(map)
                 elif load_button.check_pressed():
-                    map = load_button.load_map()
+                    new_map = load_button.load_map()
+                    if new_map != '':
+                        map = new_map
 #                elif fast_save_button.check_pressed():
 #                    fast_save_button.fast_save(n, map)
 #                    n += 1
@@ -359,7 +415,12 @@ while not finished:
                         for i in range(abs(mb_end-mb_start)):
                             for j in range(abs(ma_end-ma_start)):
                                 map.tiles_array[mb_start+i][ma_start+j].update_tile(tiles_menu.chosen_type)
-    
+    if f_ctrl == 1 and fs == 1:
+        save_button.save_map(map)
+    if f_ctrl == 1 and fo == 1:
+        new_map = load_button.load_map()
+        if new_map != '':
+            map = new_map
     if fa == 1 and fd == 0:
         change_pos_chosen(chosen_tile, -1, 0, scale)
     elif fa == 0 and fd == 1:
