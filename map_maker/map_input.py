@@ -51,7 +51,7 @@ def file_reader(input_filename):
                     line_tiles.append(char)
             map.append(line_tiles.copy())
 
-    return map_maker(map)
+    return map
 
 
 # "map_maker/templates/ice and ground/"
