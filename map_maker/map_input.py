@@ -142,7 +142,7 @@ def get_complimentary(i, key, direction):
     return comp_list
 
 
-def map_generator(key):
+def jigsaw_generator(key):
     scale = 7
     map = [[0 for i in range(scale)] for j in range(scale)]
     map[0][0] = random.randint(0, len(key) - 1)
@@ -165,7 +165,7 @@ def map_generator(key):
     return map
 
 
-def map_maker_from_jigsaw(scheme):
+def map_from_jigsaw(scheme):
     map = [[0 for i in range(10 * len(scheme) + 2)] for j in range(10 * len(scheme[0]) + 2)]
     for i in range(len(scheme)):
         for j in range(len(scheme[i])):
@@ -193,4 +193,4 @@ def map_maker_from_jigsaw(scheme):
         map[i+1][0] = ([a * 0, a * (i+1), 'stone'])
         map[i + 1][10 * len(scheme) + 1] = ([a * (10 * len(scheme) + 1), a * (i + 1), 'stone'])
 
-    return map
+    return map_maker(map)
