@@ -51,7 +51,7 @@ def file_reader(input_filename):
                     line_tiles.append(char)
             map.append(line_tiles.copy())
 
-    return map
+    return map_maker(map)
 
 
 # "map_maker/templates/ice and ground/"
@@ -69,6 +69,7 @@ def key_maker():
             file2 = str(j_file)
             map2 = file_reader(path + file2 + '.txt')
             par = 4
+
             up = 0
             for i in range(10):
                 if map1[0][i] != map2[9][i]:
