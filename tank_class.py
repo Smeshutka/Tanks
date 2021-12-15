@@ -60,6 +60,7 @@ class Tank(pygame.sprite.Sprite):
         self.dy = 0
         self.ai = 0
         self.dist = 300
+        self.type = tank_type
 
         if tank_type == "light":
             self.hp = 5
@@ -309,8 +310,8 @@ class Tank(pygame.sprite.Sprite):
 
         def update_options(self, map):
             """Движение танка (обновление координат, скоростей)"""
-            vx = self.velocity.x
-            vy = self.velocity.y
+            vx = 0.0001 *self.velocity.x
+            vy = 0.0001 *self.velocity.y 
             v = (vx ** 2 + vy ** 2) ** 0.5
             x = self.center.x
             y = self.center.y
@@ -320,8 +321,8 @@ class Tank(pygame.sprite.Sprite):
                 self.velocity.x = 0
                 self.velocity.y = 0
             else:
-                self.velocity.x += self.acceleration.x
-                self.velocity.y += self.acceleration.y
+                self.velocity.x += self.acceleration.x 
+                self.velocity.y += self.acceleration.y 
 
             self.center.x += self.velocity.x * dt
             self.center.y += self.velocity.y * dt
@@ -377,7 +378,7 @@ class Tank(pygame.sprite.Sprite):
         a, b = self.turret_image.get_size()
 
         self.screen.blit(self.turret_image, (self.center_visible.x - a / 2 - self.s * math.cos(self.body_ang),
-                                             self.center_visible.y - b / 2 + self.s * math.sin(self.body_ang)))
+                                            self.center_visible.y - b / 2 + self.s * math.sin(self.body_ang)))
 
     def reload_left(self):
         self.flpk = 1

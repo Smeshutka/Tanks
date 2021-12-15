@@ -35,6 +35,7 @@ class Tile(pygame.sprite.Sprite):
         self.map_pos = pos(x // a, y // a)
         self.type = tile_type
         self.rect = self.image.get_rect()
+        
 
         if tile_type == "grass":
             self.hp = -1
@@ -73,7 +74,7 @@ class Tile(pygame.sprite.Sprite):
         else:
             self.screen.blit(self.image, (self.corner_visible.x, self.corner_visible.y))
 
-    def meet_with_bullet(tile, bul):
+    def meet_with_bullet(tile, bul, map):
         """Обработка пересечения с пулей"""
 
         if tile.type == "bricks" or tile.type == "stone":
@@ -82,6 +83,7 @@ class Tile(pygame.sprite.Sprite):
                 if tile.type == "bricks":
                     tile_new = "grass"
                     tile.update_tile(tile_new)
+                    map.list_update.append([tile.map_pos, tile_new])
 
 def return_tile_ower_pos(x, y, map):
     """Указываются координаты точки, возвращается тайл с данными координатами"""
@@ -94,7 +96,8 @@ def return_tile_ower_pos(x, y, map):
 class Map(pygame.sprite.Sprite):
     """По списку tiles_list формата (x, y, name_image) создает группу тайлов"""
 
-    def __init__(self, map, screen):
+    def __init__(self, map, screen, flag = False):
+        self.flag = flag
         tiles = pygame.sprite.Group()
         tiles_array = []
 
@@ -106,6 +109,7 @@ class Map(pygame.sprite.Sprite):
 
         self.tiles_array = tiles_array
         self.tiles = tiles
+        self.list_update = []
 
     def draw(self, observating_point, k=1):
         tl_x = max(int((observating_point.x - w / 2) / a ), 0)

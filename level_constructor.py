@@ -90,7 +90,7 @@ class SaveLoad_Button(Button):
         root.destroy()
         if new_map != '':
             chosen_tile = Tile(a*0,a*0,"stone",screen)
-            map = Map(file_reader(new_map), screen)
+            map = Map(map_maker(file_reader(new_map)), screen)
             return map
         else:
             return ''
@@ -203,13 +203,23 @@ class Tiles_menu:
                     return self.all_types[i]
         return ''
         
+def draw_run_line(k,c):
+    sur = pygame.Surface((a*k,a*k), pygame.SRCALPHA)
+    pygame.draw.line(sur, (255,255,255), (-2*a*k/3+c,0), (-a*k/3+c,0), 2)
+    pygame.draw.line(sur, (255,255,255), (c,0), (a*k/3+c,0), 2)
+    pygame.draw.line(sur, (255,255,255), (2*a*k/3+c,0), (a*k+c,0), 2)
+    return sur
 
-def draw_chosen(chosen_tile, k):
+def draw_chosen(chosen_tile, k, time):
     '''рисует прямоугольник на месте выбранного тайла и
     рассчитывает его координаты для корректного центрирования вида на нём'''
     sur = pygame.Surface((a*k,a*k), pygame.SRCALPHA)
-    pygame.draw.rect(sur, (255,255,255), (a*k/4,a*k/4,a*k/2,a*k/2))
-    
+    c = time/(2*FPS) * 2*a*k/3
+    sur.blit(pygame.transform.rotate(draw_run_line(k,c),0),(0,0))
+    sur.blit(pygame.transform.rotate(draw_run_line(k,c-a*k/3),90),(0,0))
+    sur.blit(pygame.transform.rotate(draw_run_line(k,c),90*2),(0,0))
+    sur.blit(pygame.transform.rotate(draw_run_line(k,c-a*k/3),90*3),(0,0))
+  
     chosen_tile.corner_visible = pos(w // 2, h // 2)
     chosen_tile.screen.blit(sur,(chosen_tile.corner_visible.x- a*k/2, chosen_tile.corner_visible.y-a*k/2))
 
@@ -276,6 +286,7 @@ mouse_pressed = False
 
 fa,fw,fs,fd,fo,f_ctrl = 0,0,0,0,0,0
 scale = 1
+time = 0
 #lt = list of tiles
 lt = []
 for i in range(10):
@@ -298,7 +309,7 @@ size_button = Change_size_button(screen, w-a*tiles_menu.k-a*10, 0, a*2, a*2, 'si
 while not finished:
     screen.fill((0,0,0))
     map.draw_level_constructor(chosen_tile.center, scale)
-    draw_chosen(chosen_tile, scale)
+    draw_chosen(chosen_tile, scale, time)
     tiles_menu.draw()
     if mouse_pressed:
         draw_highlighting(ma_start, mb_start, screen,map,scale)
@@ -426,3 +437,7 @@ while not finished:
         change_pos_chosen(chosen_tile, 0, -1, scale)
     elif fw == 0 and fs == 1:
         change_pos_chosen(chosen_tile, 0, 1, scale)
+    
+    time += 1
+    if time >= 2*FPS:
+        time = 0

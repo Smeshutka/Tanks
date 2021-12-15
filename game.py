@@ -82,7 +82,7 @@ while not finished:
     for bul in bullets:
         bul.move()
         for tile in bul.tiles_near(map):
-            tile.meet_with_bullet(bul)
+            tile.meet_with_bullet(bul, map)
 
         for tank in tanks:
             tank.meet_with_bullet(bul)
