@@ -2,6 +2,7 @@ from helper import *
 from tank_class import*
 from map_maker.tiles import*
 from map_maker.map_input import*
+from win_for_change_size import *
 import tkinter
 from tkinter.filedialog import *
 '''
@@ -124,6 +125,31 @@ class SaveLoad_Button(Button):
             file.write('\n')
         file.close()
 
+class Change_size_button(Button):
+    def call_tk(self):
+        create_dialog_window()
+        
+    def read_new_size(self):
+        self.call_tk()
+        file = open('new_size.txt','r')
+        data = file.read()
+        file.close()
+        if data != '':
+            return data.split()[0], data.split()[1]
+    
+    def change_map_size(self,map,screen):
+        a,b = self.read_new_size()
+        a,b = int(a),int(b)
+        if b > 0 and a > 0:
+            lt = []
+            for i in range(b):
+                lt.append([])
+                for j in range(a):
+                    lt[i].append('g')
+            return Map(map_maker(lt), screen)
+        else:
+            return ''
+    
 class Tiles_menu:
     '''Меню на котором отображаются все имеющиеся виды тайлов слева,
     хранит выбранный тип тайлов, и визуально отмечает его'''
@@ -235,43 +261,8 @@ def draw_highlighting(ma_start, mb_start, screen,map,k):
         my, y0 = y0, my
     pygame.draw.rect(screen, (0,0,0), (x0,y0,mx-x0,my-y0), 2)
 
-def create_dialog_window():
-    import tkinter as tk
-     
-    def increase():
-        value = int(lbl_value["text"])
-        lbl_value["text"] = f"{value + 1}"
-     
-     
-    def decrease():
-        value = int(lbl_value["text"])
-        lbl_value["text"] = f"{value - 1}"
-     
-    window = tk.Tk()
-     
-    window.rowconfigure(0, minsize=50, weight=1)
-    window.columnconfigure([0, 1, 2], minsize=50, weight=1)
-     
-    btn_decrease = tk.Button(
-        master=window,
-        text="-",
-        command=decrease
-    )
-     
-    btn_decrease.grid(row=0, column=0, sticky="nsew")
-     
-    lbl_value = tk.Label(master=window, text="0")
-    lbl_value.grid(row=0, column=1)
-     
-    btn_increase = tk.Button(
-        master=window,
-        text="+",
-        command=increase
-    )
-     
-    btn_increase.grid(row=0, column=2, sticky="nsew")
-     
-    window.mainloop()
+
+
 
 #print('Please, print start number')
 #n = call_n_for_fast_save()
@@ -300,6 +291,7 @@ rotate_clockwise_button = Rotate_button(screen, w-a*tiles_menu.k-a*2, 0, a*2, a*
 rotate_counterclockwise_button = Rotate_button(screen, w-a*tiles_menu.k-a*4, 0, a*2, a*2, 'rotate_icon', True)
 save_button = SaveLoad_Button(screen, w-a*tiles_menu.k-a*6, 0, a*2, a*2, 'save')
 load_button = SaveLoad_Button(screen, w-a*tiles_menu.k-a*8, 0, a*2, a*2, 'load')
+size_button = Change_size_button(screen, w-a*tiles_menu.k-a*10, 0, a*2, a*2, 'size')
 
 #fast_save_button = SaveLoad_Button(screen, 0, 0, a*2,a*2, 'save')
 
@@ -314,6 +306,7 @@ while not finished:
     rotate_counterclockwise_button.draw(2)
     save_button.draw(2)
     load_button.draw(2)
+    size_button.draw(2)
     #fast_save_button.draw(2)
     pygame.display.update()
     
@@ -386,6 +379,10 @@ while not finished:
                     save_button.save_map(map)
                 elif load_button.check_pressed():
                     new_map = load_button.load_map()
+                    if new_map != '':
+                        map = new_map
+                elif size_button.check_pressed():
+                    new_map = size_button.change_map_size(map,screen)
                     if new_map != '':
                         map = new_map
 #                elif fast_save_button.check_pressed():
