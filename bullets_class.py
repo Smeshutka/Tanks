@@ -54,11 +54,21 @@ class Bullets(pygame.sprite.Sprite):
         self.center.x += self.velocity.x
         self.center.y += self.velocity.y
 
-    def draw(self, observating_point):
+    def draw1(self, observating_point):
         self.image = pygame.transform.rotate(self.image_start, self.ang * 180 / math.pi)
+        
+    def between_draw1_and_draw2(self, observating_point):
         update_corner(self)
+    
+    def draw2(self, observating_point):
         self.screen.blit(self.image, (screen_center.x + self.corner.x - observating_point.x,
                                       screen_center.y + self.corner.y - observating_point.y))
+
+    def draw(self, observating_point):
+        draw1(self, observating_point)
+        beween_draw1_and_draw2(self, observating_point)
+        draw2(self, observating_point)
+        
 
     def tiles_near(self, map):
         """

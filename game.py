@@ -29,6 +29,7 @@ def game_main():
         map.draw(observating_point)
 
         for tank in tanks:
+            tank.before_draw(observating_point)
             tank.draw(observating_point)
 
         tank_player.update_pos_mouse_for_player()
@@ -86,3 +87,4 @@ def game_main():
 
             for tank in tanks:
                 tank.meet_with_bullet(bul)
+game_main()

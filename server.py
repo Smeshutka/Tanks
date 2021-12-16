@@ -58,8 +58,12 @@ pygame.init()
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind(("192.168.31.130",12345))
 
-server.listen(1)
-player, adress = server.accept()
+number_of_players = 1
+
+server.listen(number_of_players)
+player1, adress = server.accept()
+if number_of_players == 2:
+    player2, adress = server.accept()
 print('connected!')
 
 clock = pygame.time.Clock()
@@ -69,28 +73,38 @@ screen = pygame.display.set_mode((w, h))
 
 map = Map(map_maker(file_reader("map_maker/maps/1.txt")), screen)
 
-tank_player = create_tank_player(250, 250, 0, "light", "0", screen)
+
+tank_player1 = create_tank_player(250, 100, 0, "light", "0", screen)
+if number_of_players == 2:
+    tank_player2 = create_tank_player(250, 250, 0, "middle", "1", screen)
 
 list_tile = [pos(5, 5), pos(5, 20), pos(20, 20), pos(20, 5)]
-create_tank_bot(400, 400, 0, "heavy", "1", screen, list_tile) 
+create_tank_bot(400, 400, 0, "heavy", "2", screen, list_tile)
 
-observating_point = tank_player.center
+observating_point = tank_player1.center
 
-start_data = all_start(tanks, map, tank_player)
-player.send(pickle.dumps(start_data))
-player.recv(100)
+start_data = all_start(tanks, map, tank_player1)
+player1.send(pickle.dumps(start_data))
+player1.recv(100)
+if number_of_players == 2:
+    start_data = all_start(tanks, map, tank_player2)
+    player2.send(pickle.dumps(start_data))
+    player2.recv(100)
 
 while not finished:
     screen.fill((255,255,255))
     map.draw(observating_point)
 
     for tank in tanks:
+        tank.before_draw(observating_point)
         tank.draw(observating_point)
 
     #tank_player.update_pos_mouse_for_player()
 
     for tank in tanks_bots:
-        meet_with_tank(tank, tank_player)
+        meet_with_tank(tank, tank_player1)
+        if number_of_players == 2:
+            meet_with_tank(tank, tank_player2)
 
     for tank in tanks:
         tank.draw_turret()
@@ -118,10 +132,16 @@ while not finished:
             tank.meet_with_bullet(bul)
     
     #отправка игроку данных
-    send_all = all(tanks, bullets, tank_player, map)
-    player.send(pickle.dumps(send_all))
+    send_all = all(tanks, bullets, tank_player1, map)
+    player1.send(pickle.dumps(send_all))
+    if number_of_players == 2:
+        send_all = all(tanks, bullets, tank_player2, map)
+        player2.send(pickle.dumps(send_all))
     map.list_update = []
     
-    data = pickle.loads(player.recv(1024))
-    update_tank_keys(tank_player, data)
+    data = pickle.loads(player1.recv(1024))
+    update_tank_keys(tank_player1, data)
+    if number_of_players == 2:
+        data = pickle.loads(player2.recv(1024))
+        update_tank_keys(tank_player2, data)
     #player.send(pickle.dumps(''))

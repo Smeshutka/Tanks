@@ -360,11 +360,13 @@ class Tank(pygame.sprite.Sprite):
 
         main(self, map)
 
-    def draw(self, observating_point):
+    def before_draw(self, observating_point):
         self.center_visible = pos(screen_center.x + self.center.x - observating_point.x,
                                   screen_center.y + self.center.y - observating_point.y)
         self.corner_visible = pos(screen_center.x + self.corner.x - observating_point.x,
                                   screen_center.y + self.corner.y - observating_point.y)
+
+    def draw(self, observating_point):
         # Рисование тела танка:
         self.body_image = pygame.transform.rotate(self.body_image_start, self.body_ang * 180 / math.pi)
         self.screen.blit(self.body_image, (self.corner_visible.x, self.corner_visible.y))
