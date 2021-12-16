@@ -149,7 +149,32 @@ class Change_size_button(Button):
             return Map(map_maker(lt), screen)
         else:
             return ''
+
+class Generate_button(Button):
+    def call_tk(self):
+        create_dialog_window_for_generator()
     
+    def read_new_size(self):
+        self.call_tk()
+        file = open('new_size.txt','r')
+        data = file.read()
+        file.close()
+        if data != '':
+            return data.split()[0], data.split()[1]
+    
+    def generate(self):
+        a,b = self.read_new_size()
+        a,b = int(a),int(b)
+        if b > 0 and a > 0:
+            lt = []
+            for i in range(b):
+                lt.append([])
+                for j in range(a):
+                    lt[i].append('g')
+            return Map((map_from_jigsaw(jigsaw_generator(key_reader(), a,b))), screen)
+        else:
+            return ''     
+
 class Tiles_menu:
     '''Меню на котором отображаются все имеющиеся виды тайлов слева,
     хранит выбранный тип тайлов, и визуально отмечает его'''
@@ -303,6 +328,7 @@ def level_constructor_main():
     save_button = SaveLoad_Button(screen, w-a*tiles_menu.k-a*6, 0, a*2, a*2, 'save')
     load_button = SaveLoad_Button(screen, w-a*tiles_menu.k-a*8, 0, a*2, a*2, 'load')
     size_button = Change_size_button(screen, w-a*tiles_menu.k-a*10, 0, a*2, a*2, 'size')
+    generator = Generate_button(screen, w-a*tiles_menu.k-a*12, 0, a*2, a*2, 'dices') 
 
     #fast_save_button = SaveLoad_Button(screen, 0, 0, a*2,a*2, 'save')
 
@@ -318,6 +344,7 @@ def level_constructor_main():
         save_button.draw(2)
         load_button.draw(2)
         size_button.draw(2)
+        generator.draw(2)
         #fast_save_button.draw(2)
         pygame.display.update()
 
@@ -396,6 +423,10 @@ def level_constructor_main():
                         new_map = size_button.change_map_size(map,screen)
                         if new_map != '':
                             map = new_map
+                    elif generator.check_pressed():
+                        new_map = generator.generate()
+                        if new_map != '':
+                            map = new_map
     #                elif fast_save_button.check_pressed():
     #                    fast_save_button.fast_save(n, map)
     #                    n += 1
@@ -441,3 +472,4 @@ def level_constructor_main():
         time += 1
         if time >= 2*FPS:
             time = 0
+level_constructor_main()
