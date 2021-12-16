@@ -26,7 +26,7 @@ def update_image_for_tank(self):
 
 class Tank(pygame.sprite.Sprite):
 
-    def __init__(self, x, y, angle, tank_type, screen):
+    def __init__(self, x, y, angle, tank_type, ID, screen):
         """
         x,y - положение центра танка
         tank_type - тип танка, возможные: "light", "middle", "heavy"
@@ -34,6 +34,7 @@ class Tank(pygame.sprite.Sprite):
         """
 
         pygame.sprite.Sprite.__init__(self)
+        self.ID = ID
         self.screen = screen
         self.center = pos(x, y)
         self.velocity = pos(0, 0)
@@ -115,7 +116,7 @@ class Tank(pygame.sprite.Sprite):
         update_corner(self)
         update_mask(self)
         self.rect = self.image.get_rect()
-        self.add(tanks)
+#        self.add(tanks)
 
         a_body, b_body = self.body_image_start.get_size()
         self.s = b_body * self.k_turret_draw
@@ -354,6 +355,7 @@ class Tank(pygame.sprite.Sprite):
         self.corner_visible = pos(screen_center.x + self.corner.x - observating_point.x,
                                   screen_center.y + self.corner.y - observating_point.y)
         # Рисование тела танка:
+        self.body_image = pygame.transform.rotate(self.body_image_start, self.body_ang * 180 / math.pi)
         self.screen.blit(self.body_image, (self.corner_visible.x, self.corner_visible.y))
 
         # Рисование cooldawn:

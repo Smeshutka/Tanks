@@ -21,7 +21,7 @@ def convert_map(map):
 
 def prepared_tank(tank):
     return [tank.center, tank.corner, tank.body_ang, tank.turret_ang, tank.cooldawn,
-            tank.time_cooldawn]
+            tank.time_cooldawn, tank.hp]
 
 def prepared_bullet(bul):
     return [bul.center, bul.corner, bul.ang]
@@ -35,26 +35,24 @@ def update_tank_keys(tank, data):
     tank.flpk = data[5]
 
 class all:
-    def __init__(self, tank_player, bullets, map):  
-        self.tank_player = prepared_tank(tank_player)
+    def __init__(self, tanks, bullets, tank_player, map):
+        self.tanks = {}
+        for tank in tanks:
+            self.tanks[tank.ID] = prepared_tank(tank)
         self.list_update = map.list_update
-        
+        self.tank_player = prepared_tank(tank_player)
         self.bullets = []
         for bul in bullets:
             self.bullets.append(prepared_bullet(bul))
 
 class all_start:
-    def __init__(self, tanks, tanks_bots, map, tank_player):
+    def __init__(self, tanks, map, tank_player):
         self.map = convert_map(map)
-        '''
-        self.tank_player = [tank_player.center.x, tank_player.center.y, tank_player.body_ang, tank_player.type]
-        self.tanks_init = []
-        self.tanks_bots_init = []
+        self.tank_player = [tank_player.center.x, tank_player.center.y, tank_player.body_ang, tank_player.type, tank_player.ID]
+        self.tanks_init = {}
         for tank in tanks:
-            self.tanks_init.append([tank.center.x, tank.center.y, tank.body_ang, tank.type])
-        for tank in tanks_bots:
-            self.tanks_bots_init.append([tank.center.x, tank.center.y, tank.body_ang, tank.type])
-    '''
+            self.tanks_init[tank.ID] = [tank.center.x, tank.center.y, tank.body_ang, tank.type, tank.ID]
+    
 pygame.init()
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -71,17 +69,19 @@ screen = pygame.display.set_mode((w, h))
 
 map = Map(map_maker(file_reader("map_maker/maps/1.txt")), screen)
 
-tank_player = Tank(250, 250, 0, "light", screen)
-#tank_enemy = Tank(400, 400, 0, "heavy", screen) # Пробный вариант танка противника
-#tank_enemy.add(tanks_bots)
+tank_player = Tank(250, 250, 0, "light", '-1', screen)
+tank_player.add(tanks)
+tank_enemy = Tank(400, 400, 0, "heavy", '1', screen) # Пробный вариант танка противника
+tank_enemy.add(tanks)
+tank_enemy.add(tanks_bots)
 
 list_tile = [pos(5, 5), pos(5, 20), pos(20, 20), pos(20, 5)] #Список точек, по которым будет двигаться бот
-#tank_enemy.update_list_tile(list_tile)
+tank_enemy.update_list_tile(list_tile)
 
 observating_point = tank_player.center
 
-start_data = all_start(tanks, tanks_bots, map, tank_player)
-player.send(pickle.dumps(convert_map(map)))
+start_data = all_start(tanks, map, tank_player)
+player.send(pickle.dumps(start_data))
 player.recv(100)
 
 while not finished:
@@ -122,19 +122,9 @@ while not finished:
             tank.meet_with_bullet(bul)
     
     #отправка игроку данных
-    #player.send(pickle.dumps(convert_map(map)))
-    #player.recv(100)
-    send_all = all(tank_player, bullets, map)
+    send_all = all(tanks, bullets, tank_player, map)
     player.send(pickle.dumps(send_all))
     map.list_update = []
-    #player.recv(100)
-    #player.send(pickle.dumps(prepared_tank(tank_enemy)))
-    #player.recv(100)
-    #player.send(pickle.dumps(len(bullets)))
-    #player.recv(100)
-    #for bul in bullets:
-    #    player.send(pickle.dumps(prepared_bullet(bul)))
-    #    player.recv(100)
     
     data = pickle.loads(player.recv(1024))
     update_tank_keys(tank_player, data)
