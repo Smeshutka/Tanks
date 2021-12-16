@@ -306,10 +306,9 @@ class Tank(pygame.sprite.Sprite):
             elif self.fw == False and self.fs == True:
                 self.acceleration.x = dt * -self.engine_power * math.cos(an) / self.m
                 self.acceleration.y = dt * self.engine_power * math.sin(an) / self.m
-
             # Ускорение за счёт сопротивления среды:
-            # if v < 15:
-            #    v = 15
+            if v < 15:
+                v = 15
             self.v_ort = v * math.sin(self.vel_ang - an)
             self.v_par = v * math.cos(self.vel_ang - an)
 
@@ -322,8 +321,8 @@ class Tank(pygame.sprite.Sprite):
 
         def update_options(self, map):
             """Движение танка (обновление координат, скоростей)"""
-            vx = 0.0001 *self.velocity.x
-            vy = 0.0001 *self.velocity.y 
+            vx = self.velocity.x
+            vy = self.velocity.y 
             v = (vx ** 2 + vy ** 2) ** 0.5
             x = self.center.x
             y = self.center.y

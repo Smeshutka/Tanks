@@ -14,13 +14,13 @@ def game_main():
     screen = pygame.display.set_mode((w, h))
 
     #key_maker()
-    #map = Map((map_from_jigsaw(jigsaw_generator(key_reader()))), screen)
-    map = Map(map_maker(file_reader("map_maker/maps/1.txt")), screen)
+    map = Map((map_from_jigsaw(jigsaw_generator(key_reader(), 3, 4))), screen)
+    #map = Map(map_maker(file_reader("map_maker/maps/1.txt")), screen)
 
     tank_player = create_tank_player(250, 250, 0, "light", "0", screen)
 
     list_tile = [pos(5, 5), pos(5, 20), pos(20, 20), pos(20, 5)]
-    create_tank_bot(400, 400, 0, "heavy", "1", screen, list_tile)  # Пробный вариант танка противника
+    #create_tank_bot(400, 400, 0, "heavy", "1", screen, list_tile)  # Пробный вариант танка противника
 
     observating_point = tank_player.center
 

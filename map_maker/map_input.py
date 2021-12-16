@@ -143,9 +143,8 @@ def get_complimentary(i, key, direction):
     return comp_list
 
 
-def jigsaw_generator(key):
-    scale = 7
-    map = [[0 for i in range(scale)] for j in range(scale)]
+def jigsaw_generator(key, scale_y, scale_x):
+    map = [[0 for i in range(scale_x)] for j in range(scale_y)]
     map[0][0] = random.randint(0, len(key) - 1)
     for j in range(1, len(map[0])):
         map[0][j] = random.choice(get_complimentary(map[0][j - 1], key, 3))
@@ -167,11 +166,11 @@ def jigsaw_generator(key):
 
 
 def map_from_jigsaw(scheme):
-    map = [[0 for i in range(10 * len(scheme) + 2)] for j in range(10 * len(scheme[0]) + 2)]
+    map = [[0 for i in range(10 * len(scheme[0]) + 2)] for j in range(10 * len(scheme) + 2)]
     for i in range(len(scheme)):
         for j in range(len(scheme[i])):
             puzzle = file_reader('map_maker/templates/ice and ground/' + str(scheme[i][j]) + '.txt')
-
+            
             for i_1 in range(len(puzzle)):
                 for j_1 in range(len(puzzle[i_1])):
                     if puzzle[i_1][j_1] == 'g':
@@ -187,11 +186,11 @@ def map_from_jigsaw(scheme):
                     elif puzzle[i_1][j_1] == 'i':
                         map[10 * i + i_1 + 1][10 * j + j_1 + 1] = ([a * (10 * j + j_1 + 1), a * (10 * i + i_1 + 1), 'ice'])
 
-    for i in range(10 * len(scheme) + 2):
+    for i in range(10 * len(scheme[0]) + 2):
         map[0][i] = ([a * i, a * 0, 'stone'])
-        map[10 * len(scheme[0]) + 1][i] = ([a * i, a * (10 * len(scheme[0]) + 1), 'stone'])
+        map[10 * len(scheme) + 1][i] = ([a * i, a * (10 * len(scheme) + 1), 'stone'])
     for i in range(10 * len(scheme)):
         map[i+1][0] = ([a * 0, a * (i+1), 'stone'])
-        map[i + 1][10 * len(scheme) + 1] = ([a * (10 * len(scheme) + 1), a * (i + 1), 'stone'])
+        map[i + 1][10 * len(scheme[0]) + 1] = ([a * (10 * len(scheme[0]) + 1), a * (i + 1), 'stone'])
 
     return map_maker(map)
