@@ -59,6 +59,10 @@ class Button:
             return 'game.game_main(game_input)'
         elif self.type == 'choose_level':
             return 'choose_level()'
+        elif self.type == 'host_game':
+            return 'server.server_main'
+        elif self.type == 'join_game':
+            return 'client.client_main()'
         else:
             return 'print("in_progress")'
 

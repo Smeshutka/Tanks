@@ -3,6 +3,8 @@ import game
 import level_constructor
 import map_maker.map_input
 import tkinter
+import server
+import client
 
 game_input = "map_maker/maps/1.txt"
 
