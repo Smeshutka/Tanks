@@ -5,6 +5,7 @@ import map_maker.map_input
 import tkinter
 import server
 import client
+from tank_class import *
 
 game_input = "map_maker/maps/1.txt"
 
@@ -59,6 +60,9 @@ def menu_singleplayer():
     button1 = Button(screen, 10, 10, 150, 50, 'go_back')
     button2 = Button(screen, 250, 490, 300, 100, 'start_game')
     button3 = Button(screen, 550, 350, 200, 66, 'choose_level')
+    #tank1 = Button(screen, 0, 0, 100, 100, 'light')
+    #tank2 = Button(screen, 0, 0, 100, 100, 'middle')
+    #tank3 = Button(screen, 0, 0, 100, 100, 'heavy')
     buttons = [button1, button2, button3]
 
     while not finished:
@@ -68,6 +72,7 @@ def menu_singleplayer():
         for button in buttons:
             button.check_pressed()
             button.draw()
+
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -157,5 +162,7 @@ def choose_level():
     global game_input
     if new_map != '':
         game_input = new_map
+        print(game_input)
+
 
 menu_main()
