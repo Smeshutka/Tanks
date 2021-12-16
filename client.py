@@ -29,7 +29,7 @@ def update_tanks_pos(data_all):
         if flag == False:
             tank.kill()
     
-def update_tank_player_pos(data):
+def update_tank_player_pos(data, tank_player):
     tank_player.center = data[0]
     tank_player.corner = data[1]
     tank_player.body_ang = data[2]
@@ -82,7 +82,7 @@ def client_main():
         for update in data_all.list_update:
             map.tiles_array[update[0].y][update[0].x].update_tile(update[1])
 
-        update_tank_player_pos(data_all.tank_player)
+        update_tank_player_pos(data_all.tank_player, tank_player)
         update_tanks_pos(data_all.tanks)
 
         observating_point = tank_player.center
