@@ -60,7 +60,7 @@ def server_main():
     pygame.init()
 
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server.bind(("192.168.31.92",12345))
+    server.bind(("192.168.31.130",12345))
 
     number_of_players = 2
 
