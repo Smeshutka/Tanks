@@ -60,7 +60,7 @@ class Button:
         elif self.type == 'choose_level':
             return 'choose_level()'
         elif self.type == 'host_game':
-            return 'server.server_main'
+            return 'server.server_main()'
         elif self.type == 'join_game':
             return 'client.client_main()'
         else:
