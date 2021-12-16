@@ -69,14 +69,10 @@ screen = pygame.display.set_mode((w, h))
 
 map = Map(map_maker(file_reader("map_maker/maps/1.txt")), screen)
 
-tank_player = Tank(250, 250, 0, "light", '-1', screen)
-tank_player.add(tanks)
-tank_enemy = Tank(400, 400, 0, "heavy", '1', screen) # Пробный вариант танка противника
-tank_enemy.add(tanks)
-tank_enemy.add(tanks_bots)
+tank_player = create_tank_player(250, 250, 0, "light", "0", screen)
 
-list_tile = [pos(5, 5), pos(5, 20), pos(20, 20), pos(20, 5)] #Список точек, по которым будет двигаться бот
-tank_enemy.update_list_tile(list_tile)
+list_tile = [pos(5, 5), pos(5, 20), pos(20, 20), pos(20, 5)]
+create_tank_bot(400, 400, 0, "heavy", "1", screen, list_tile) 
 
 observating_point = tank_player.center
 

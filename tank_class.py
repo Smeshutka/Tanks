@@ -23,6 +23,17 @@ def update_image_for_tank(self):
     self.body_image_start = update_image(self.body_image_start, k, k * b_body / a_body)
     self.turret_image_start = update_image(self.turret_image_start, k * a_turret / a_body, k * b_turret / a_body)
 
+def create_tank_player(x, y, ang, tank_type, ID, screen):
+    tank = Tank(x, y, ang, tank_type, ID, screen)
+    tank.add(tanks)
+    return tank
+
+def create_tank_bot(x, y, ang, tank_type, ID, screen, list_tile):
+    tank = Tank(x, y, ang, tank_type, ID, screen)
+    tank.add(tanks)
+    tank.add(tanks_bots)
+    tank.update_list_tile(list_tile)
+    return tank
 
 class Tank(pygame.sprite.Sprite):
 
