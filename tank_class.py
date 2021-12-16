@@ -22,6 +22,14 @@ def update_image_for_tank(self):
     self.body_image_start = update_image(self.body_image_start, k, k * b_body / a_body)
     self.turret_image_start = update_image(self.turret_image_start, k * a_turret / a_body, k * b_turret / a_body)
 
+def all_dead():
+    for bul in bullets:
+        bul.kill()
+    for tank in tanks:
+        tank.kill()
+    for tank in tanks_bots:
+        tank.kill()
+
 def create_tank_player(x, y, ang, tank_type, ID, screen):
     tank = Tank(x, y, ang, tank_type, ID, screen)
     tank.add(tanks)

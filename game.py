@@ -4,15 +4,17 @@ from map_maker.tiles import *
 from map_maker.map_input import *
 from AI import *
 
-def game_main():
+def game_main(game_input):
     pygame.init()
+
+    all_dead()
 
     clock = pygame.time.Clock()
     finished = False
 
     screen = pygame.display.set_mode((w, h))
 
-    map = Map(map_maker(file_reader("map_maker/maps/1.txt")), screen)
+    map = Map(map_maker(file_reader(game_input )), screen)
 
     tank_player = create_tank_player(250, 250, 0, "light", "0", screen)
 
