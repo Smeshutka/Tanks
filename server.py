@@ -58,9 +58,9 @@ class all_start:
 pygame.init()
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server.bind(("192.168.31.130",12345))
+server.bind(("192.168.31.92",12345))
 
-number_of_players = 2
+number_of_players = 1
 
 server.listen(number_of_players)
 player1, adress = server.accept()
@@ -112,8 +112,6 @@ while not finished:
             tank.before_draw(observating_point)
         tank.draw(observating_point)
 
-    #tank_player.update_pos_mouse_for_player()
-
     for tank in tanks_bots:
         meet_with_tank(tank, tank_player1)
         if number_of_players == 2:
@@ -127,7 +125,7 @@ while not finished:
 
     pygame.display.update()
     clock.tick(FPS)
-                
+    
     for tank in tanks_bots:
         move_AI(tank)
 
@@ -157,4 +155,3 @@ while not finished:
     if number_of_players == 2:
         data = pickle.loads(player2.recv(1024))
         update_tank_keys(tank_player2, data)
-    #player.send(pickle.dumps(''))

@@ -1,6 +1,5 @@
 from helper import *
 from bullets_class import *
-from constans import *
 from map_maker.tiles import *
 from map_maker.tiles import *
 from AI import *
@@ -30,6 +29,7 @@ def create_tank_player(x, y, ang, tank_type, ID, screen):
 
 def create_tank_bot(x, y, ang, tank_type, ID, screen, list_tile):
     tank = Tank(x, y, ang, tank_type, ID, screen)
+    tank.hp = 1
     tank.add(tanks)
     tank.add(tanks_bots)
     tank.update_list_tile(list_tile)
@@ -75,12 +75,10 @@ class Tank(pygame.sprite.Sprite):
         self.type = tank_type
 
         if tank_type == "light":
-            self.hp = 5
-            self.size = pos(100, 50)
             self.body_image_start = pygame.image.load("textures/light_body.png").convert_alpha()
             self.turret_image_start = pygame.image.load("textures/light_turret(4).png").convert_alpha()
             self.engine_power = 100
-            self.ang_speed = 2 * math.pi / 10
+            self.ang_speed = 3 * math.pi / 10
             self.m = 0.25
             self.cooldawn = 1
             self.time_cooldawn = 0
@@ -90,31 +88,27 @@ class Tank(pygame.sprite.Sprite):
             self.width_in_tiles = 3.5
 
         elif tank_type == "middle":
-            self.hp = 5
-            self.size = pos(100, 50)
             self.body_image_start = pygame.image.load("textures/middle_body.png").convert_alpha()
             self.turret_image_start = pygame.image.load("textures/middle_turret.png").convert_alpha()
-            self.engine_power = 100
+            self.engine_power = 80
             self.ang_speed = 2 * math.pi / 10
             self.m = 0.5
             self.cooldawn = 1
             self.time_cooldawn = 0
-            self.hp = 3
+            self.hp = 4
             self.ai = 2
             self.k_turret_draw = 0.0
             self.width_in_tiles = 3.5
 
         elif tank_type == "heavy":
-            self.hp = 5
-            self.size = pos(134, 82)
-            self.body_image_start = pygame.image.load("textures/heavy_body1.png").convert_alpha()
-            self.turret_image_start = pygame.image.load("textures/heavy_turret1.png").convert_alpha()
-            self.engine_power = 100
-            self.ang_speed = 2 * math.pi / 10
+            self.body_image_start = pygame.image.load("textures/heavy_body.png").convert_alpha()
+            self.turret_image_start = pygame.image.load("textures/heavy_turret.png").convert_alpha()
+            self.engine_power = 60
+            self.ang_speed = 1.5 * math.pi / 10
             self.m = 1
             self.cooldawn = 1
             self.time_cooldawn = 0
-            self.hp = 3
+            self.hp = 5
             self.ai = 3
             self.k_turret_draw = 0.3
             self.width_in_tiles = 3.5
@@ -357,7 +351,8 @@ class Tank(pygame.sprite.Sprite):
             set_acceleration(self, k1, k2)  # Расчет ускорений
             update_options(self, map)  # Движение танка
 
-        main(self, map)
+        if self.hp > 0:
+            main(self, map)
 
     def before_draw(self, observating_point):
         self.center_visible = pos(screen_center.x + self.center.x - observating_point.x,
@@ -395,10 +390,12 @@ class Tank(pygame.sprite.Sprite):
                                             self.center_visible.y - b / 2 + self.s * math.sin(self.body_ang)))
 
     def reload_left(self):
-        self.flpk = 1
+        if self.hp > 0:
+            self.flpk = 1
 
     def reload_right(self):
-        self.frpk = 1
+        if self.hp > 0:
+            self.frpk = 1
 
     def fire_gun(self):
         if self.flpk == 1 and self.time_cooldawn == 0:
@@ -417,10 +414,20 @@ class Tank(pygame.sprite.Sprite):
         if self.time_cooldawn <= 0:
             self.time_cooldawn = 0
 
+    def dead(self):
+        self.body_image_start = pygame.image.load("textures/" + self.type + "_body_crash.png").convert_alpha()
+        self.turret_image_start = pygame.image.load("textures/" + self.type + "_turret_crash.png").convert_alpha()
+        update_image_for_tank(self)
+    
+    def life_before_death(self):
+        self.kill()
+        
     def meet_with_bullet(self, obj):
         if meet(self, obj):
             if not (obj.owner is self):
                 self.hp -= obj.damage
                 obj.kill()
-                # if self.hp == 0:
-                #    self.kill()
+                if self.hp == 0:
+                    self.dead()
+                if self.hp == -1:
+                    self.life_before_death()

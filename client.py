@@ -1,6 +1,5 @@
 from helper import*
 from tank_class import*
-from constans import*
 from map_maker.tiles import*
 from map_maker.map_input import*
 from AI import*
@@ -14,9 +13,11 @@ def prepared_keys(tank):
 
 def update_tanks_pos(data_all):
 
-    for ID in data_all:
-        for tank in tanks:
+    for tank in tanks:
+        flag = False
+        for ID in data_all:
             if tank.ID == ID:
+                flag = True
                 data = data_all[ID]
                 tank.center = data[0]
                 tank.corner = data[1]
@@ -25,7 +26,9 @@ def update_tanks_pos(data_all):
                 tank.cooldawn = data[4]
                 tank.time_cooldawn = data[5]
                 tank.hp = data[6]
-
+        if flag == False:
+            tank.kill()
+    
 def update_tank_player_pos(data):
     tank_player.center = data[0]
     tank_player.corner = data[1]
@@ -35,7 +38,6 @@ def update_tank_player_pos(data):
     tank_player.time_cooldawn = data[5]
     tank_player.hp = data[6]
 
-
 class all:
     pass
 
@@ -43,7 +45,7 @@ class all_start:
     pass        
 
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client.connect(("192.168.31.130", 12345))
+client.connect(("192.168.31.92", 12345))
 
 pygame.init()
 
@@ -69,9 +71,6 @@ for tank_init in data_all_start.tanks_init:
     new_tank = Tank(*tank)
     new_tank.add(tanks)
         
-#tank_player = Tank(250, 250, 0, "light", screen)
-#tank_enemy = Tank(400, 400, 0, "heavy", screen)
-
 observating_point = tank_player.center
 
 
@@ -98,10 +97,11 @@ while not finished:
     update_image_for_tank(tank_player)
     tank_player.before_draw(observating_point)
     for tank in tanks:
+        if tank.hp == 0:
+            tank.dead()
         update_image_for_tank(tank)
         tank.before_draw(observating_point)
         tank.draw(observating_point)
-    
     update_image_for_tank(tank_player)
     tank_player.update_pos_mouse_for_player()
 
