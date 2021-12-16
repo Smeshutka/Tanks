@@ -15,12 +15,40 @@ def game_main(game_input):
     screen = pygame.display.set_mode((w, h))
 
     map = Map(map_maker(file_reader(game_input )), screen)
+    if game_input[len(game_input)-20:len(game_input)] == "map_maker/maps/1.txt":
+        tank_player = create_tank_player(12, 12, 0, "light", "0", screen)
 
-    tank_player = create_tank_player(250, 250, 0, "light", "0", screen)
-
-    list_tile = [pos(5, 5), pos(5, 20), pos(20, 20), pos(20, 5)]
-    create_tank_bot(400, 400, 0, "light", "1", screen, list_tile)  # Пробный вариант танка противника
-
+        list_tile = [pos(5, 5), pos(5, 20), pos(20, 20), pos(20, 5)]
+        create_tank_bot(20, 20, 0, "light", "1", screen, list_tile, 1)  # Пробный вариант танка противника
+    elif game_input[len(game_input)-15:len(game_input)] == "great_level.txt":
+        tank_player = create_tank_player(41, 139, 3.14, "light", "0", screen)
+        tank_player.hp = 7
+        list_tile = [pos(3, 145), pos(3, 129), pos(12, 129), pos(12, 145)]
+        create_tank_bot(7, 140, 0, "heavy", "1", screen, list_tile, 2)  # Пробный вариант танка противника
+        
+        list_tile = [pos(5, 100), pos(46, 100)]
+        create_tank_bot(5, 100, 0, "light", "2", screen, list_tile, 1)  # Пробный вариант танка противника
+        
+        list_tile = [pos(27, 109), pos(45, 109)]
+        create_tank_bot(27, 113, 0, "middle", "3", screen, list_tile, 1)  # Пробный вариант танка противника
+        
+        #list_tile = [pos(25, 75), pos(38, 45)]
+        #create_tank_bot(25, 75, 0, "heavy", "4", screen, list_tile, 2)  # Пробный вариант танка противника
+        
+        list_tile = [pos(7, 82), pos(6, 89), pos(17, 82), pos(26, 82)]
+        create_tank_bot(7, 82, 0, "heavy", "5", screen, list_tile, 2)  # Пробный вариант танка противника
+        
+        list_tile = [pos(23, 87), pos(39, 87)]
+        create_tank_bot(23, 87, 0, "middle", "6", screen, list_tile, 1)  # Пробный вариант танка противника
+        
+        list_tile = [pos(45, 36), pos(32, 36)]
+        create_tank_bot(45, 37, 0, "middle", "7", screen, list_tile, 2)  # Пробный вариант танка противника
+        
+        
+        list_tile = [pos(6, 11), pos(44, 16), pos(5, 19)]
+        create_tank_bot(6, 11, 0, "light", "8", screen, list_tile, 3)  # Пробный вариант танка противника
+        
+        
     observating_point = tank_player.center
 
     while not finished:

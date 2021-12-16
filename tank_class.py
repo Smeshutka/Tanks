@@ -31,13 +31,18 @@ def all_dead():
         tank.kill()
 
 def create_tank_player(x, y, ang, tank_type, ID, screen):
+    x = x * a + a / 2
+    y = y * a + a / 2
+    
     tank = Tank(x, y, ang, tank_type, ID, screen)
     tank.add(tanks)
     return tank
 
-def create_tank_bot(x, y, ang, tank_type, ID, screen, list_tile):
+def create_tank_bot(x, y, ang, tank_type, ID, screen, list_tile, hp):
+    x = x * a + a / 2
+    y = y * a + a / 2
     tank = Tank(x, y, ang, tank_type, ID, screen)
-    tank.hp = 1
+    tank.hp = hp
     tank.add(tanks)
     tank.add(tanks_bots)
     tank.update_list_tile(list_tile)
