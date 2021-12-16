@@ -60,7 +60,7 @@ pygame.init()
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind(("192.168.31.92",12345))
 
-number_of_players = 1
+number_of_players = 2
 
 server.listen(number_of_players)
 player1, adress = server.accept()

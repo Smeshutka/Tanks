@@ -472,4 +472,3 @@ def level_constructor_main():
         time += 1
         if time >= 2*FPS:
             time = 0
-level_constructor_main()

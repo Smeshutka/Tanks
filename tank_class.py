@@ -121,7 +121,6 @@ class Tank(pygame.sprite.Sprite):
         update_corner(self)
         update_mask(self)
         self.rect = self.image.get_rect()
-#        self.add(tanks)
 
         a_body, b_body = self.body_image_start.get_size()
         self.s = b_body * self.k_turret_draw
@@ -295,26 +294,29 @@ class Tank(pygame.sprite.Sprite):
 
             # Ускорение за счёт работы двигателя:
             if self.fw == True and self.fs == False:
-                self.acceleration.x = dt * self.engine_power * math.cos(an) / self.m
-                self.acceleration.y = dt * -self.engine_power * math.sin(an) / self.m
+                self.acceleration.x = dt**2 * self.engine_power * math.cos(an) / self.m
+                self.acceleration.y = dt**2* -self.engine_power * math.sin(an) / self.m
             elif self.fw == False and self.fs == True:
-                self.acceleration.x = dt * -self.engine_power * math.cos(an) / self.m
-                self.acceleration.y = dt * self.engine_power * math.sin(an) / self.m
+                self.acceleration.x = dt**2 * -self.engine_power * math.cos(an) / self.m
+                self.acceleration.y = dt**2 * self.engine_power * math.sin(an) / self.m
             # Ускорение за счёт сопротивления среды:
-            if v < 15:
-                v = 15
+            if v < 15 * dt:
+                v = 15 * dt
             self.v_ort = v * math.sin(self.vel_ang - an)
             self.v_par = v * math.cos(self.vel_ang - an)
 
-            self.acceleration.x -= dt * k1 * abs(self.v_par * math.cos(an)) * self.v_par * math.cos(an) / self.m
-            self.acceleration.y += dt * k1 * abs(self.v_par * math.sin(an)) * self.v_par * math.sin(an) / self.m
-            self.acceleration.x -= dt * k2 * abs(self.v_ort * math.cos(math.pi / 2 + an)) * self.v_ort * math.cos(
+            self.acceleration.x -= dt**2 * k1 * abs(self.v_par * math.cos(an)) * self.v_par * math.cos(an) / self.m
+            self.acceleration.y += dt**2 * k1 * abs(self.v_par * math.sin(an)) * self.v_par * math.sin(an) / self.m
+            self.acceleration.x -= dt**2 * k2 * abs(self.v_ort * math.cos(math.pi / 2 + an)) * self.v_ort * math.cos(
                 math.pi / 2 + an) / self.m
-            self.acceleration.y += dt * k2 * abs(self.v_ort * math.sin(math.pi / 2 + an)) * self.v_ort * math.sin(
+            self.acceleration.y += dt**2 * k2 * abs(self.v_ort * math.sin(math.pi / 2 + an)) * self.v_ort * math.sin(
                 math.pi / 2 + an) / self.m
-
+            
         def update_options(self, map):
             """Движение танка (обновление координат, скоростей)"""
+            self.velocity.x *= dt
+            self.velocity.y *= dt
+            
             vx = self.velocity.x
             vy = self.velocity.y 
             v = (vx ** 2 + vy ** 2) ** 0.5
@@ -322,16 +324,18 @@ class Tank(pygame.sprite.Sprite):
             y = self.center.y
 
             # Обновление скоростей и координат
-            if v <= 1 and (self.fw + self.fs) % 2 == 0:
+            if v <= 1 * dt and (self.fw + self.fs) % 2 == 0:
                 self.velocity.x = 0
                 self.velocity.y = 0
             else:
                 self.velocity.x += self.acceleration.x 
                 self.velocity.y += self.acceleration.y 
 
-            self.center.x += self.velocity.x * dt
-            self.center.y += self.velocity.y * dt
-
+            self.center.x += self.velocity.x 
+            self.center.y += self.velocity.y 
+            self.velocity.x /= dt
+            self.velocity.y /= dt
+            
             update_for_check(self)
 
             if check_move(self, map):

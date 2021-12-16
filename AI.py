@@ -113,7 +113,7 @@ class vision(pygame.sprite.Sprite):
     def __init__(self, owner, screen):
         pygame.sprite.Sprite.__init__(self)
         self.screen = screen
-        self.image = pygame.image.load('textures/visibility(800).png').convert_alpha()
+        self.image = pygame.image.load('textures/visibility(600).png').convert_alpha()
         a, b = self.image.get_size()
         self.corner = pos(owner.center.x - a / 2, owner.center.y - b / 2)
         self.rect = self.image.get_rect()
