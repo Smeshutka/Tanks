@@ -33,6 +33,8 @@ def update_tank_keys(tank, data):
     tank.fd = data[3]
     tank.mouse = data[4]
     tank.flpk = data[5]
+    tank.center_visible = data[6]
+    tank.corner_visible = data[7]
 
 class all:
     def __init__(self, tanks, bullets, tank_player, map):
@@ -58,7 +60,7 @@ pygame.init()
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind(("192.168.31.130",12345))
 
-number_of_players = 1
+number_of_players = 2
 
 server.listen(number_of_players)
 player1, adress = server.accept()
@@ -79,7 +81,7 @@ if number_of_players == 2:
     tank_player2 = create_tank_player(250, 250, 0, "middle", "1", screen)
 
 list_tile = [pos(5, 5), pos(5, 20), pos(20, 20), pos(20, 5)]
-create_tank_bot(400, 400, 0, "heavy", "2", screen, list_tile)
+bot = create_tank_bot(400, 400, 0, "heavy", "2", screen, list_tile)
 
 observating_point = tank_player1.center
 
@@ -91,12 +93,23 @@ if number_of_players == 2:
     player2.send(pickle.dumps(start_data))
     player2.recv(100)
 
+for tank in tanks:
+    tank.before_draw(observating_point)
+
 while not finished:
     screen.fill((255,255,255))
     map.draw(observating_point)
 
     for tank in tanks:
-        tank.before_draw(observating_point)
+        flag = True
+        if tank is tank_player1:
+            flag = False
+        if number_of_players == 2:
+            if tank is tank_player2:
+                flag = False
+                
+        if flag:
+            tank.before_draw(observating_point)
         tank.draw(observating_point)
 
     #tank_player.update_pos_mouse_for_player()

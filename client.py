@@ -10,7 +10,7 @@ import socket
 def prepared_keys(tank):
     flpk = tank.flpk
     tank.flpk = 0
-    return [tank.fw, tank.fa, tank.fs, tank.fd, tank.mouse, flpk]
+    return [tank.fw, tank.fa, tank.fs, tank.fd, tank.mouse, flpk, tank.center_visible, tank.corner_visible]
 
 def update_tanks_pos(data_all):
 
@@ -95,9 +95,11 @@ while not finished:
     screen.fill((255,255,255))
     map.draw(observating_point)
 
-    
+    update_image_for_tank(tank_player)
+    tank_player.before_draw(observating_point)
     for tank in tanks:
         update_image_for_tank(tank)
+        tank.before_draw(observating_point)
         tank.draw(observating_point)
     
     update_image_for_tank(tank_player)
