@@ -79,16 +79,14 @@ def key_maker():
             else:
                 up = False
 
-
             down = 0
             for i in range(10):
                 if map1[9][i] != map2[0][i]:
-                    down +=1
+                    down += 1
             if down <= par:
                 down = True
             else:
                 down = False
-
 
             left = 0
             for i in range(10):
@@ -98,7 +96,6 @@ def key_maker():
                 left = True
             else:
                 left = False
-
 
             right = 0
             for i in range(10):
@@ -161,7 +158,6 @@ def jigsaw_generator(key, scale_y, scale_x):
                         break
             map[i][j] = random.choice(map_c)
 
-
     return map
 
 
@@ -170,27 +166,33 @@ def map_from_jigsaw(scheme):
     for i in range(len(scheme)):
         for j in range(len(scheme[i])):
             puzzle = file_reader('map_maker/templates/ice and ground/' + str(scheme[i][j]) + '.txt')
-            
+
             for i_1 in range(len(puzzle)):
                 for j_1 in range(len(puzzle[i_1])):
                     if puzzle[i_1][j_1] == 'g':
-                        map[10 * i + i_1 + 1][10 * j + j_1 + 1] = ([a * (10 * j + j_1 + 1), a * (10 * i + i_1 + 1), 'grass'])
+                        map[10 * i + i_1 + 1][10 * j + j_1 + 1] = (
+                        [a * (10 * j + j_1 + 1), a * (10 * i + i_1 + 1), 'grass'])
                     elif puzzle[i_1][j_1] == 'w':
-                        map[10 * i + i_1 + 1][10 * j + j_1 + 1] = ([a * (10 * j + j_1 + 1), a * (10 * i + i_1 + 1), 'water'])
+                        map[10 * i + i_1 + 1][10 * j + j_1 + 1] = (
+                        [a * (10 * j + j_1 + 1), a * (10 * i + i_1 + 1), 'water'])
                     elif puzzle[i_1][j_1] == 'b':
-                        map[10 * i + i_1 + 1][10 * j + j_1 + 1] = ([a * (10 * j + j_1 + 1), a * (10 * i + i_1 + 1), 'bricks'])
+                        map[10 * i + i_1 + 1][10 * j + j_1 + 1] = (
+                        [a * (10 * j + j_1 + 1), a * (10 * i + i_1 + 1), 'bricks'])
                     elif puzzle[i_1][j_1] == 'S':
-                        map[10 * i + i_1 + 1][10 * j + j_1 + 1] = ([a * (10 * j + j_1 + 1), a * (10 * i + i_1 + 1), 'stone'])
+                        map[10 * i + i_1 + 1][10 * j + j_1 + 1] = (
+                        [a * (10 * j + j_1 + 1), a * (10 * i + i_1 + 1), 'stone'])
                     elif puzzle[i_1][j_1] == 's':
-                        map[10 * i + i_1 + 1][10 * j + j_1 + 1] = ([a * (10 * j + j_1 + 1), a * (10 * i + i_1 + 1), 'sand'])
+                        map[10 * i + i_1 + 1][10 * j + j_1 + 1] = (
+                        [a * (10 * j + j_1 + 1), a * (10 * i + i_1 + 1), 'sand'])
                     elif puzzle[i_1][j_1] == 'i':
-                        map[10 * i + i_1 + 1][10 * j + j_1 + 1] = ([a * (10 * j + j_1 + 1), a * (10 * i + i_1 + 1), 'ice'])
+                        map[10 * i + i_1 + 1][10 * j + j_1 + 1] = (
+                        [a * (10 * j + j_1 + 1), a * (10 * i + i_1 + 1), 'ice'])
 
     for i in range(10 * len(scheme[0]) + 2):
         map[0][i] = ([a * i, a * 0, 'stone'])
         map[10 * len(scheme) + 1][i] = ([a * i, a * (10 * len(scheme) + 1), 'stone'])
     for i in range(10 * len(scheme)):
-        map[i+1][0] = ([a * 0, a * (i+1), 'stone'])
+        map[i + 1][0] = ([a * 0, a * (i + 1), 'stone'])
         map[i + 1][10 * len(scheme[0]) + 1] = ([a * (10 * len(scheme[0]) + 1), a * (i + 1), 'stone'])
 
     return map_maker(map)

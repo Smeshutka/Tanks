@@ -22,6 +22,7 @@ def update_image_for_tank(self):
     self.body_image_start = update_image(self.body_image_start, k, k * b_body / a_body)
     self.turret_image_start = update_image(self.turret_image_start, k * a_turret / a_body, k * b_turret / a_body)
 
+
 def all_dead():
     for bul in bullets:
         bul.kill()
@@ -30,13 +31,15 @@ def all_dead():
     for tank in tanks_bots:
         tank.kill()
 
+
 def create_tank_player(x, y, ang, tank_type, ID, screen):
     x = x * a + a / 2
     y = y * a + a / 2
-    
+
     tank = Tank(x, y, ang, tank_type, ID, screen)
     tank.add(tanks)
     return tank
+
 
 def create_tank_bot(x, y, ang, tank_type, ID, screen, list_tile, hp):
     x = x * a + a / 2
@@ -47,6 +50,7 @@ def create_tank_bot(x, y, ang, tank_type, ID, screen, list_tile, hp):
     tank.add(tanks_bots)
     tank.update_list_tile(list_tile)
     return tank
+
 
 class Tank(pygame.sprite.Sprite):
 
@@ -307,31 +311,31 @@ class Tank(pygame.sprite.Sprite):
 
             # Ускорение за счёт работы двигателя:
             if self.fw == True and self.fs == False:
-                self.acceleration.x = dt**2 * self.engine_power * math.cos(an) / self.m
-                self.acceleration.y = dt**2* -self.engine_power * math.sin(an) / self.m
+                self.acceleration.x = dt ** 2 * self.engine_power * math.cos(an) / self.m
+                self.acceleration.y = dt ** 2 * -self.engine_power * math.sin(an) / self.m
             elif self.fw == False and self.fs == True:
-                self.acceleration.x = dt**2 * -self.engine_power * math.cos(an) / self.m
-                self.acceleration.y = dt**2 * self.engine_power * math.sin(an) / self.m
+                self.acceleration.x = dt ** 2 * -self.engine_power * math.cos(an) / self.m
+                self.acceleration.y = dt ** 2 * self.engine_power * math.sin(an) / self.m
             # Ускорение за счёт сопротивления среды:
             if v < 15 * dt:
                 v = 15 * dt
             self.v_ort = v * math.sin(self.vel_ang - an)
             self.v_par = v * math.cos(self.vel_ang - an)
 
-            self.acceleration.x -= dt**2 * k1 * abs(self.v_par * math.cos(an)) * self.v_par * math.cos(an) / self.m
-            self.acceleration.y += dt**2 * k1 * abs(self.v_par * math.sin(an)) * self.v_par * math.sin(an) / self.m
-            self.acceleration.x -= dt**2 * k2 * abs(self.v_ort * math.cos(math.pi / 2 + an)) * self.v_ort * math.cos(
+            self.acceleration.x -= dt ** 2 * k1 * abs(self.v_par * math.cos(an)) * self.v_par * math.cos(an) / self.m
+            self.acceleration.y += dt ** 2 * k1 * abs(self.v_par * math.sin(an)) * self.v_par * math.sin(an) / self.m
+            self.acceleration.x -= dt ** 2 * k2 * abs(self.v_ort * math.cos(math.pi / 2 + an)) * self.v_ort * math.cos(
                 math.pi / 2 + an) / self.m
-            self.acceleration.y += dt**2 * k2 * abs(self.v_ort * math.sin(math.pi / 2 + an)) * self.v_ort * math.sin(
+            self.acceleration.y += dt ** 2 * k2 * abs(self.v_ort * math.sin(math.pi / 2 + an)) * self.v_ort * math.sin(
                 math.pi / 2 + an) / self.m
-            
+
         def update_options(self, map):
             """Движение танка (обновление координат, скоростей)"""
             self.velocity.x *= dt
             self.velocity.y *= dt
-            
+
             vx = self.velocity.x
-            vy = self.velocity.y 
+            vy = self.velocity.y
             v = (vx ** 2 + vy ** 2) ** 0.5
             x = self.center.x
             y = self.center.y
@@ -341,14 +345,14 @@ class Tank(pygame.sprite.Sprite):
                 self.velocity.x = 0
                 self.velocity.y = 0
             else:
-                self.velocity.x += self.acceleration.x 
-                self.velocity.y += self.acceleration.y 
+                self.velocity.x += self.acceleration.x
+                self.velocity.y += self.acceleration.y
 
-            self.center.x += self.velocity.x 
-            self.center.y += self.velocity.y 
+            self.center.x += self.velocity.x
+            self.center.y += self.velocity.y
             self.velocity.x /= dt
             self.velocity.y /= dt
-            
+
             update_for_check(self)
 
             if check_move(self, map):
@@ -404,7 +408,7 @@ class Tank(pygame.sprite.Sprite):
         a, b = self.turret_image.get_size()
 
         self.screen.blit(self.turret_image, (self.center_visible.x - a / 2 - self.s * math.cos(self.body_ang),
-                                            self.center_visible.y - b / 2 + self.s * math.sin(self.body_ang)))
+                                             self.center_visible.y - b / 2 + self.s * math.sin(self.body_ang)))
 
     def reload_left(self):
         if self.hp > 0:
@@ -435,10 +439,10 @@ class Tank(pygame.sprite.Sprite):
         self.body_image_start = pygame.image.load("textures/" + self.type + "_body_crash.png").convert_alpha()
         self.turret_image_start = pygame.image.load("textures/" + self.type + "_turret_crash.png").convert_alpha()
         update_image_for_tank(self)
-    
+
     def life_before_death(self):
         self.kill()
-        
+
     def meet_with_bullet(self, obj):
         if meet(self, obj):
             if not (obj.owner is self):

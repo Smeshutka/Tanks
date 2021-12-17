@@ -7,7 +7,6 @@ import server
 import client
 from tank_class import *
 
-game_input = "map_maker/maps/1.txt"
 
 def menu_main():
     pygame.init()
@@ -42,7 +41,6 @@ def menu_main():
                         if button.pressed:
                             eval(button.trigger())
 
-
         pygame.display.update()
 
         clock.tick(FPS)
@@ -50,6 +48,11 @@ def menu_main():
 
 def menu_singleplayer():
     pygame.init()
+
+    global game_input
+    global tank_type
+    game_input = "map_maker/maps/1.txt"
+    tank_type = 'light'
 
     screen = pygame.display.set_mode((w, h))
     clock = pygame.time.Clock()
@@ -60,10 +63,11 @@ def menu_singleplayer():
     button1 = Button(screen, 10, 10, 150, 50, 'go_back')
     button2 = Button(screen, 250, 490, 300, 100, 'start_game')
     button3 = Button(screen, 550, 350, 200, 66, 'choose_level')
-    #tank1 = Button(screen, 0, 0, 100, 100, 'light')
-    #tank2 = Button(screen, 0, 0, 100, 100, 'middle')
-    #tank3 = Button(screen, 0, 0, 100, 100, 'heavy')
-    buttons = [button1, button2, button3]
+    tank1 = Button(screen, 20, 200, 100, 200, 'tank_light')
+    tank2 = Button(screen, 170, 200, 100, 200, 'tank_middle')
+    tank3 = Button(screen, 320, 200, 170, 200, 'tank_heavy')
+    level_text = Entry(screen, 525, 250, 250, 66, game_input)
+    buttons = [button1, button2, button3, tank1, tank2, tank3]
 
     while not finished:
         screen.fill((0, 0, 0))
@@ -73,6 +77,8 @@ def menu_singleplayer():
             button.check_pressed()
             button.draw()
 
+        level_text.change_text(game_input)
+        level_text.draw()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -81,11 +87,15 @@ def menu_singleplayer():
                 if event.button == 1:
                     for button in buttons:
                         if button.pressed:
+                            button.set_bg_color((255, 255, 0))
                             eval(button.trigger())
+                        else:
+                            button.set_bg_color(None)
 
         pygame.display.update()
 
         clock.tick(FPS)
+
 
 def menu_multiplayer():
     time_meazure = 0
@@ -104,7 +114,6 @@ def menu_multiplayer():
     port_entry = Entry(screen, 500, 400, 200, 50)
     ip_text = Entry(screen, 100, 350, 200, 50, 'IP', None)
     port_text = Entry(screen, 500, 350, 200, 50, 'port', None)
-
 
     buttons = [button1, button2, button3]
     entries = [ip_entry, port_entry]
@@ -144,8 +153,9 @@ def menu_multiplayer():
 
         pygame.display.update()
 
-        time_meazure += 1/FPS
+        time_meazure += 2 / FPS
         clock.tick(FPS)
+
 
 def menu_settings():
     pygame.init()
@@ -180,14 +190,24 @@ def menu_settings():
 
         clock.tick(FPS)
 
+
 def choose_level():
     root = tkinter.Tk()
     new_map = tkinter.filedialog.askopenfilename(filetypes=(("Text file", ".txt"),))
     root.destroy()
     global game_input
     if new_map != '':
-        game_input = new_map
-        print(game_input)
+        splited_path = new_map.split('/')
+        for i in range(len(splited_path)):
+            if splited_path[i] == 'Tanks':
+                game_input = splited_path[i + 1]
+                for j in range(i + 2, len(splited_path)):
+                    game_input += '/' + splited_path[j]
+
+
+def set_tank_type(type):
+    global tank_type
+    tank_type = type
 
 
 menu_main()
