@@ -56,11 +56,13 @@ class all_start:
             self.tanks_init[tank.ID] = [tank.center.x, tank.center.y, tank.body_ang, tank.type, tank.ID]
 
 
-def server_main():
+def server_main(ip, port):
+    to_connect_with = (ip[0:3] + '.' + ip[3:6] + '.' + ip[6:8] + '.' + ip[8:11], int(port))
+
     pygame.init()
 
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server.bind(("192.168.31.130",12345))
+    server.bind(to_connect_with)
 
     number_of_players = 2
 
