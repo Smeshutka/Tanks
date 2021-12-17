@@ -33,7 +33,6 @@ class Tile(pygame.sprite.Sprite):
         self.map_pos = pos(x // a, y // a)
         self.type = tile_type
         self.rect = self.image.get_rect()
-        
 
         if tile_type == "grass":
             self.hp = -1
@@ -83,6 +82,7 @@ class Tile(pygame.sprite.Sprite):
                     tile.update_tile(tile_new)
                     map.list_update.append([tile.map_pos, tile_new])
 
+
 def return_tile_ower_pos(x, y, map):
     """Указываются координаты точки, возвращается тайл с данными координатами"""
     i = int(x / a)
@@ -91,10 +91,11 @@ def return_tile_ower_pos(x, y, map):
         return map.tiles_array[int(y // a)][int(x // a)]
     return False
 
+
 class Map(pygame.sprite.Sprite):
     """По списку tiles_list формата (x, y, name_image) создает группу тайлов"""
 
-    def __init__(self, map, screen, flag = False):
+    def __init__(self, map, screen, flag=False):
         self.flag = flag
         tiles = pygame.sprite.Group()
         tiles_array = []
@@ -110,26 +111,26 @@ class Map(pygame.sprite.Sprite):
         self.list_update = []
 
     def draw(self, observating_point, k=1):
-        tl_x = max(int((observating_point.x - w / 2) / a ), 0)
-        tl_y = max(int((observating_point.y - h / 2) / a ), 0)
-        tr_x = min(int((observating_point.x + w / 2) / a ) + 1, len(self.tiles_array[0]))
-        tr_y = min(int((observating_point.y + h / 2) / a ) + 1, len(self.tiles_array))
-        
+        tl_x = max(int((observating_point.x - w / 2) / a), 0)
+        tl_y = max(int((observating_point.y - h / 2) / a), 0)
+        tr_x = min(int((observating_point.x + w / 2) / a) + 1, len(self.tiles_array[0]))
+        tr_y = min(int((observating_point.y + h / 2) / a) + 1, len(self.tiles_array))
+
         for tx in range(tl_x, tr_x):
             for ty in range(tl_y, tr_y):
                 t = self.tiles_array[ty][tx]
-                
-                t.corner_visible = pos(screen_center.x + t.corner.x*k - observating_point.x*k,
-                                           screen_center.y + t.corner.y*k - observating_point.y*k)
+
+                t.corner_visible = pos(screen_center.x + t.corner.x * k - observating_point.x * k,
+                                       screen_center.y + t.corner.y * k - observating_point.y * k)
                 t.draw(k)
-                
+
     def draw_level_constructor(self, observating_point, k=1):
         for t in self.tiles:
-            usl1 = (t.corner.y - observating_point.y)*k < screen_center.y
-            usl2 = (observating_point.y - t.corner.y - a)*k < screen_center.y
-            usl3 = (t.corner.x - observating_point.x)*k < screen_center.x
-            usl4 = (observating_point.x - t.corner.x - a)*k < screen_center.x
+            usl1 = (t.corner.y - observating_point.y) * k < screen_center.y
+            usl2 = (observating_point.y - t.corner.y - a) * k < screen_center.y
+            usl3 = (t.corner.x - observating_point.x) * k < screen_center.x
+            usl4 = (observating_point.x - t.corner.x - a) * k < screen_center.x
             if usl1 and usl2 and usl3 and usl4:
-                t.corner_visible = pos(screen_center.x + t.corner.x*k - observating_point.x*k,
-                                       screen_center.y + t.corner.y*k - observating_point.y*k)
+                t.corner_visible = pos(screen_center.x + t.corner.x * k - observating_point.x * k,
+                                       screen_center.y + t.corner.y * k - observating_point.y * k)
                 t.draw(k)
