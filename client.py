@@ -44,9 +44,10 @@ class all:
 class all_start:
     pass        
 
-def client_main():
+def client_main(ip, port):
+    to_connect_with = (ip[0:3]+'.'+ip[3:6]+'.'+ip[6:8]+'.'+ip[8:11], int(port))
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client.connect(("192.168.31.130", 12345))
+    client.connect(to_connect_with)
 
     pygame.init()
 
