@@ -88,6 +88,7 @@ def menu_singleplayer():
         clock.tick(FPS)
 
 def menu_multiplayer():
+    time_meazure = 0
     pygame.init()
 
     screen = pygame.display.set_mode((w, h))
@@ -99,7 +100,11 @@ def menu_multiplayer():
     button1 = Button(screen, 10, 10, 150, 50, 'go_back')
     button2 = Button(screen, 250, 100, 300, 100, 'host_game')
     button3 = Button(screen, 250, 220, 300, 100, 'join_game')
+    ip_entry = Entry(screen, 100, 400, 200, 50, 'ip_entry')
+    port_entry = Entry(screen, 500, 400, 200, 50, 'port_entry')
+
     buttons = [button1, button2, button3]
+    entries = [ip_entry, port_entry]
 
     while not finished:
         screen.fill((0, 0, 0))
@@ -109,6 +114,13 @@ def menu_multiplayer():
             button.check_pressed()
             button.draw()
 
+        for entry in entries:
+            entry.check_pressed()
+            if (time_meazure // 1 % 2) == 0:
+                entry.draw(True)
+            else:
+                entry.draw()
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 finished = True
@@ -117,9 +129,15 @@ def menu_multiplayer():
                     for button in buttons:
                         if button.pressed:
                             eval(button.trigger())
+                    for entry in entries:
+                        entry.trigger()
+            if event.type == pygame.KEYUP:
+                for entry in entries:
+                    entry.writing(event)
 
         pygame.display.update()
 
+        time_meazure += 1/FPS
         clock.tick(FPS)
 
 def menu_settings():
