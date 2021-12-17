@@ -100,11 +100,15 @@ def menu_multiplayer():
     button1 = Button(screen, 10, 10, 150, 50, 'go_back')
     button2 = Button(screen, 250, 100, 300, 100, 'host_game')
     button3 = Button(screen, 250, 220, 300, 100, 'join_game')
-    ip_entry = Entry(screen, 100, 400, 200, 50, 'ip_entry')
-    port_entry = Entry(screen, 500, 400, 200, 50, 'port_entry')
+    ip_entry = Entry(screen, 100, 400, 200, 50)
+    port_entry = Entry(screen, 500, 400, 200, 50)
+    ip_text = Entry(screen, 100, 350, 200, 50, 'IP', None)
+    port_text = Entry(screen, 500, 350, 200, 50, 'port', None)
+
 
     buttons = [button1, button2, button3]
     entries = [ip_entry, port_entry]
+    text = [ip_text, port_text]
 
     while not finished:
         screen.fill((0, 0, 0))
@@ -120,6 +124,9 @@ def menu_multiplayer():
                 entry.draw(True)
             else:
                 entry.draw()
+
+        for t in text:
+            t.draw()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:

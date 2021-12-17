@@ -95,7 +95,7 @@ class Static:
                          (self.pos.x, self.pos.y))
 
 class Entry:
-    def __init__(self, screen, x0, y0, a, b, type):
+    def __init__(self, screen, x0, y0, a, b, text = '', bg_color = (0, 0, 0)):
         '''screen: pygame.display
         x0,y0 - координаты левого верхнего угла относительно экрана
         a,b - размеры окна по x,y соотв.
@@ -103,14 +103,15 @@ class Entry:
         self.screen = screen
         self.size = pos(a, b)
         self.pos = pos(x0, y0)
-        self.type = type
-        self.text = ''
+        self.bg_color = bg_color
+        self.text = text
         self.is_writing = False
 
     def draw(self, slash = False, k=1):
         x0, y0 = self.pos.x, self.pos.y
         a0, b0 = self.size.x, self.size.y
-        pygame.draw.rect(self.screen, (0, 0, 0), (x0, y0, a0, b0))
+        if self.bg_color != None:
+            pygame.draw.rect(self.screen, self.bg_color, (x0, y0, a0, b0))
         if self.is_writing and slash:
             text_out = ARIAL_32.render(self.text+'/', True, (255,255,255))
         else:
