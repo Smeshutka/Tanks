@@ -2,6 +2,7 @@ from helper import *
 
 pygame.init()
 
+ARIAL_32 = pygame.font.SysFont('arial', 32)
 
 class Button:
     '''класс кнопок'''
@@ -60,9 +61,9 @@ class Button:
         elif self.type == 'choose_level':
             return 'choose_level()'
         elif self.type == 'host_game':
-            return 'server.server_main()'
+            return 'server.server_main(ip_entry.text, port_entry.text)'
         elif self.type == 'join_game':
-            return 'client.client_main()'
+            return 'client.client_main(ip_entry.text, port_entry.text)'
         else:
             return 'print("in_progress")'
 
@@ -92,3 +93,56 @@ class Static:
         pygame.draw.rect(self.screen, (255, 255, 255), (x0, y0, a0, b0))
         self.screen.blit(update_image(self.image, a0 * k / a, b0 * k / a),
                          (self.pos.x, self.pos.y))
+
+class Entry:
+    def __init__(self, screen, x0, y0, a, b, type):
+        '''screen: pygame.display
+        x0,y0 - координаты левого верхнего угла относительно экрана
+        a,b - размеры окна по x,y соотв.
+        image - название файла в папке textures формата png'''
+        self.screen = screen
+        self.size = pos(a, b)
+        self.pos = pos(x0, y0)
+        self.type = type
+        self.text = ''
+        self.is_writing = False
+
+    def draw(self, slash = False, k=1):
+        x0, y0 = self.pos.x, self.pos.y
+        a0, b0 = self.size.x, self.size.y
+        pygame.draw.rect(self.screen, (0, 0, 0), (x0, y0, a0, b0))
+        if self.is_writing and slash:
+            text_out = ARIAL_32.render(self.text+'/', True, (255,255,255))
+        else:
+            text_out = ARIAL_32.render(self.text, True, (255, 255, 255))
+        self.screen.blit(text_out, (x0 + (a0 / 2 - text_out.get_width() / 2), y0 + (b0 / 2 -
+                                                                                    text_out.get_height() / 2)))
+
+    def check_pressed(self):
+        mx, my = pygame.mouse.get_pos()
+        x0, y0 = self.pos.x, self.pos.y
+        a, b = self.size.x, self.size.y
+        if mx >= x0 and my >= y0 and mx <= x0 + a and my <= y0 + b:
+            self.pressed = True
+        else:
+            self.pressed = False
+
+
+
+    def trigger(self):
+        if self.pressed:
+            self.is_writing = True
+        else:
+            self.is_writing = False
+
+    def writing(self, event):
+        text_to_enter = ''
+        for i in range(10):
+            if event.key == eval('pygame.K_' + str(i)):
+                text_to_enter = str(i)
+
+        if self.is_writing:
+            if event.key == pygame.K_BACKSPACE:
+                self.text = self.text[0:len(self.text) - 1]
+            else:
+                self.text += text_to_enter
