@@ -139,8 +139,8 @@ def menu_multiplayer():
                     for entry in entries:
                         entry.trigger()
             if event.type == pygame.KEYUP:
-                for entry in entries:
-                    entry.writing(event)
+                ip_entry.writing(event, True)
+                port_entry.writing(event)
 
         pygame.display.update()
 

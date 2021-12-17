@@ -61,9 +61,9 @@ class Button:
         elif self.type == 'choose_level':
             return 'choose_level()'
         elif self.type == 'host_game':
-            return 'server.server_main(ip_entry.text, port_entry.text)'
+            return 'server.server_main((ip_entry.text, int(port_entry.text)))'
         elif self.type == 'join_game':
-            return 'client.client_main(ip_entry.text, port_entry.text)'
+            return 'client.client_main((ip_entry.text, int(port_entry.text)))'
         else:
             return 'print("in_progress")'
 
@@ -136,12 +136,15 @@ class Entry:
         else:
             self.is_writing = False
 
-    def writing(self, event):
+    def writing(self, event, period = False,  numbers = True):
         text_to_enter = ''
-        for i in range(10):
-            if event.key == eval('pygame.K_' + str(i)):
-                text_to_enter = str(i)
-
+        if numbers:
+            for i in range(10):
+                if event.key == eval('pygame.K_' + str(i)):
+                    text_to_enter = str(i)
+        if period:
+            if event.key == pygame.K_PERIOD:
+                text_to_enter = '.'
         if self.is_writing:
             if event.key == pygame.K_BACKSPACE:
                 self.text = self.text[0:len(self.text) - 1]

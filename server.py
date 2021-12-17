@@ -56,8 +56,7 @@ class all_start:
             self.tanks_init[tank.ID] = [tank.center.x, tank.center.y, tank.body_ang, tank.type, tank.ID]
 
 
-def server_main(ip, port):
-    to_connect_with = (ip[0:3] + '.' + ip[3:6] + '.' + ip[6:8] + '.' + ip[8:11], int(port))
+def server_main(to_connect_with):
 
     pygame.init()
 

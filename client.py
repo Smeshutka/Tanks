@@ -44,8 +44,8 @@ class all:
 class all_start:
     pass        
 
-def client_main(ip, port):
-    to_connect_with = (ip[0:3]+'.'+ip[3:6]+'.'+ip[6:8]+'.'+ip[8:11], int(port))
+def client_main(to_connect_with):
+
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client.connect(to_connect_with)
 
