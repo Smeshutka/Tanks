@@ -9,7 +9,7 @@ def game_main(game_input, tank_type):
     pygame.init()
 
     all_dead()
-
+    
     clock = pygame.time.Clock()
     finished = False
 
@@ -53,7 +53,7 @@ def game_main(game_input, tank_type):
     while not finished:
         screen.fill((255, 255, 255))
         map.draw(observating_point)
-
+        
         for tank in tanks:
             tank.before_draw(observating_point)
             tank.draw(observating_point)
@@ -113,3 +113,5 @@ def game_main(game_input, tank_type):
 
             for tank in tanks:
                 tank.meet_with_bullet(bul)
+                
+        tank_player.game_over()

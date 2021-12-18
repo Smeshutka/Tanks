@@ -34,7 +34,7 @@ def menu_main():
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                finished = True
+                exit()
             if event.type == pygame.MOUSEBUTTONUP:
                 if event.button == 1:
                     for button in buttons:
