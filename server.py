@@ -90,7 +90,7 @@ def server_main(ip, port):
         map = Map(map_maker(file_reader("map_maker/maps/1.txt")), screen)
 
         tank_player1 = create_tank_player(12, 12, 0, "light", "0", screen)
-        
+        tank_player1.hp = 10
         if number_of_players == 2:
             tank_player2 = create_tank_player(14, 14, 1.57, "light", "1", screen)
 

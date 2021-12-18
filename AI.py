@@ -6,7 +6,7 @@ from helper import *
 def check_meet_dot(dot, tank):
     """Проверка того, доехал ли танк до точки, если да, то обновляем точку, до которой едим"""
 
-    if abs(tank.center.x - dot.x) <= 1 and abs(tank.center.y - dot.y) <= 1:
+    if abs(tank.center.x - dot.x) <= a // 4 and abs(tank.center.y - dot.y) <= a // 4:
         tank.number_dot += 1
         if tank.number_dot >= len(tank.list_dot):
             tank.number_dot = 0
