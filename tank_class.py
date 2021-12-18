@@ -238,12 +238,19 @@ class Tank(pygame.sprite.Sprite):
             return True
 
         def check_move_tiles(self, map):
-            """Проверка на то, может ли танк сюда сдвинутся (врезался ли он с тайлами)"""
+            """Эта функция выполняет две задачи:
+                1) если танк врезался в bricks, water, stone: возвращает False (ехать нельзя) или True (можно)
+                2) если танк попал на финиш, то запускается соответсвующая функция"""
+            
+            FLAG = True
             for tile in tiles_near(self, map):
                 if tile.type == "bricks" or tile.type == "water" or tile.type == "stone":
                     if meet(self, tile):
-                        return False
-            return True
+                        FLAG =  False
+                elif tile.type == "finish":
+                    if meet(self, tile):
+                        print("*Здесь должна появится менюшка с поздравлением об успешном прохождение уровня. Должны появится кнопки 'Restart' и 'Menu'*")
+            return FLAG
 
         def check_move(self, map):
             """Проверка на то, может ли танк сюда сдвинутся (врезался ли он с тайлами или танком)"""

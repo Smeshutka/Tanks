@@ -5,7 +5,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..\..')
 from Tanks.helper import *
 from Tanks.constans import *
 
-tiles_type = ["grass", "water", "bricks", "ice", "sand", "stone"]
+tiles_type = ["grass", "water", "bricks", "ice", "sand", "stone", "finish"]
 name_images = {}
 images = {}
 masks = {}
@@ -58,6 +58,10 @@ class Tile(pygame.sprite.Sprite):
             self.hp = -1
             self.k1 = 0.002
             self.k2 = 0.2
+        elif tile_type == "finish":
+            self.hp = -1
+            self.k1 = 0.01
+            self.k2 = 1
 
     def update_tile(self, tile_type):
         """Обновляет тип тайла с сохранением всего прочего"""

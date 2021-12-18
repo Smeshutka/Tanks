@@ -22,7 +22,8 @@ def map_maker(map):
                 map[i][j] = ([a * j, a * i, 'sand'])
             elif map[i][j] == 'i':
                 map[i][j] = ([a * j, a * i, 'ice'])
-
+            elif map[i][j] == 'F':
+                map[i][j] = ([a * j, a * i, 'finish'])
     return map
 
 
