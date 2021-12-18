@@ -15,6 +15,8 @@ def convert_map(map):
         for j in range(len(map.tiles_array[0])):
             if map.tiles_array[i][j].type == 'stone':
                 ttype = 'S'
+            elif map.tiles_array[i][j].type == 'finish':
+                ttype = 'F'
             else:
                 ttype = map.tiles_array[i][j].type[0]
             ar[i].append(ttype)
@@ -87,9 +89,11 @@ def server_main(ip, port):
 
         map = Map(map_maker(file_reader("map_maker/maps/1.txt")), screen)
 
-        tank_player1 = create_tank_player(12, 5, 0, "light", "0", screen)
+        tank_player1 = create_tank_player(12, 12, 0, "light", "0", screen)
+        
         if number_of_players == 2:
-            tank_player2 = create_tank_player(14, 14, 0, "middle", "1", screen)
+            tank_player2 = create_tank_player(14, 14, 1.57, "light", "1", screen)
+
 
         list_tile = [pos(5, 5), pos(5, 20), pos(20, 20), pos(20, 5)]
         bot = create_tank_bot(20, 20, 0, "heavy", "2", screen, list_tile, 2)

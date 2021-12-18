@@ -21,7 +21,7 @@ class Tile(pygame.sprite.Sprite):
         """ 
         x, y:  положение левого верхнего угла тайла
         tile_type: тип тайла, возможные: "grass", "water", "bricks", "stone",
-        "sand", "ice"
+        "sand", "ice", "finish"
         sreen: экран на котором будет отображаться танк
         """
 

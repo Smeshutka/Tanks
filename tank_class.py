@@ -247,7 +247,7 @@ class Tank(pygame.sprite.Sprite):
                 if tile.type == "bricks" or tile.type == "water" or tile.type == "stone":
                     if meet(self, tile):
                         FLAG =  False
-                elif tile.type == "finish":
+                elif tile.type == "finish" and not(self is tanks_bots):
                     if meet(self, tile):
                         print("*Здесь должна появится менюшка с поздравлением об успешном прохождение уровня. Должны появится кнопки 'Restart' и 'Menu'*")
             return FLAG
