@@ -65,7 +65,7 @@ def menu_singleplayer():
     button3 = Button(screen, 550, 350, 200, 66, 'choose_level')
     tank1 = Button(screen, 20, 200, 100, 200, 'tank_light')
     tank2 = Button(screen, 170, 200, 100, 200, 'tank_middle')
-    tank3 = Button(screen, 320, 200, 170, 200, 'tank_heavy')
+    tank3 = Button(screen, 320, 200, 119, 200, 'tank_heavy')
     level_text = Entry(screen, 525, 250, 250, 66, game_input)
     buttons = [button1, button2, button3, tank1, tank2, tank3]
 
