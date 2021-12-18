@@ -72,7 +72,7 @@ def server_main(ip, port):
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server.bind(to_connect_with)
 
-        number_of_players = 2
+        number_of_players = 1
 
         server.listen(number_of_players)
         player1, adress = server.accept()

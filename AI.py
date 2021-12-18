@@ -163,7 +163,7 @@ def meet_with_tank(tank, tank_pl):
         tank.dy = tank_pl.center.y - tank.center.y
 
     else:
-        tank.update_pos_mouse_for_AI(tank.center.x, tank.center.y)
-
+        tank.update_pos_mouse_for_AI(tank.center_visible.x, tank.center_visible.y)
+        
         # Движение:
         tank.flag_at = 0
