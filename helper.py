@@ -48,7 +48,18 @@ def update_image(image, w, h):
     Меняет исходные размеры картинки
     w, h: новые размеры картинки в размерах тайла (у.е.)
     """
+    
     image = pygame.transform.scale(image, (int(w * a), int(h * a)))
+    return image
+
+def update_image_k(image, k):
+    """
+    Меняет исходные размеры картинки
+    k: во столько раз увеличивает размер изображения
+    """
+    
+    a_image, b_image = image.get_size()
+    image = pygame.transform.scale(image, (int(k * a_image), int(k * b_image)))
     return image
 
 
