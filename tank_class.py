@@ -452,3 +452,7 @@ class Tank(pygame.sprite.Sprite):
                     self.dead()
                 if self.hp == -1:
                     self.life_before_death()
+    
+    def game_over(self):
+        if self.hp <= 0:
+            print("*Здесь должна вылезти менюшка с надписью 'game over', а также кнопки 'Restart' и 'Menu'")
