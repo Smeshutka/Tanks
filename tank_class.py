@@ -91,6 +91,7 @@ class Tank(pygame.sprite.Sprite):
         self.dist = 300
         self.type = tank_type
         self.alive = True
+        self.win = False
 
         if tank_type == "light":
             self.body_image_start = pygame.image.load("textures/light_body.png").convert_alpha()
@@ -250,7 +251,7 @@ class Tank(pygame.sprite.Sprite):
                         FLAG =  False
                 elif tile.type == "finish" and not(self is tanks_bots):
                     if meet(self, tile):
-                        print("*Здесь должна появится менюшка с поздравлением об успешном прохождение уровня. Должны появится кнопки 'Restart' и 'Menu'*")
+                        self.win = True
             return FLAG
 
         def check_move(self, map):
@@ -464,4 +465,12 @@ class Tank(pygame.sprite.Sprite):
     def game_over(self):
         if self.hp <= 0 and self.alive:
             self.alive = False
-            print("*Здесь должна вылезти менюшка с надписью 'game over', а также кнопки 'Restart' и 'Menu'")
+            return True
+        else:
+            return False
+
+    def game_win(self):
+        if self.win:
+            return True
+        else:
+            return False
