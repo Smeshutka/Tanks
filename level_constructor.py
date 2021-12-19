@@ -295,11 +295,13 @@ def level_constructor_main():
                     elif rotate_counterclockwise_button.check_pressed():
                         map = rotate_counterclockwise_button.rotate_map(map)
                     elif save_button.check_pressed():
-                        save_button.save_map(map, tanks)
+                        save_button.save_map(map, tanks, pl_flags)
                     elif load_button.check_pressed():
-                        new_map = load_button.load_map()
+                        new_map, tanks_bots_list, tanks_player = load_button.load_level()
                         if new_map != '':
                             map = new_map
+                            tanks = tanks_bots_list
+                            pl_flags = tanks_player
                     elif size_button.check_pressed():
                         new_map = size_button.change_map_size(map, screen)
                         if new_map != '':
@@ -375,11 +377,13 @@ def level_constructor_main():
                                 for j in range(abs(ma_end - ma_start)):
                                     map.tiles_array[mb_start + i][ma_start + j].update_tile(tiles_menu.chosen_type)
         if f_ctrl == 1 and fs == 1:
-            save_button.save_map(map, tanks)
+            save_button.save_map(map, tanks, pl_flags)
         if f_ctrl == 1 and fo == 1:
-            new_map = load_button.load_map()
+            new_map, tanks_bots_list, tanks_player = load_button.load_level()
             if new_map != '':
                 map = new_map
+                tanks = tanks_bots_list
+                pl_flags = tanks_player
         if fa == 1 and fd == 0:
             change_pos_chosen(chosen_tile, -1, 0, scale)
         elif fa == 0 and fd == 1:

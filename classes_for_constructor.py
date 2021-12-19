@@ -71,7 +71,7 @@ class SaveLoad_Button(Button):
     fast_save - функция для сохранения без диалогового окна внуть папки map_maker/templates
     была создана для облегчения создания шаблонов'''
 
-    def load_map(self):
+    def load_level(self):
         try:
             # global lt, tiles_array, map
             root = tkinter.Tk()
@@ -79,16 +79,27 @@ class SaveLoad_Button(Button):
             root.destroy()
             if new_map != '':
                 chosen_tile = Tile(a * 0, a * 0, "stone", screen)
-                map = Map(map_maker(file_reader(new_map)), screen)
-                return map
+                n_map, tanks_bots_list, tanks_player = file_reader_level(new_map)
+                map = Map(n_map, screen)
+                
+                #tanks = pygame.sprite.Group()
+                all_dead()
+                for i in range(len(tanks_bots_list)):
+                    tanks_bots_list[i].insert(5, screen)
+                    tank = create_tank_bot(*tanks_bots_list[i])
+                
+                pl_flags = []
+                for i in range(len(tanks_player)):
+                    pl_flags.append([tanks_player[i][0], tanks_player[i][1]])
+                return map, tanks, pl_flags
             else:
-                return ''
+                return '', '', ''
 
         except tkinter.TclError:
             print('не закрывайте крестиком окно tkinter-а, пожалуйста')
             return ''
         
-    def save_map(self, map, tanks_bots, tank_player):
+    def save_map(self, map, tanks_bots, pl_flags):
         """
         map: карта
         
@@ -109,8 +120,8 @@ class SaveLoad_Button(Button):
         3.затем в последующих строчках в следующем формате записывается информация:
             [tank.x, tank.y, tank.ang, tank.type, tank.ID, tank.list_tile, tank.hp]
         4.затем идет строчка с кодовым словом 'tank_player'
-        5.затем в следующей строчке идет информация о tank_player:
-            [tank_player.x, tank_player.y, tank_player.body_ang, tank_player.type, str(ID), tank_player.list_tile, tank_player.hp]
+        5.затем в следующей строчке идет информация о tank_players:
+            [tank_player.x, tank_player.y, tank_player.body_ang, ID]
         """
         
         try:
@@ -141,12 +152,14 @@ class SaveLoad_Button(Button):
                         file.write('\n')
                         ID += 1
                     
+                    ID = 0
                     #Для tank_player:
                     file.write('tank_player\n')
-                    list = [tank_player.x, tank_player.y, tank_player.body_ang, str(ID), tank_player.list_tile, tank_player.hp]
-                    file.write(str(list))
-                    file.write('\n')
-                    ID += 1    
+                    for flag in pl_flags:
+                        list = [flag[0], flag[1], math.pi/2, 'pl'+str(ID)]
+                        file.write(str(list))
+                        file.write('\n')
+                        ID += 1    
                     
         except tkinter.TclError:
             print('не закрывайте крестиком окно tkinter-а, пожалуйста')

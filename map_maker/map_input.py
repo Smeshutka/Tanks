@@ -82,12 +82,14 @@ def file_reader_level(input_filename):
     tanks_bots_list: список, элементами которого являются:
         [tank.x, tank.y, tank.ang, tank.type, tank.ID, tank.list_tile, tank.hp]
     tank_player (игрок):
-        [tank.x, tank.y, tank.ang, tank.type, tank.ID, tank.hp]
+        [tank_player.x, tank_player.y, tank_player.body_ang, ID]
     
     """
 
     map = []
     tanks_bots_list = []
+    tanks_player = []
+    
     flag = 'map'
     with open(input_filename) as input_file:
         for line in input_file:
@@ -109,10 +111,10 @@ def file_reader_level(input_filename):
                 list[5] = list_tile
                 tanks_bots_list.append(list) #list = [tank.x, tank.y, tank.ang, tank.type, tank.ID, tank.list_tile, tank.hp]
             elif flag == 'tank_player':
-                tank_player = eval(line) #list = [tank.x, tank.y, tank.ang, tank.type, tank.ID, tank.hp]
-
+                tank_player = eval(line) #list = [tank_player.x, tank_player.y, tank_player.body_ang, ID]
+                tanks_player.append(tank_player)
                 
-    return [map_maker(map), tanks_bots_list, tank_player]
+    return [map_maker(map), tanks_bots_list, tanks_player]
 
 
 # "map_maker/templates/ice and ground/"

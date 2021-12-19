@@ -165,6 +165,9 @@ class Tank(pygame.sprite.Sprite):
         """
 
         list_dot = []
+        self.list_tile = []
+        for tile in list_tile:
+            self.list_tile.append([tile.x, tile.y])
         for i in range(len(list_tile)):
             list_tile[i] = pos_tile_to_pos_map(list_tile[i])
         self.list_dot = list_tile

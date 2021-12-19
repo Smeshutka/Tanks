@@ -54,13 +54,13 @@ def game_main(game_input, tank_type):
 
 
     input = file_reader_level(game_input)
-    map, tanks_bots_list, tank_player = input[0], input[1], input[2]
+    map, tanks_bots_list, tanks_player = input[0], input[1], input[2]
     map = Map(map, screen)
     for i in range(len(tanks_bots_list)):
         list = tanks_bots_list[i]
         list.insert(5, screen)
         create_tank_bot(*tanks_bots_list[i])
-    
+    tank_player = tanks_player[0]
     tank_player.insert(3, tank_type)
     tank_player.insert(5, screen)
     tank_player = create_tank_player(*tank_player)
