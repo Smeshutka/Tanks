@@ -32,12 +32,14 @@ def all_dead():
         tank.kill()
 
 
-def create_tank_player(x, y, ang, tank_type, ID, screen):
+def create_tank_player(x, y, ang, tank_type, ID, screen, hp = None):
     x = x * a + a / 2
     y = y * a + a / 2
-
+    
     tank = Tank(x, y, ang, tank_type, ID, screen)
     tank.add(tanks)
+    if hp != None:
+        tank.hp = hp
     return tank
 
 

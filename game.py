@@ -17,6 +17,7 @@ def game_main(game_input, tank_type):
 
     screen = pygame.display.set_mode((w, h))
     
+    """
     if game_input == "map_maker/maps/1.txt":
         map = Map(map_maker(file_reader(game_input)), screen)
         tank_player = create_tank_player(12, 12, 0, tank_type, "0", screen)
@@ -49,16 +50,22 @@ def game_main(game_input, tank_type):
         create_tank_bot(45, 37, 0, "middle", "7", screen, list_tile, 2)  # Пробный вариант танка противника
 
         list_tile = [pos(6, 11), pos(44, 16), pos(5, 19)]
-        create_tank_bot(6, 11, 0, "light", "8", screen, list_tile, 3)  # Пробный вариант танка противника
-    else:
-        input = file_reader_level(game_input)
-        map, tanks_bots_list = input[0], input[1]
-        map = Map(map, screen)
-        for i in range(len(tanks_bots_list)):
-            list = tanks_bots_list[i]
-            list.insert(5, screen)
-            create_tank_bot(*tanks_bots_list[i])
-        tank_player = create_tank_player(15, 15, 0, tank_type, "0", screen)
+        create_tank_bot(6, 11, 0, "light", "8", screen, list_tile, 3)  # Пробный вариант танка противника"""
+
+
+    input = file_reader_level(game_input)
+    map, tanks_bots_list, tank_player = input[0], input[1], input[2]
+    map = Map(map, screen)
+    for i in range(len(tanks_bots_list)):
+        list = tanks_bots_list[i]
+        list.insert(5, screen)
+        create_tank_bot(*tanks_bots_list[i])
+    
+    tank_player.insert(3, tank_type)
+    tank_player.insert(5, screen)
+    tank_player = create_tank_player(*tank_player)
+        
+        
         
     observating_point = tank_player.center
     pause_text = Entry(screen, 300, 225, 200, 50, 'pause', None)

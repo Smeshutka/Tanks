@@ -88,7 +88,7 @@ class SaveLoad_Button(Button):
             print('не закрывайте крестиком окно tkinter-а, пожалуйста')
             return ''
         
-    def save_map(self, map, tanks_bots):
+    def save_map(self, map, tanks_bots, tank_player):
         """
         map: карта
         
@@ -100,12 +100,19 @@ class SaveLoad_Button(Button):
         tank.y: координата по оси игрек в единицах размера тайла
         tank.ang: начальный угол поворота танка
         
+        tank_player: игрок, с параметрами аналогичными параметрам танков из tanks_bots
+        
+        
         Возвращает: file
-        Стандартным способом кодирует карту,
-        затем идет строчка с кодовым словом 'tanks_bots'
-        затем в последующих строчках в следующем формате записывается информация:
-        [tank.x, tank.y, tank.ang, tank.type, tank.ID, tank.list_tile, tank.hp]
+        1.Стандартным способом кодирует карту,
+        2.затем идет строчка с кодовым словом 'tanks_bots'
+        3.затем в последующих строчках в следующем формате записывается информация:
+            [tank.x, tank.y, tank.ang, tank.type, tank.ID, tank.list_tile, tank.hp]
+        4.затем идет строчка с кодовым словом 'tank_player'
+        5.затем в следующей строчке идет информация о tank_player:
+            [tank_player.x, tank_player.y, tank_player.body_ang, tank_player.type, str(ID), tank_player.list_tile, tank_player.hp]
         """
+        
         try:
             root = tkinter.Tk()
             file = asksaveasfilename(filetypes=(("Text file", ".txt"),))
@@ -127,12 +134,19 @@ class SaveLoad_Button(Button):
                     file.write('tanks_bots\n')
                     
                     ID = 0
+                    #Для tanks_bots:
                     for tank in tanks_bots:
                         list = [tank.x, tank.y, tank.body_ang, tank.type, str(ID), tank.list_tile, tank.hp]
                         file.write(str(list))
                         file.write('\n')
                         ID += 1
-                        
+                    
+                    #Для tank_player:
+                    file.write('tank_player\n')
+                    list = [tank_player.x, tank_player.y, tank_player.body_ang, str(ID), tank_player.list_tile, tank_player.hp]
+                    file.write(str(list))
+                    file.write('\n')
+                    ID += 1    
                     
         except tkinter.TclError:
             print('не закрывайте крестиком окно tkinter-а, пожалуйста')

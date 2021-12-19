@@ -75,13 +75,14 @@ def file_reader_level(input_filename):
     Параметры:
     **input_filename** — имя входного файла
 
-    Возвращает: [map, tanks_bots_list]
+    Возвращает: [map, tanks_bots_list, tank_player]
     
     map: карта, в ячейках которых лежит: map[row][col] = [a * col, a * row, name_tile]
     
     tanks_bots_list: список, элементами которого являются:
-        [tank.x, tank.y, tank.ang, tank.type, tank.ID, screen, tank.list_tile, tank.hp]
-    
+        [tank.x, tank.y, tank.ang, tank.type, tank.ID, tank.list_tile, tank.hp]
+    tank_player (игрок):
+        [tank.x, tank.y, tank.ang, tank.type, tank.ID, tank.hp]
     
     """
 
@@ -92,6 +93,8 @@ def file_reader_level(input_filename):
         for line in input_file:
             if line[0:10] == 'tanks_bots':
                 flag = 'tanks_bots'
+            elif line[0:11] == 'tank_player':
+                flag = 'tank_player'
             elif flag == 'map':
                 line_tiles = []
                 for line_1 in line.split():
@@ -104,9 +107,12 @@ def file_reader_level(input_filename):
                 for i in range(len(list_tile)):
                     list_tile[i] = pos(list_tile[i][0], list_tile[i][1])
                 list[5] = list_tile
-                tanks_bots_list.append(list) #list = [tank.x, tank.y, tank.ang, tank.type, tank.ID, screen, tank.list_tile, tank.hp]
-                       
-    return [map_maker(map), tanks_bots_list]
+                tanks_bots_list.append(list) #list = [tank.x, tank.y, tank.ang, tank.type, tank.ID, tank.list_tile, tank.hp]
+            elif flag == 'tank_player':
+                tank_player = eval(line) #list = [tank.x, tank.y, tank.ang, tank.type, tank.ID, tank.hp]
+
+                
+    return [map_maker(map), tanks_bots_list, tank_player]
 
 
 # "map_maker/templates/ice and ground/"
