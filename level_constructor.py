@@ -22,24 +22,27 @@ Backspace - возвращение в левый верхний угол кар�
 
 # def call_n_for_fast_save():
 #    return int(input())
-def draw_run_line(k, c):
+def draw_run_line(k, c, color):
     sur = pygame.Surface((a * k, a * k), pygame.SRCALPHA)
-    pygame.draw.line(sur, (255, 255, 255), (-2 * a * k / 3 + c, 0), (-a * k / 3 + c, 0), 2)
-    pygame.draw.line(sur, (255, 255, 255), (c, 0), (a * k / 3 + c, 0), 2)
-    pygame.draw.line(sur, (255, 255, 255), (2 * a * k / 3 + c, 0), (a * k + c, 0), 2)
+    pygame.draw.line(sur, color, (-2 * a * k / 3 + c, 0), (-a * k / 3 + c, 0), 2)
+    pygame.draw.line(sur, color, (c, 0), (a * k / 3 + c, 0), 2)
+    pygame.draw.line(sur, color, (2 * a * k / 3 + c, 0), (a * k + c, 0), 2)
     return sur
 
 
-def draw_chosen(chosen_tile, k, time):
+def draw_chosen(k, time, color = (255,255,255)):
     '''рисует прямоугольник на месте выбранного тайла и
     рассчитывает его координаты для корректного центрирования вида на нём'''
     sur = pygame.Surface((a * k, a * k), pygame.SRCALPHA)
     c = time / (2 * FPS) * 2 * a * k / 3
-    sur.blit(pygame.transform.rotate(draw_run_line(k, c), 0), (0, 0))
-    sur.blit(pygame.transform.rotate(draw_run_line(k, c - a * k / 3), 90), (0, 0))
-    sur.blit(pygame.transform.rotate(draw_run_line(k, c), 90 * 2), (0, 0))
-    sur.blit(pygame.transform.rotate(draw_run_line(k, c - a * k / 3), 90 * 3), (0, 0))
+    sur.blit(pygame.transform.rotate(draw_run_line(k, c,color), 0), (0, 0))
+    sur.blit(pygame.transform.rotate(draw_run_line(k, c - a * k / 3,color), 90), (0, 0))
+    sur.blit(pygame.transform.rotate(draw_run_line(k, c,color), 90 * 2), (0, 0))
+    sur.blit(pygame.transform.rotate(draw_run_line(k, c - a * k / 3,color), 90 * 3), (0, 0))
+    return sur
 
+def draw_chosen_tile(chosen_tile,k,time):
+    sur = draw_chosen(k,time)
     chosen_tile.corner_visible = pos(w // 2, h // 2)
     chosen_tile.screen.blit(sur, (chosen_tile.corner_visible.x - a * k / 2, chosen_tile.corner_visible.y - a * k / 2))
 
@@ -123,6 +126,13 @@ def draw_dots_from_list_tile(screen, tanks, map, observating_point, k):
             pygame.draw.line(screen, (255,255,255), (ar_for_lines[i][0], ar_for_lines[i][1]),
                              (ar_for_lines[i+1][0],ar_for_lines[i+1][1]))
 
+def draw_flag(screen, flag, map, observating_point, k):
+    t = map.tiles_array[flag[1]][flag[0]]
+    t.corner_visible = pos(screen_center.x + t.corner.x * k - observating_point.x * k,
+                                       screen_center.y + t.corner.y * k - observating_point.y * k)
+    image = pygame.image.load('textures/flag.png').convert_alpha()
+    screen.blit(update_image(image, k, k), (t.corner_visible.x, t.corner_visible.y))
+
 def del_all_in_tile(ma,mb,tanks,pl_flags):
     for tank in tanks:
         if tank.x == ma and tank.y == mb:
@@ -176,8 +186,9 @@ def level_constructor_main():
     change_menu_button = Change_menu_mode_button(screen, w - a * tiles_menu.k - a * 2, h - a * 2, a * 2, a * 2, 'cycle')
     hp_minus_button = HP_button(screen, w - a * tiles_menu.k + a, h-2*a, a, a, 'minus', False)
     hp_plus_button = HP_button(screen, w - 2*a, h-2*a, a, a, 'plus', True)
-    player_flag_button = Button(screen, w - a * tiles_menu.k, tiles_menu.y0, a,a, 'flag')
-    rubber_button = Button(screen, w-2*a, tiles_menu.y0,a,a,'rubber')
+    tiles_menu.draw_tanks_type()
+    player_flag_button = Button(screen, w - a * tiles_menu.k, h-10*a, 2*a,2*a, 'flag')
+    rubber_button = Button(screen, w-2*a, h-10*a,2*a,2*a,'rubber')
     # fast_save_button = SaveLoad_Button(screen, 0, 0, a*2,a*2, 'save')
     to_main_menu_button = button_class.Button(screen, 10, 10, 150, 50, 'to_main_menu')
 
@@ -186,8 +197,10 @@ def level_constructor_main():
         map.draw_level_constructor(chosen_tile.center, scale)
         for tank in tanks:
             tank.draw_tank_for_constructor(chosen_tile.center, scale)
+        for flag in pl_flags:
+            draw_flag(screen, flag, map, chosen_tile.center, scale)
         draw_dots_from_list_tile(screen, tanks, map, chosen_tile.center, scale)
-        draw_chosen(chosen_tile, scale, time)
+        draw_chosen_tile(chosen_tile, scale, time)
         tiles_menu.draw()
         if mouse_pressed:
             draw_highlighting(ma_start, mb_start, screen, map, scale)
@@ -199,8 +212,12 @@ def level_constructor_main():
         generator.draw(2)
         change_menu_button.draw(2)
         if tiles_menu.mode == 'tanks':
-            player_flag_button.draw(1)
-            rubber_button.draw(1)
+            player_flag_button.draw(2)
+            rubber_button.draw(2)
+            if player_flag:
+                screen.blit(draw_chosen(2, time, (0,0,0)), (player_flag_button.pos.x, player_flag_button.pos.y))
+            if rubber_mod:
+                screen.blit(draw_chosen(2, time, (0,0,0)), (rubber_button.pos.x, rubber_button.pos.y))
             hp_minus_button.draw(1)
             hp_plus_button.draw(1)
         to_main_menu_button.check_pressed()
@@ -302,11 +319,11 @@ def level_constructor_main():
                     elif hp_plus_button.check_pressed() and tiles_menu.mode == 'tanks':
                         hp_plus_button.change_tank_hp(tiles_menu)
                     elif player_flag_button.check_pressed() and tiles_menu.mode == 'tanks' and not(updating_tank_list):
-                        player_flag = True
+                        player_flag = not(player_flag)
                         rubber_mod = False
                     elif rubber_button.check_pressed() and tiles_menu.mode == 'tanks' and not(updating_tank_list):
                         player_flag = False
-                        rubber_mod = True
+                        rubber_mod = not(rubber_mod)
                     #                elif fast_save_button.check_pressed():
                     #                    fast_save_button.fast_save(n, map)
                     #                    n += 1
