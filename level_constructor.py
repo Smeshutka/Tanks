@@ -105,17 +105,23 @@ def put_tank_on_map(tanks, ma, mb, menu, n):
     tank.y = mb
     tank.list_tile = [[ma,mb]]
     tank.add(tanks)
+    return tank
 
 def draw_dots_from_list_tile(screen, tanks, map, observating_point, k):
     sur = pygame.Surface((a * k, a * k), pygame.SRCALPHA)
     pygame.draw.rect(sur, (255,255,255), (a*k/4, a*k/4, a*k/2, a*k/2))
     for tank in tanks:
+        ar_for_lines = []
         for dot in tank.list_tile:
-            b,c = dot
+            b,c = dot[0], dot[1]
             t = map.tiles_array[c][b]
             t.corner_visible = pos(screen_center.x + t.corner.x * k - observating_point.x * k,
                                        screen_center.y + t.corner.y * k - observating_point.y * k)
+            ar_for_lines.append([t.corner_visible.x + a/2*k, t.corner_visible.y + a/2*k])
             screen.blit(sur, (t.corner_visible.x, t.corner_visible.y))
+        for i in range(len(ar_for_lines)-1):
+            pygame.draw.line(screen, (255,255,255), (ar_for_lines[i][0], ar_for_lines[i][1]),
+                             (ar_for_lines[i+1][0],ar_for_lines[i+1][1]))
 
 def level_constructor_main():
     # print('Please, print start number')
@@ -282,8 +288,10 @@ def level_constructor_main():
                     else:
                         if updating_tank_list:
                             ma, mb = calculate_map_pressed(map, chosen_tile, scale)
-                            #if ma_start != -1 and mb_start != -1:
-                                
+                            if ma != -1 and mb != -1:
+                                if ma == editing_tank.list_tile[0][0] and mb == editing_tank.list_tile[0][1]:
+                                    updating_tank_list = False
+                                editing_tank.list_tile.append([ma, mb])
                         elif tiles_menu.mode == 'tiles':
                             ma_start, mb_start = calculate_map_pressed(map, chosen_tile, scale)
                             if ma_start != -1 and mb_start != -1:
@@ -291,7 +299,7 @@ def level_constructor_main():
                         elif tiles_menu.mode == 'tanks':
                             ma, mb = calculate_map_pressed(map, chosen_tile, scale)
                             if ma != -1 and mb != -1:
-                                put_tank_on_map(tanks, ma, mb, tiles_menu, bots_number)
+                                editing_tank = put_tank_on_map(tanks, ma, mb, tiles_menu, bots_number)
                                 bots_number += 1
                                 updating_tank_list = True
                 if event.button == 4:
