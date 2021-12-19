@@ -1,4 +1,5 @@
 from classes_for_constructor import *
+import button_class
 
 '''
 Этот модуль позволяет создавать карту
@@ -96,9 +97,11 @@ def draw_highlighting(ma_start, mb_start, screen, map, k):
         my, y0 = y0, my
     pygame.draw.rect(screen, (0, 0, 0), (x0, y0, mx - x0, my - y0), 2)
 
+
 def put_tank_on_map(tanks, ma, mb, menu):
     tank = Tank(ma*a + a/2, mb*a + a/2, math.pi/2, menu.chosen_type, '0', menu.screen)
     tank.add(tanks)
+
 
 def level_constructor_main():
     # print('Please, print start number')
@@ -108,7 +111,7 @@ def level_constructor_main():
     screen = pygame.display.set_mode((w, h))
     clock = pygame.time.Clock()
     tanks = pygame.sprite.Group()
-    
+
     finished = False
     mouse_pressed = False
 
@@ -133,8 +136,9 @@ def level_constructor_main():
     load_button = SaveLoad_Button(screen, w - a * tiles_menu.k - a * 8, 0, a * 2, a * 2, 'load')
     size_button = Change_size_button(screen, w - a * tiles_menu.k - a * 10, 0, a * 2, a * 2, 'size')
     generator = Generate_button(screen, w - a * tiles_menu.k - a * 12, 0, a * 2, a * 2, 'dices')
-    change_menu_button = Change_menu_mode_button(screen, w - a * tiles_menu.k - a * 2, h-a*2, a * 2, a * 2, 'cycle')
+    change_menu_button = Change_menu_mode_button(screen, w - a * tiles_menu.k - a * 2, h - a * 2, a * 2, a * 2, 'cycle')
     # fast_save_button = SaveLoad_Button(screen, 0, 0, a*2,a*2, 'save')
+    to_main_menu_button = button_class.Button(screen, 10, 10, 150, 50, 'to_main_menu')
 
     while not finished:
         screen.fill((0, 0, 0))
@@ -150,7 +154,9 @@ def level_constructor_main():
         size_button.draw(2)
         generator.draw(2)
         change_menu_button.draw(2)
-        
+        to_main_menu_button.check_pressed()
+        to_main_menu_button.draw()
+
         for tank in tanks:
             tank.draw_tank_for_constructor(chosen_tile.center, scale)
         # fast_save_button.draw(2)
@@ -215,6 +221,8 @@ def level_constructor_main():
                     f_ctrl = 0
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
+                    if to_main_menu_button.pressed:
+                            return 'menu_main()'
                     if tiles_menu.check_pressed() != '':
                         tiles_menu.chosen_type = tiles_menu.check_pressed()
                     elif rotate_clockwise_button.check_pressed():

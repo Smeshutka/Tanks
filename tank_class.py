@@ -243,13 +243,13 @@ class Tank(pygame.sprite.Sprite):
             """Эта функция выполняет две задачи:
                 1) если танк врезался в bricks, water, stone: возвращает False (ехать нельзя) или True (можно)
                 2) если танк попал на финиш, то запускается соответсвующая функция"""
-            
+
             FLAG = True
             for tile in tiles_near(self, map):
                 if tile.type == "bricks" or tile.type == "water" or tile.type == "stone":
                     if meet(self, tile):
-                        FLAG =  False
-                elif tile.type == "finish" and not(self is tanks_bots):
+                        FLAG = False
+                elif tile.type == "finish" and not (self is tanks_bots):
                     if meet(self, tile):
                         self.win = True
             return FLAG
@@ -418,34 +418,34 @@ class Tank(pygame.sprite.Sprite):
 
         self.screen.blit(self.turret_image, (self.center_visible.x - a / 2 - self.s * math.cos(self.body_ang),
                                              self.center_visible.y - b / 2 + self.s * math.sin(self.body_ang)))
-    
+
     def draw_tank_for_constructor(self, observating_point, k):
-        self.center_visible = pos(screen_center.x + self.center.x*k - observating_point.x*k,
-                                  screen_center.y + self.center.y*k - observating_point.y*k)
-        self.corner_visible = pos(screen_center.x + self.corner.x*k - observating_point.x*k,
-                                  screen_center.y + self.corner.y*k - observating_point.y*k)
-        
+        self.center_visible = pos(screen_center.x + self.center.x * k - observating_point.x * k,
+                                  screen_center.y + self.center.y * k - observating_point.y * k)
+        self.corner_visible = pos(screen_center.x + self.corner.x * k - observating_point.x * k,
+                                  screen_center.y + self.corner.y * k - observating_point.y * k)
+
         self.body_image = pygame.transform.rotate(self.body_image_start, self.body_ang * 180 / math.pi)
-        a,b = self.body_image.get_size()
-        self.body_image = pygame.transform.scale(self.body_image, (a*k, b*k))
-        a,b = self.body_image.get_size()
-        self.screen.blit(self.body_image, (self.center_visible.x - a/2, self.center_visible.y - b/2))
-        #hp
+        a, b = self.body_image.get_size()
+        self.body_image = pygame.transform.scale(self.body_image, (a * k, b * k))
+        a, b = self.body_image.get_size()
+        self.screen.blit(self.body_image, (self.center_visible.x - a / 2, self.center_visible.y - b / 2))
+        # hp
         sub = pygame.Surface((20, 20), pygame.SRCALPHA)
         dots = ((0, 5), (5, 0), (10, 5), (15, 0), (20, 5), (10, 20))
         pygame.draw.polygon(sub, (255, 0, 0), dots)
-        sub = pygame.transform.scale(sub, (20*k, 20*k))
+        sub = pygame.transform.scale(sub, (20 * k, 20 * k))
         b = self.body_image.get_size()[1]
         for i in range(self.hp):
-            self.screen.blit(sub, (self.center_visible.x - 50*k + 25 * k * i, self.center_visible.y - b / 2 - 30*k))
-        #turret
+            self.screen.blit(sub, (self.center_visible.x - 50 * k + 25 * k * i, self.center_visible.y - b / 2 - 30 * k))
+        # turret
         self.turret_image = pygame.transform.rotate(self.turret_image_start, self.turret_ang * 180 / math.pi)
         a, b = self.turret_image.get_size()
-        self.turret_image = pygame.transform.scale(self.turret_image, (a*k, b*k))
+        self.turret_image = pygame.transform.scale(self.turret_image, (a * k, b * k))
         a, b = self.turret_image.get_size()
         self.screen.blit(self.turret_image, (self.center_visible.x - a / 2 - self.s * math.cos(self.body_ang),
                                              self.center_visible.y - b / 2 + self.s * math.sin(self.body_ang)))
-    
+
     def reload_left(self):
         if self.hp > 0:
             self.flpk = 1
@@ -488,7 +488,7 @@ class Tank(pygame.sprite.Sprite):
                     self.dead()
                 if self.hp == -1:
                     self.life_before_death()
-    
+
     def game_over(self):
         if self.hp <= 0 and self.alive:
             self.alive = False
