@@ -97,7 +97,7 @@ def draw_highlighting(ma_start, mb_start, screen, map, k):
     pygame.draw.rect(screen, (0, 0, 0), (x0, y0, mx - x0, my - y0), 2)
 
 def put_tank_on_map(tanks, ma, mb, menu):
-    tank = Tank(ma*a, mb*a, math.pi/2, menu.chosen_type, '0', menu.screen)
+    tank = Tank(ma*a + a/2, mb*a + a/2, math.pi/2, menu.chosen_type, '0', menu.screen)
     tank.add(tanks)
 
 def level_constructor_main():
@@ -152,8 +152,7 @@ def level_constructor_main():
         change_menu_button.draw(2)
         
         for tank in tanks:
-            tank.before_draw(chosen_tile.center)
-            tank.draw(chosen_tile)
+            tank.draw_tank_for_constructor(chosen_tile.center, scale)
         # fast_save_button.draw(2)
         pygame.display.update()
 

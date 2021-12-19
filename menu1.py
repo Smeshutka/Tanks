@@ -279,7 +279,7 @@ def four():
 def five():
     pygame.mixer.music.set_volume(0.19*10)
 
-def
+#def
 
 
 menu_main()
