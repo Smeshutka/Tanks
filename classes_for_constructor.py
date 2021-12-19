@@ -6,8 +6,10 @@ from win_for_change_size import *
 import tkinter
 from tkinter.filedialog import *
 
+
 class Button:
     '''класс кнопок'''
+
     def __init__(self, screen, x0, y0, a, b, image):
         '''screen: pygame.display
         x0,y0 - координаты левого верхнего угла относительно экрана
@@ -173,20 +175,23 @@ class Generate_button(Button):
         else:
             return ''
 
+
 class Change_menu_mode_button(Button):
     def change_mode(self, menu):
         for i in range(len(menu.all_modes)):
             if menu.mode == menu.all_modes[i]:
-                menu.mode = menu.all_modes[i-1]
+                menu.mode = menu.all_modes[i - 1]
                 break
         if menu.mode == 'tiles':
             menu.chosen_type = 'grass'
         elif menu.mode == 'tanks':
             menu.chosen_type = 'light'
 
+
 class Tiles_menu:
     '''Меню на котором отображаются все имеющиеся виды тайлов слева,
     хранит выбранный тип тайлов, и визуально отмечает его'''
+
     def __init__(self, screen, w, h, chosen_type='stone'):
         self.screen = screen
         self.screen_size = pos(w, h)
@@ -220,34 +225,35 @@ class Tiles_menu:
                 sur.blit(draw_chosen(self), (tile.corner.x, tile.corner.y))
             tile.corner = pos(tile.corner.x, tile.corner.y + a * (self.k - 1))
         return sur
-    
+
     def create_sur_tanks_type(self):
-        l = a*self.k - a
+        l = a * self.k - a
         sur = pygame.Surface((a * self.k, self.screen_size.y), pygame.SRCALPHA)
-        tank_chosen = ["textures/buttons/tank_light_selected.png", "textures/buttons/tank_middle_selected.png", "textures/buttons/tank_heavy_selected.png"]
+        tank_chosen = ["textures/buttons/tank_light_selected.png", "textures/buttons/tank_middle_selected.png",
+                       "textures/buttons/tank_heavy_selected.png"]
         c = a
         for tank_type in self.tank_types:
             if self.chosen_type == tank_type:
-                path = "textures/buttons/tank_" + tank_type + "_selected.png" 
+                path = "textures/buttons/tank_" + tank_type + "_selected.png"
             else:
                 path = "textures/buttons/tank_" + tank_type + ".png"
             image = pygame.image.load(path).convert_alpha()
             a_image, b_image = image.get_size()
-            a_needed = l - a
-            image = pygame.transform.scale(image, (a_needed, b_image*a_needed/a_image))
-            sur.blit(image, (a,c))
+            a_needed = int(l - a)
+            image = pygame.transform.scale(image, (a_needed, int(b_image * a_needed / a_image)))
+            sur.blit(image, (a, c))
             self.tank_y.append(c)
-            c += b_image*a_needed/a_image + a
+            c += b_image * a_needed / a_image + a
         self.tank_y.append(c)
         return sur
-    
+
     def draw_work_space(self):
         pygame.draw.rect(self.screen, (255, 255, 255),
                          (self.screen_size.x - a * self.k, 0, a * self.k, self.screen_size.y))
 
     def draw_tiles_type(self):
         self.screen.blit(self.create_sur_tiles_type(), (self.screen_size.x - a * self.k, self.y0))
-    
+
     def draw_tanks_type(self):
         self.screen.blit(self.create_sur_tanks_type(), (self.screen_size.x - a * self.k, self.y0))
 
@@ -265,10 +271,11 @@ class Tiles_menu:
         if mx >= self.screen_size.x - a * self.k + a and mx <= self.screen_size.x - a:
             if self.mode == 'tiles':
                 for i in range(len(self.tile_types)):
-                    if my + self.y0 <= (self.k - 1) * a + a * i * (self.k - 1) and my + self.y0 >= a + a * i * (self.k - 1):
+                    if my + self.y0 <= (self.k - 1) * a + a * i * (self.k - 1) and my + self.y0 >= a + a * i * (
+                            self.k - 1):
                         return self.tile_types[i]
             elif self.mode == 'tanks':
                 for i in range(len(self.tank_types)):
-                    if my >= self.tank_y[i] and my <= self.tank_y[i+1]-a:
+                    if my >= self.tank_y[i] and my <= self.tank_y[i + 1] - a:
                         return self.tank_types[i]
         return ''

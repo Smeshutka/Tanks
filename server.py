@@ -65,7 +65,7 @@ class all_start:
             self.tanks_init[tank.ID] = [tank.center.x, tank.center.y, tank.body_ang, tank.type, tank.ID]
 
 
-def server_main(ip, port):
+def server_main(ip, port, game_input):
     try:
         to_connect_with = (ip, int(port))
 
@@ -87,13 +87,12 @@ def server_main(ip, port):
 
         screen = pygame.display.set_mode((w, h))
 
-        map = Map(map_maker(file_reader("map_maker/maps/1.txt")), screen)
+        map = Map(map_maker(file_reader(game_input)), screen)
 
         tank_player1 = create_tank_player(12, 12, 0, "light", "0", screen)
         tank_player1.hp = 10
         if number_of_players == 2:
             tank_player2 = create_tank_player(14, 14, 1.57, "light", "1", screen)
-
 
         list_tile = [pos(5, 5), pos(5, 20), pos(20, 20), pos(20, 5)]
         bot = create_tank_bot(20, 20, 0, "heavy", "2", screen, list_tile, 2)
