@@ -98,11 +98,24 @@ def draw_highlighting(ma_start, mb_start, screen, map, k):
     pygame.draw.rect(screen, (0, 0, 0), (x0, y0, mx - x0, my - y0), 2)
 
 
-def put_tank_on_map(tanks, ma, mb, menu):
-    tank = Tank(ma*a + a/2, mb*a + a/2, math.pi/2, menu.chosen_type, '0', menu.screen)
+def put_tank_on_map(tanks, ma, mb, menu, n):
+    tank = Tank(ma*a + a/2, mb*a + a/2, math.pi/2, menu.chosen_type, str(n), menu.screen)
     tank.hp = menu.tank_hp
+    tank.x = ma
+    tank.y = mb
+    tank.list_tile = [[ma,mb]]
     tank.add(tanks)
 
+def draw_dots_from_list_tile(screen, tanks, map, observating_point, k):
+    sur = pygame.Surface((a * k, a * k), pygame.SRCALPHA)
+    pygame.draw.rect(sur, (255,255,255), (a*k/4, a*k/4, a*k/2, a*k/2))
+    for tank in tanks:
+        for dot in tank.list_tile:
+            b,c = dot
+            t = map.tiles_array[c][b]
+            t.corner_visible = pos(screen_center.x + t.corner.x * k - observating_point.x * k,
+                                       screen_center.y + t.corner.y * k - observating_point.y * k)
+            screen.blit(sur, (t.corner_visible.x, t.corner_visible.y))
 
 def level_constructor_main():
     # print('Please, print start number')
@@ -115,10 +128,12 @@ def level_constructor_main():
 
     finished = False
     mouse_pressed = False
+    updating_tank_list = False
 
     fa, fw, fs, fd, fo, f_ctrl = 0, 0, 0, 0, 0, 0
     scale = 1
     time = 0
+    bots_number = 0
     # lt = list of tiles
     lt = []
     for i in range(10):
@@ -146,6 +161,9 @@ def level_constructor_main():
     while not finished:
         screen.fill((0, 0, 0))
         map.draw_level_constructor(chosen_tile.center, scale)
+        for tank in tanks:
+            tank.draw_tank_for_constructor(chosen_tile.center, scale)
+        draw_dots_from_list_tile(screen, tanks, map, chosen_tile.center, scale)
         draw_chosen(chosen_tile, scale, time)
         tiles_menu.draw()
         if mouse_pressed:
@@ -163,8 +181,7 @@ def level_constructor_main():
         to_main_menu_button.check_pressed()
         to_main_menu_button.draw()
 
-        for tank in tanks:
-            tank.draw_tank_for_constructor(chosen_tile.center, scale)
+        
         # fast_save_button.draw(2)
         pygame.display.update()
 
@@ -222,7 +239,7 @@ def level_constructor_main():
                 elif event.key == pygame.K_d:
                     fd = 0
                 elif event.key == pygame.K_o:
-                    fo = 1
+                    fo = 0
                 elif event.key == pygame.K_LCTRL:
                     f_ctrl = 0
             elif event.type == pygame.MOUSEBUTTONDOWN:
@@ -236,7 +253,7 @@ def level_constructor_main():
                     elif rotate_counterclockwise_button.check_pressed():
                         map = rotate_counterclockwise_button.rotate_map(map)
                     elif save_button.check_pressed():
-                        save_button.save_map(map)
+                        save_button.save_map(map, tanks)
                     elif load_button.check_pressed():
                         new_map = load_button.load_map()
                         if new_map != '':
@@ -263,14 +280,20 @@ def level_constructor_main():
                     #                    fast_save_button.fast_save(n, map)
                     #                    n += 1
                     else:
-                        if tiles_menu.mode == 'tiles':
+                        if updating_tank_list:
+                            ma, mb = calculate_map_pressed(map, chosen_tile, scale)
+                            #if ma_start != -1 and mb_start != -1:
+                                
+                        elif tiles_menu.mode == 'tiles':
                             ma_start, mb_start = calculate_map_pressed(map, chosen_tile, scale)
                             if ma_start != -1 and mb_start != -1:
                                 mouse_pressed = True
                         elif tiles_menu.mode == 'tanks':
                             ma, mb = calculate_map_pressed(map, chosen_tile, scale)
                             if ma != -1 and mb != -1:
-                                put_tank_on_map(tanks, ma, mb, tiles_menu)
+                                put_tank_on_map(tanks, ma, mb, tiles_menu, bots_number)
+                                bots_number += 1
+                                updating_tank_list = True
                 if event.button == 4:
                     scale += 0.3
                 if event.button == 5 and scale > 0.3:
@@ -292,7 +315,7 @@ def level_constructor_main():
                                 for j in range(abs(ma_end - ma_start)):
                                     map.tiles_array[mb_start + i][ma_start + j].update_tile(tiles_menu.chosen_type)
         if f_ctrl == 1 and fs == 1:
-            save_button.save_map(map)
+            save_button.save_map(map, tanks)
         if f_ctrl == 1 and fo == 1:
             new_map = load_button.load_map()
             if new_map != '':

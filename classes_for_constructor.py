@@ -87,8 +87,25 @@ class SaveLoad_Button(Button):
         except tkinter.TclError:
             print('не закрывайте крестиком окно tkinter-а, пожалуйста')
             return ''
-
-    def save_map(self, map):
+        
+    def save_map(self, map, tanks_bots):
+        """
+        map: карта
+        
+        tanks_bots: группа танков-ботов, в которых обяательно должна иметь:
+        tank.list_tile: траектория движения танка (список пар [a,b])
+        tank.hp: число жизней
+        tank.type: тип танка ('light', 'middle', 'heavy')
+        tank.x: координата по оси икс в единицах размера тайла
+        tank.y: координата по оси игрек в единицах размера тайла
+        tank.ang: начальный угол поворота танка
+        
+        Возвращает: file
+        Стандартным способом кодирует карту,
+        затем идет строчка с кодовым словом 'tanks_bots'
+        затем в последующих строчках в следующем формате записывается информация:
+        [tank.x, tank.y, tank.ang, tank.type, tank.ID, tank.list_tile, tank.hp]
+        """
         try:
             root = tkinter.Tk()
             file = asksaveasfilename(filetypes=(("Text file", ".txt"),))
@@ -96,16 +113,27 @@ class SaveLoad_Button(Button):
             if file != '':
                 with open(file, 'w') as file:
                     for i in range(len(map.tiles_array)):
-                        for j in range(len(map.tiles_array[0])):
-                            tile = map.tiles_array[i][j]
-                            if tile.type == 'stone':
-                                text = 'S'
-                            elif tile.type == 'finish':
-                                text = 'F'
-                            else:
-                                text = tile.type[0]
-                            file.write(text)
+                            for j in range(len(map.tiles_array[0])):
+                                tile = map.tiles_array[i][j]
+                                if tile.type == 'stone':
+                                    text = 'S'
+                                elif tile.type == 'finish':
+                                    text = 'F'
+                                else:
+                                    text = tile.type[0]
+                                file.write(text)
+                            file.write('\n')
+                            
+                    file.write('tanks_bots\n')
+                    
+                    ID = 0
+                    for tank in tanks_bots:
+                        list = [tank.x, tank.y, tank.body_ang, tank.type, str(ID), tank.list_tile, tank.hp]
+                        file.write(str(list))
                         file.write('\n')
+                        ID += 1
+                        
+                    
         except tkinter.TclError:
             print('не закрывайте крестиком окно tkinter-а, пожалуйста')
 
