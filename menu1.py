@@ -51,7 +51,9 @@ def menu_main():
 
 def menu_singleplayer():
     def start_function():
-        game.game_main(game_input, tank_type)
+        ending = game.game_main(game_input, tank_type)
+        if ending != None:
+            eval(ending)
 
     pygame.init()
 
@@ -352,6 +354,75 @@ def music():
         clock.tick(FPS)
 
 
+def death():
+    pygame.init()
+
+    screen = pygame.display.set_mode((w, h))
+    clock = pygame.time.Clock()
+
+    finished = False
+
+    menu = Static(screen, 0, 0, w, h, 'floppa')
+    button1 = Button(screen, 10, 10, 150, 50, 'go_back')
+    buttons = []
+
+    while not finished:
+        screen.fill((0, 0, 0))
+
+        menu.draw()
+        for button in buttons:
+            button.check_pressed()
+            button.draw()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                finished = True
+            if event.type == pygame.MOUSEBUTTONUP:
+                if event.button == 1:
+                    for button in buttons:
+                        if button.pressed:
+                            eval(button.trigger())
+
+        pygame.display.update()
+
+        clock.tick(FPS)
+
+
+def win():
+    pygame.init()
+
+    screen = pygame.display.set_mode((w, h))
+    clock = pygame.time.Clock()
+
+    finished = False
+
+    menu = Static(screen, 0, 0, w, h, 'floppa_win')
+    button1 = Button(screen, 10, 10, 150, 50, 'go_back')
+    buttons = []
+
+    while not finished:
+        screen.fill((0, 0, 0))
+
+        menu.draw()
+        for button in buttons:
+            button.check_pressed()
+            button.draw()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                finished = True
+            if event.type == pygame.MOUSEBUTTONUP:
+                if event.button == 1:
+                    for button in buttons:
+                        if button.pressed:
+                            eval(button.trigger())
+
+        pygame.display.update()
+
+        clock.tick(FPS)
+
+
+
 '''Вспомогательные функции'''
 
 
@@ -381,6 +452,5 @@ def on():
 
 def off():
     pygame.mixer.music.pause()
-
 
 menu_main()

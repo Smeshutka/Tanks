@@ -114,4 +114,7 @@ def game_main(game_input, tank_type):
             for tank in tanks:
                 tank.meet_with_bullet(bul)
 
-        tank_player.game_over()
+        if tank_player.game_over():
+            return 'death()'
+        if tank_player.game_win():
+            return 'win()'
