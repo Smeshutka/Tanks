@@ -87,6 +87,7 @@ class SaveLoad_Button(Button):
                 for i in range(len(tanks_bots_list)):
                     tanks_bots_list[i].insert(5, screen)
                     tank = create_tank_bot(*tanks_bots_list[i])
+                    tank.x, tank.y = tanks_bots_list[i][0], tanks_bots_list[i][1]
                 
                 pl_flags = []
                 for i in range(len(tanks_player)):
