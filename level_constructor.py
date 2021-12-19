@@ -100,6 +100,7 @@ def draw_highlighting(ma_start, mb_start, screen, map, k):
 
 def put_tank_on_map(tanks, ma, mb, menu):
     tank = Tank(ma*a + a/2, mb*a + a/2, math.pi/2, menu.chosen_type, '0', menu.screen)
+    tank.hp = menu.tank_hp
     tank.add(tanks)
 
 
@@ -137,6 +138,8 @@ def level_constructor_main():
     size_button = Change_size_button(screen, w - a * tiles_menu.k - a * 10, 0, a * 2, a * 2, 'size')
     generator = Generate_button(screen, w - a * tiles_menu.k - a * 12, 0, a * 2, a * 2, 'dices')
     change_menu_button = Change_menu_mode_button(screen, w - a * tiles_menu.k - a * 2, h - a * 2, a * 2, a * 2, 'cycle')
+    hp_minus_button = HP_button(screen, w - a * tiles_menu.k + a, h-2*a, a, a, 'minus', False)
+    hp_plus_button = HP_button(screen, w - 2*a, h-2*a, a, a, 'plus', True)
     # fast_save_button = SaveLoad_Button(screen, 0, 0, a*2,a*2, 'save')
     to_main_menu_button = button_class.Button(screen, 10, 10, 150, 50, 'to_main_menu')
 
@@ -154,6 +157,9 @@ def level_constructor_main():
         size_button.draw(2)
         generator.draw(2)
         change_menu_button.draw(2)
+        if tiles_menu.mode == 'tanks':
+            hp_minus_button.draw(1)
+            hp_plus_button.draw(1)
         to_main_menu_button.check_pressed()
         to_main_menu_button.draw()
 
@@ -249,6 +255,10 @@ def level_constructor_main():
                             new_map = ''
                         if new_map != '':
                             map = new_map
+                    elif hp_minus_button.check_pressed() and tiles_menu.mode == 'tanks':
+                        hp_minus_button.change_tank_hp(tiles_menu)
+                    elif hp_plus_button.check_pressed() and tiles_menu.mode == 'tanks':
+                        hp_plus_button.change_tank_hp(tiles_menu)
                     #                elif fast_save_button.check_pressed():
                     #                    fast_save_button.fast_save(n, map)
                     #                    n += 1

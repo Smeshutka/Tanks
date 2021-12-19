@@ -187,6 +187,16 @@ class Change_menu_mode_button(Button):
         elif menu.mode == 'tanks':
             menu.chosen_type = 'light'
 
+class HP_button(Button):
+    def __init__(self, screen, x0, y0, a, b, image, plus):
+        Button.__init__(self, screen, x0, y0, a, b, image)
+        self.plus = plus
+    
+    def change_tank_hp(self, menu):
+        if self.plus:
+            menu.tank_hp += 1
+        else:
+            menu.tank_hp -= 1
 
 class Tiles_menu:
     '''Меню на котором отображаются все имеющиеся виды тайлов слева,
@@ -203,6 +213,7 @@ class Tiles_menu:
         self.tile_types = ['grass', 'water', 'bricks', 'stone', 'sand', 'ice', 'finish']
         self.tank_types = ['light', 'middle', 'heavy']
         self.tank_y = []
+        self.tank_hp = 3
 
     def create_sur_tiles_type(self):
         def draw_chosen(self):
@@ -257,6 +268,15 @@ class Tiles_menu:
     def draw_tanks_type(self):
         self.screen.blit(self.create_sur_tanks_type(), (self.screen_size.x - a * self.k, self.y0))
 
+    def draw_tank_hp(self):
+        sub = pygame.Surface((a, a), pygame.SRCALPHA)
+        dots = ((0, a/4), (a/4, 0), (a/2, a/4), (a*3/4, 0), (a, a/4), (a/2, a))
+        pygame.draw.polygon(sub, (255, 0, 0), dots)
+        for i in range(self.tank_hp):
+            c = i // self.k
+            b = i % self.k
+            self.screen.blit(sub, (w - a*self.k + a * b, h - 3*a - c*a - 5))
+    
     def draw(self):
         self.draw_work_space()
         # рамка рисуется не так как надо
@@ -265,6 +285,7 @@ class Tiles_menu:
             self.draw_tiles_type()
         elif self.mode == 'tanks':
             self.draw_tanks_type()
+            self.draw_tank_hp()
 
     def check_pressed(self):
         mx, my = pygame.mouse.get_pos()
