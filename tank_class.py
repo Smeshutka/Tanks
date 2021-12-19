@@ -428,7 +428,8 @@ class Tank(pygame.sprite.Sprite):
         self.body_image = pygame.transform.rotate(self.body_image_start, self.body_ang * 180 / math.pi)
         a,b = self.body_image.get_size()
         self.body_image = pygame.transform.scale(self.body_image, (a*k, b*k))
-        self.screen.blit(self.body_image, (self.corner_visible.x, self.corner_visible.y))
+        a,b = self.body_image.get_size()
+        self.screen.blit(self.body_image, (self.center_visible.x - a/2, self.center_visible.y - b/2))
         #hp
         sub = pygame.Surface((20, 20), pygame.SRCALPHA)
         dots = ((0, 5), (5, 0), (10, 5), (15, 0), (20, 5), (10, 20))
@@ -439,6 +440,8 @@ class Tank(pygame.sprite.Sprite):
             self.screen.blit(sub, (self.center_visible.x - 50*k + 25 * k * i, self.center_visible.y - b / 2 - 30*k))
         #turret
         self.turret_image = pygame.transform.rotate(self.turret_image_start, self.turret_ang * 180 / math.pi)
+        a, b = self.turret_image.get_size()
+        self.turret_image = pygame.transform.scale(self.turret_image, (a*k, b*k))
         a, b = self.turret_image.get_size()
         self.screen.blit(self.turret_image, (self.center_visible.x - a / 2 - self.s * math.cos(self.body_ang),
                                              self.center_visible.y - b / 2 + self.s * math.sin(self.body_ang)))
