@@ -90,6 +90,7 @@ class Tank(pygame.sprite.Sprite):
         self.ai = 0
         self.dist = 300
         self.type = tank_type
+        self.alive = True
 
         if tank_type == "light":
             self.body_image_start = pygame.image.load("textures/light_body.png").convert_alpha()
@@ -461,5 +462,6 @@ class Tank(pygame.sprite.Sprite):
                     self.life_before_death()
     
     def game_over(self):
-        if self.hp <= 0:
+        if self.hp <= 0 and self.alive:
+            self.alive = False
             print("*Здесь должна вылезти менюшка с надписью 'game over', а также кнопки 'Restart' и 'Menu'")
