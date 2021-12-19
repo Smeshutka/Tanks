@@ -1,3 +1,5 @@
+import sys
+
 from button_class import *
 import game
 import level_constructor
@@ -6,6 +8,8 @@ import tkinter
 import server
 import client
 from tank_class import *
+
+
 
 
 def menu_main():
@@ -167,7 +171,8 @@ def menu_settings():
 
     menu = Static(screen, 0, 0, w, h, 'metall')
     button1 = Button(screen, 10, 10, 150, 50, 'go_back')
-    buttons = [button1]
+    button2 = Button(screen, 10, 80, 150, 50, 'music')
+    buttons = [button1, button2]
 
     while not finished:
         screen.fill((0, 0, 0))
@@ -184,7 +189,7 @@ def menu_settings():
                 if event.button == 1:
                     for button in buttons:
                         if button.pressed:
-                            finished = button.trigger()
+                            eval(button.trigger())
 
         pygame.display.update()
 
@@ -209,5 +214,45 @@ def set_tank_type(type):
     global tank_type
     tank_type = type
 
+
+def music():
+    pygame.init()
+
+    screen = pygame.display.set_mode((w, h))
+    clock = pygame.time.Clock()
+
+    finished = False
+
+    menu = Static(screen, 0, 0, w, h, 'metall')
+    button1 = Button(screen, 350, 100, 150, 50, 'on')
+    button2 = Button(screen, 350, 170, 150, 50, 'off')
+    buttons = [button1, button2]
+
+    while not finished:
+        screen.fill((0, 0, 0))
+
+        menu.draw()
+        for button in buttons:
+            button.check_pressed()
+            button.draw()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                finished = True
+            if event.type == pygame.MOUSEBUTTONUP:
+                if event.button == 1:
+                    for button in buttons:
+                        if button.pressed:
+                            eval(button.trigger())
+
+        pygame.display.update()
+
+        clock.tick(FPS)
+
+def on():
+    pygame.mixer.music.load("music/1.mp3")
+    pygame.mixer.music.play()
+def off():
+    pygame.mixer.music.pause()
 
 menu_main()

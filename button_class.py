@@ -1,3 +1,5 @@
+from numpy.distutils.fcompiler import pg
+
 from helper import *
 
 pygame.init()
@@ -73,12 +75,17 @@ class Button:
             return 'server.server_main(ip_entry.text, port_entry.text)'
         elif self.type == 'join_game':
             return 'client.client_main(ip_entry.text, port_entry.text)'
+        elif self.type == "music":
+            return 'music()'
+        elif self.type == "on":
+            return 'on()'
+        elif self.type == "off":
+            return 'music_off()'
         else:
             return 'print("in_progress")'
 
     def set_bg_color(self, bg_color):
         self.bg_color = bg_color
-
 
 class Static:
     '''класс кнопок'''
@@ -166,3 +173,8 @@ class Entry:
 
     def change_text(self, text):
         self.text = text
+
+def music_on():
+    pg.mixer.music.load('1.mp3')
+def music_off():
+    pg.mixer.music.load('1.mp3')
