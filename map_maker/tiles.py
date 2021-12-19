@@ -97,18 +97,17 @@ def return_tile_ower_pos(x, y, map):
 
 
 class Map(pygame.sprite.Sprite):
-    """По списку tiles_list формата (x, y, name_image) создает группу тайлов"""
 
     def __init__(self, map, screen, flag=False):
         self.flag = flag
         tiles = pygame.sprite.Group()
         tiles_array = []
 
-        for i in range(len(map)):
+        for row in range(len(map)):
             tiles_array.append([])
-            for j in range(len(map[i])):
-                tiles_array[i].append(Tile(map[i][j][0], map[i][j][1], map[i][j][2], screen))
-                tiles_array[i][j].add(tiles)
+            for col in range(len(map[row])):
+                tiles_array[row].append(Tile(map[row][col][0], map[row][col][1], map[row][col][2], screen))
+                tiles_array[row][col].add(tiles)
 
         self.tiles_array = tiles_array
         self.tiles = tiles

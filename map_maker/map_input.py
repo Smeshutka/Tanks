@@ -8,22 +8,39 @@ from Tanks.constans import *
 
 
 def map_maker(map):
-    for i in range(len(map)):
-        for j in range(len(map[i])):
-            if map[i][j] == 'g':
-                map[i][j] = ([a * j, a * i, 'grass'])
-            elif map[i][j] == 'w':
-                map[i][j] = ([a * j, a * i, 'water'])
-            elif map[i][j] == 'b':
-                map[i][j] = ([a * j, a * i, 'bricks'])
-            elif map[i][j] == 'S':
-                map[i][j] = ([a * j, a * i, 'stone'])
-            elif map[i][j] == 's':
-                map[i][j] = ([a * j, a * i, 'sand'])
-            elif map[i][j] == 'i':
-                map[i][j] = ([a * j, a * i, 'ice'])
-            elif map[i][j] == 'F':
-                map[i][j] = ([a * j, a * i, 'finish'])
+    """
+    По карте (двумерный массив map), в которой
+    просто расставлены тайлы-буквы: g, w, b, S, s, i, F
+    идет переработка в двумерный массив map, в ячейках которых
+    лежит map[row][col] = [a * col, a * row, name_tile]
+    """
+    
+    for row in range(len(map)):
+        for col in range(len(map[row])):
+            list = [a * col, a * row]
+            name_tile = None
+            
+            if map[row][col] == 'g':
+                name_tile = 'grass'
+            elif map[row][col] == 'w':
+                name_tile = 'water'
+            elif map[row][col] == 'b':
+                name_tile = 'bricks'
+            elif map[row][col] == 'S':
+                name_tile = 'stone'
+            elif map[row][col] == 's':
+                name_tile = 'sand'
+            elif map[row][col] == 'i':
+                name_tile = 'ice'
+            elif map[row][col] == 'F':
+               name_tile = 'finish'
+            if name_tile != None:
+                list.append(name_tile)
+            else:
+                list = map[row][col]
+                
+            map[row][col] = list
+            
     return map
 
 
@@ -31,15 +48,11 @@ def file_reader(input_filename):
     """Cчитывает данные о карте из файла
 
     Параметры:
-
     **input_filename** — имя входного файла
 
     Возвращает:
-    (screen_width, screen_height, tiles)
-    **screen_width** — необходимая ширина экрана
-    **screen_height** — необходимая высота экрана
-    **screen_height** — кортеж с элементами вида
-        (координата левого верхнего угла по x, координата левого верхнего угла по y, название файла с изображением)
+    map, в ячейках которых лежит:
+    map[row][col] = name_tile: вид тайла, состоящий из одной буквы
     """
 
     map = []
@@ -51,7 +64,7 @@ def file_reader(input_filename):
                 for char in line_1:
                     line_tiles.append(char)
             map.append(line_tiles.copy())
-
+            
     return map
 
 
@@ -59,9 +72,19 @@ def file_reader(input_filename):
 # "map_maker/templates/test/"
 
 def key_maker():
+    """
+    По шаблонам 10*10 генерирует ключ-соответсвие: двумерный массив
+    key[map1][map2] = [up, down, left, right],
+    можно ли сверху, снизу, слева, справа относительно map1 поставить map2.
+    Данный ключ записывается в файл key.txt
+    
+    par: число тайлов, которые могут не состыковаться
+    """
+    par = 4
     key = []
     path = "map_maker/templates/ice and ground/"
     files = os.listdir(path=path)
+    
     for i_file in range(len(files)):
         list = []
         file1 = str(i_file)
@@ -69,11 +92,10 @@ def key_maker():
         for j_file in range(len(files)):
             file2 = str(j_file)
             map2 = file_reader(path + file2 + '.txt')
-            par = 4
-
+            
             up = 0
-            for i in range(10):
-                if map1[0][i] != map2[9][i]:
+            for col in range(10):
+                if map1[0][col] != map2[9][col]:
                     up += 1
             if up <= par:
                 up = True
@@ -81,8 +103,8 @@ def key_maker():
                 up = False
 
             down = 0
-            for i in range(10):
-                if map1[9][i] != map2[0][i]:
+            for col in range(10):
+                if map1[9][col] != map2[0][col]:
                     down += 1
             if down <= par:
                 down = True
@@ -90,8 +112,8 @@ def key_maker():
                 down = False
 
             left = 0
-            for i in range(10):
-                if map1[i][0] != map2[i][9]:
+            for row in range(10):
+                if map1[row][0] != map2[row][9]:
                     left += 1
             if left <= par:
                 left = True
@@ -99,16 +121,16 @@ def key_maker():
                 left = False
 
             right = 0
-            for i in range(10):
-                if map1[i][9] != map2[i][0]:
+            for row in range(10):
+                if map1[row][9] != map2[row][0]:
                     right += 1
             if right <= par:
                 right = True
             else:
                 right = False
-
-            list.append([up, down, left, right])
-
+                
+            list_n =  [up, down, left, right]
+            list.append(list_n)
         key.append(list)
 
     with open('map_maker/templates/key.txt', 'w') as file:
@@ -119,6 +141,14 @@ def key_maker():
 
 
 def key_reader():
+    """
+    Считывает файл key.txt, в котором лежит ключ.
+    
+    Возвращает двумерный массив, в котором:
+    key[map1][map2] = {'up':bool, 'down':bool, 'left':bool, 'right':bool}:
+    можно ли сверху, снизу, слева, справа от map1 поставить map2
+    """
+    
     key = []
 
     with open('map_maker/templates/key.txt', 'r') as input_file:
@@ -126,43 +156,80 @@ def key_reader():
             line_key = []
             for line_1 in line.split('. '):
                 if line_1 != '\n':
-                    line_key.append(eval(line_1))
-            key.append(line_key.copy())
-
+                    line1 = eval(line_1)
+                    dict =  {'up':False, 'down':False, 'left':False, 'right':False}
+                    dict['up'] = line1[0]
+                    dict['down'] = line1[1]
+                    dict['left'] = line1[2]
+                    dict['right'] = line1[3]
+                    
+                    line_key.append(dict)
+            
+            key.append(line_key)
     return key
 
 
-def get_complimentary(i, key, direction):
+def get_complimentary(row, key, direction):
+    """
+    Принимаются:
+    row: строчка, соответсвующая данному шаблону (шаблон №row)
+    key: ключ, соответсвующий данному набору шаблонов
+    direction: направление
+    
+    По ключу key возвращает список шаблонов, которые
+    могут контактироваться с данным по направлению direction
+    """
+    
     comp_list = []
-    for j in range(len(key[i])):
-        if key[i][j][direction]:
-            comp_list.append(j)
+    for col in range(len(key[row])):
+        if key[row][col][direction]:
+            comp_list.append(col)
 
     return comp_list
 
 
 def jigsaw_generator(key, scale_y, scale_x):
-    map = [[0 for i in range(scale_x)] for j in range(scale_y)]
+    """
+    Параметры:
+    key: ключ, необходим для генерации
+    scale_x: число столбцов (размер по оси икс)
+    scale_y: число строк (размер по оси игрек)
+    
+    Возвращает:
+    map: карта, но в ячейках лежат не тайлы, а шаблоны
+    map[row][col]: номер шаблона, который тут будет находиться
+    """
+    
+    map = [[0 for col in range(scale_x)] for row in range(scale_y)]
     map[0][0] = random.randint(0, len(key) - 1)
-    for j in range(1, len(map[0])):
-        map[0][j] = random.choice(get_complimentary(map[0][j - 1], key, 3))
-    for i in range(1, len(map)):
-        map[i][0] = random.choice(get_complimentary(map[i - 1][0], key, 1))
-        for j in range(1, len(map[i])):
-            map_a = get_complimentary(map[i - 1][j], key, 1)
-            map_b = get_complimentary(map[i][j - 1], key, 3)
+    for col in range(1, len(map[0])):
+        map[0][col] = random.choice(get_complimentary(map[0][col - 1], key, 'right'))
+        
+    for row in range(1, len(map)):
+        map[row][0] = random.choice(get_complimentary(map[row - 1][0], key, 'down'))
+        for col in range(1, len(map[row])):
+            map_a = get_complimentary(map[row - 1][col], key, 'down')
+            map_b = get_complimentary(map[row][col - 1], key, 'right')
             map_c = []
             for first in map_a:
                 for second in map_b:
                     if first == second:
                         map_c.append(first)
                         break
-            map[i][j] = random.choice(map_c)
+            map[row][col] = random.choice(map_c)
 
     return map
 
 
 def map_from_jigsaw(scheme):
+    """
+    Принимает:
+    scheme: схема расставления шаблонов
+    
+    Возвращает:
+    map: готовую карту по этим шаблонам
+    """
+    
     map = [[0 for i in range(10 * len(scheme[0]) + 2)] for j in range(10 * len(scheme) + 2)]
     for i in range(len(scheme)):
         for j in range(len(scheme[i])):
