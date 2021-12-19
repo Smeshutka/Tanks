@@ -125,7 +125,7 @@ class vision(pygame.sprite.Sprite):
 def meet_with_tank(tank, tank_pl):
     """Обработка событий бота, если он замечает игрока tank_pl"""
 
-    if meet(tank.vis, tank_pl):
+    if meet(tank.vis, tank_pl) and tank_pl.hp > -1:
         # Стрельба:
         tank.update_pos_mouse_for_AI(tank_pl.center_visible.x, tank_pl.center_visible.y)
 

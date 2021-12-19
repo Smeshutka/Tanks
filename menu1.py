@@ -156,17 +156,19 @@ def menu_multiplayer_host():
 
     menu = Static(screen, 0, 0, w, h, 'metall')
     button1 = Button(screen, 10, 10, 150, 50, 'go_back')
-    button2 = Button(screen, 300, 250, 200, 66, 'choose_level')
+    button2 = Button(screen, 100, 250, 200, 66, 'choose_level')
     button3 = Button(screen, 250, 490, 300, 100, 'start_game')
     ip_entry = Entry(screen, 100, 400, 200, 50)
     port_entry = Entry(screen, 500, 400, 200, 50)
-    level_text = Entry(screen, 275, 150, 250, 66, game_input)
+    players_entry = Entry(screen, 500, 250, 200, 50)
+    level_text = Entry(screen, 75, 150, 250, 66, game_input)
     ip_text = Entry(screen, 100, 350, 200, 50, 'IP', None)
     port_text = Entry(screen, 500, 350, 200, 50, 'port', None)
+    players_text = Entry(screen, 500, 200, 200, 50, 'amount of players', None)
 
     buttons = [button1, button2, button3]
-    entries = [ip_entry, port_entry]
-    text = [ip_text, port_text]
+    entries = [ip_entry, port_entry, players_entry]
+    text = [ip_text, port_text, players_text]
 
     while not finished:
         screen.fill((0, 0, 0))
