@@ -1,10 +1,4 @@
-from helper import *
-from tank_class import *
-from map_maker.tiles import *
-from map_maker.map_input import *
-from win_for_change_size import *
-import tkinter
-from tkinter.filedialog import *
+from classes_for_constructor import *
 
 '''
 Этот модуль позволяет создавать карту
@@ -27,230 +21,6 @@ Backspace - возвращение в левый верхний угол кар�
 
 # def call_n_for_fast_save():
 #    return int(input())
-
-class Button:
-    '''класс кнопок'''
-
-    def __init__(self, screen, x0, y0, a, b, image):
-        '''screen: pygame.display
-        x0,y0 - координаты левого верхнего угла относительно экрана
-        a,b - размеры окна по x,y соотв.
-        image - название файла в папке textures формата png'''
-        self.screen = screen
-        self.size = pos(a, b)
-        self.pos = pos(x0, y0)
-        self.image = pygame.image.load('textures/' + image + '.png').convert_alpha()
-
-    def draw(self, k):
-        x0, y0 = self.pos.x, self.pos.y
-        a, b = self.size.x, self.size.y
-        pygame.draw.rect(self.screen, (255, 255, 255), (x0, y0, a, b))
-        self.screen.blit(update_image(self.image, k, k), (self.pos.x, self.pos.y))
-
-    def check_pressed(self):
-        mx, my = pygame.mouse.get_pos()
-        x0, y0 = self.pos.x, self.pos.y
-        a, b = self.size.x, self.size.y
-        if mx >= x0 and my >= y0 and mx <= x0 + a and my <= y0 + b:
-            return True
-        else:
-            return False
-
-
-class Rotate_button(Button):
-    '''класс кнопок для поворота карты при редактировании'''
-
-    def __init__(self, screen, x0, y0, a, b, image, inverse):
-        Button.__init__(self, screen, x0, y0, a, b, image)
-        self.inverse = inverse
-
-    def draw(self, k):
-        pygame.draw.rect(self.screen, (255, 255, 255), (self.pos.x, self.pos.y, self.size.x, self.size.y))
-        self.screen.blit(update_image(pygame.transform.flip(self.image, self.inverse, False), k, k),
-                         (self.pos.x, self.pos.y))
-
-    def rotate_map(self, map):
-        ar = map.tiles_array
-        if self.inverse:
-            ar = [[ar[i][j] for i in range(len(ar))] for j in range(len(ar[0]) - 1, -1, -1)]
-        else:
-            for k in range(3):
-                ar = [[ar[i][j] for i in range(len(ar))] for j in range(len(ar[0]) - 1, -1, -1)]
-
-        for i in range(len(ar)):
-            for j in range(len(ar[0])):
-                tile = ar[i][j]
-                if tile.type == 'stone':
-                    ar[i][j] = 'S'
-                else:
-                    ar[i][j] = tile.type[0]
-        return Map(map_maker(ar), self.screen)
-
-
-class SaveLoad_Button(Button):
-    '''класс кнопок для сохранения или загрузки карт,
-    fast_save - функция для сохранения без диалогового окна внуть папки map_maker/templates
-    была создана для облегчения создания шаблонов'''
-
-    def load_map(self):
-        try:
-            # global lt, tiles_array, map
-            root = tkinter.Tk()
-            new_map = askopenfilename(filetypes=(("Text file", ".txt"),))
-            root.destroy()
-            if new_map != '':
-                chosen_tile = Tile(a * 0, a * 0, "stone", screen)
-                map = Map(map_maker(file_reader(new_map)), screen)
-                return map
-            else:
-                return ''
-
-        except tkinter.TclError:
-            print('не закрывайте крестиком окно tkinter-а, пожалуйста')
-            return ''
-
-    def save_map(self, map):
-        try:
-            root = tkinter.Tk()
-            file = asksaveasfilename(filetypes=(("Text file", ".txt"),))
-            root.destroy()
-            if file != '':
-                with open(file, 'w') as file:
-                    for i in range(len(map.tiles_array)):
-                        for j in range(len(map.tiles_array[0])):
-                            tile = map.tiles_array[i][j]
-                            if tile.type == 'stone':
-                                text = 'S'
-                            else:
-                                text = tile.type[0]
-                            file.write(text)
-                        file.write('\n')
-        except tkinter.TclError:
-            print('не закрывайте крестиком окно tkinter-а, пожалуйста')
-
-    def fast_save(self, n, map):
-        name = 'map_maker/templates/' + str(n) + '.txt'
-        file = open(name, 'w')
-        for i in range(len(map.tiles_array)):
-            for j in range(len(map.tiles_array[0])):
-                tile = map.tiles_array[i][j]
-                if tile.type == 'stone':
-                    text = 'S'
-                else:
-                    text = tile.type[0]
-                file.write(text)
-            file.write('\n')
-        file.close()
-
-
-class Change_size_button(Button):
-    def call_tk(self):
-        create_dialog_window()
-
-    def read_new_size(self):
-        self.call_tk()
-        file = open('new_size.txt', 'r')
-        data = file.read()
-        file.close()
-        if data != '':
-            return data.split()[0], data.split()[1]
-
-    def change_map_size(self, map, screen):
-        a, b = self.read_new_size()
-        a, b = int(a), int(b)
-        if b > 0 and a > 0:
-            lt = []
-            for i in range(b):
-                lt.append([])
-                for j in range(a):
-                    lt[i].append('g')
-            return Map(map_maker(lt), screen)
-        else:
-            return ''
-
-
-class Generate_button(Button):
-    def call_tk(self):
-        create_dialog_window_for_generator()
-
-    def read_new_size(self):
-        self.call_tk()
-        file = open('new_size.txt', 'r')
-        data = file.read()
-        file.close()
-        if data != '':
-            return data.split()[0], data.split()[1]
-
-    def generate(self):
-        a, b = self.read_new_size()
-        a, b = int(a), int(b)
-        if b > 0 and a > 0:
-            lt = []
-            for i in range(b):
-                lt.append([])
-                for j in range(a):
-                    lt[i].append('g')
-            return Map((map_from_jigsaw(jigsaw_generator(key_reader(), a, b))), screen)
-        else:
-            return ''
-
-
-class Tiles_menu:
-    '''Меню на котором отображаются все имеющиеся виды тайлов слева,
-    хранит выбранный тип тайлов, и визуально отмечает его'''
-
-    def __init__(self, screen, w, h, chosen_type='stone'):
-        self.screen = screen
-        self.screen_size = pos(w, h)
-        self.k = 5
-        self.chosen_type = chosen_type
-        self.y0 = 0
-        self.all_types = ['grass', 'water', 'bricks', 'stone', 'sand', 'ice']
-
-    def create_sur_ttype(self):
-        def draw_chosen(self):
-            sur = pygame.Surface((a * (self.k - 2), a * (self.k - 2)), pygame.SRCALPHA)
-            pygame.draw.line(sur, (0, 0, 0), (a * (self.k - 2) // 2, 0), (a * (self.k - 2) // 2, a * (self.k - 2)),
-                             a // 4)
-            pygame.draw.line(sur, (0, 0, 0), (0, a * (self.k - 2) // 2), (a * (self.k - 2), a * (self.k - 2) / 2),
-                             a // 4)
-            # pygame.draw.line(sur, (0,0,0), (),(), a/4)
-            return sur
-
-        sur = pygame.Surface((a * self.k, self.screen_size.y), pygame.SRCALPHA)
-        tile = Tile(a, a, 'stone', sur)
-
-        for ttype in self.all_types:
-            tile.update_tile(ttype)
-            tile.corner_visible = tile.corner
-            tile.draw(self.k - 2)
-            if ttype == self.chosen_type:
-                sur.blit(draw_chosen(self), (tile.corner.x, tile.corner.y))
-            tile.corner = pos(tile.corner.x, tile.corner.y + a * (self.k - 1))
-        return sur
-
-    def draw_work_space(self):
-        pygame.draw.rect(self.screen, (255, 255, 255),
-                         (self.screen_size.x - a * self.k, 0, a * self.k, self.screen_size.y))
-
-    def draw_tiles_type(self):
-        self.screen.blit(self.create_sur_ttype(), (self.screen_size.x - a * self.k, self.y0))
-
-    def draw(self):
-        self.draw_work_space()
-        # рамка рисуется не так как надо
-        # pygame.draw.rect(self.screen, (255,255,0),(self.screen_size.x - a*self.k, 0, a*self.k, self.screen_size.y), a)
-        self.draw_tiles_type()
-
-    def check_pressed(self):
-        mx, my = pygame.mouse.get_pos()
-        if mx >= self.screen_size.x - a * self.k + a and mx <= self.screen_size.x - a:
-            for i in range(len(self.all_types)):
-                if my + self.y0 <= (self.k - 1) * a + a * i * (self.k - 1) and my + self.y0 >= a + a * i * (self.k - 1):
-                    return self.all_types[i]
-        return ''
-
-
 def draw_run_line(k, c):
     sur = pygame.Surface((a * k, a * k), pygame.SRCALPHA)
     pygame.draw.line(sur, (255, 255, 255), (-2 * a * k / 3 + c, 0), (-a * k / 3 + c, 0), 2)
@@ -326,6 +96,9 @@ def draw_highlighting(ma_start, mb_start, screen, map, k):
         my, y0 = y0, my
     pygame.draw.rect(screen, (0, 0, 0), (x0, y0, mx - x0, my - y0), 2)
 
+def put_tank_on_map(tanks, ma, mb, menu):
+    tank = Tank(ma*a, mb*a, math.pi/2, menu.chosen_type, '0', menu.screen)
+    tank.add(tanks)
 
 def level_constructor_main():
     # print('Please, print start number')
@@ -334,7 +107,8 @@ def level_constructor_main():
     pygame.init()
     screen = pygame.display.set_mode((w, h))
     clock = pygame.time.Clock()
-
+    tanks = pygame.sprite.Group()
+    
     finished = False
     mouse_pressed = False
 
@@ -359,7 +133,7 @@ def level_constructor_main():
     load_button = SaveLoad_Button(screen, w - a * tiles_menu.k - a * 8, 0, a * 2, a * 2, 'load')
     size_button = Change_size_button(screen, w - a * tiles_menu.k - a * 10, 0, a * 2, a * 2, 'size')
     generator = Generate_button(screen, w - a * tiles_menu.k - a * 12, 0, a * 2, a * 2, 'dices')
-
+    change_menu_button = Change_menu_mode_button(screen, w - a * tiles_menu.k - a * 2, h-a*2, a * 2, a * 2, 'cycle')
     # fast_save_button = SaveLoad_Button(screen, 0, 0, a*2,a*2, 'save')
 
     while not finished:
@@ -375,6 +149,11 @@ def level_constructor_main():
         load_button.draw(2)
         size_button.draw(2)
         generator.draw(2)
+        change_menu_button.draw(2)
+        
+        for tank in tanks:
+            tank.before_draw(chosen_tile.center)
+            tank.draw(chosen_tile)
         # fast_save_button.draw(2)
         pygame.display.update()
 
@@ -453,6 +232,8 @@ def level_constructor_main():
                         new_map = size_button.change_map_size(map, screen)
                         if new_map != '':
                             map = new_map
+                    elif change_menu_button.check_pressed():
+                        change_menu_button.change_mode(tiles_menu)
                     elif generator.check_pressed():
                         try:
                             new_map = generator.generate()
@@ -465,9 +246,14 @@ def level_constructor_main():
                     #                    fast_save_button.fast_save(n, map)
                     #                    n += 1
                     else:
-                        ma_start, mb_start = calculate_map_pressed(map, chosen_tile, scale)
-                        if ma_start != -1 and mb_start != -1:
-                            mouse_pressed = True
+                        if tiles_menu.mode == 'tiles':
+                            ma_start, mb_start = calculate_map_pressed(map, chosen_tile, scale)
+                            if ma_start != -1 and mb_start != -1:
+                                mouse_pressed = True
+                        elif tiles_menu.mode == 'tanks':
+                            ma, mb = calculate_map_pressed(map, chosen_tile, scale)
+                            if ma != -1 and mb != -1:
+                                put_tank_on_map(tanks, ma, mb, tiles_menu)
                 if event.button == 4:
                     scale += 0.3
                 if event.button == 5 and scale > 0.3:
