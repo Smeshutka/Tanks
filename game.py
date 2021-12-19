@@ -16,14 +16,15 @@ def game_main(game_input, tank_type):
     paused = False
 
     screen = pygame.display.set_mode((w, h))
-
-    map = Map(map_maker(file_reader(game_input)), screen)
+    
     if game_input == "map_maker/maps/1.txt":
+        map = Map(map_maker(file_reader(game_input)), screen)
         tank_player = create_tank_player(12, 12, 0, tank_type, "0", screen)
 
         list_tile = [pos(5, 5), pos(5, 20), pos(20, 20), pos(20, 5)]
         create_tank_bot(20, 20, 0, "heavy", "1", screen, list_tile, 1)  # Пробный вариант танка противника
     elif game_input == "map_maker/maps/great_level.txt":
+        map = Map(map_maker(file_reader(game_input)), screen)
         tank_player = create_tank_player(41, 139, 3.14, tank_type, "0", screen)
         tank_player.hp = 7
         list_tile = [pos(3, 145), pos(3, 129), pos(12, 129), pos(12, 145)]
@@ -49,7 +50,16 @@ def game_main(game_input, tank_type):
 
         list_tile = [pos(6, 11), pos(44, 16), pos(5, 19)]
         create_tank_bot(6, 11, 0, "light", "8", screen, list_tile, 3)  # Пробный вариант танка противника
-
+    else:
+        input = file_reader_level(game_input)
+        map, tanks_bots_list = input[0], input[1]
+        map = Map(map, screen)
+        for i in range(len(tanks_bots_list)):
+            list = tanks_bots_list[i]
+            list.insert(5, screen)
+            create_tank_bot(*tanks_bots_list[i])
+        tank_player = create_tank_player(15, 15, 0, tank_type, "0", screen)
+        
     observating_point = tank_player.center
     pause_text = Entry(screen, 300, 225, 200, 50, 'pause', None)
     button1 = Button(screen, 325, 300, 150, 50, 'resume')

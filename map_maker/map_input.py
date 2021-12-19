@@ -9,10 +9,11 @@ from Tanks.constans import *
 
 def map_maker(map):
     """
-    По карте (двумерный массив map), в которой
-    просто расставлены тайлы-буквы: g, w, b, S, s, i, F
-    идет переработка в двумерный массив map, в ячейках которых
-    лежит map[row][col] = [a * col, a * row, name_tile]
+    Параметры:
+    map: карта, в ячейках которых тайлы-буквы: g, w, b, S, s, i, F
+    
+    Возвращает:
+    map: карта, в ячейках которых лежит: map[row][col] = [a * col, a * row, name_tile]
     """
     
     for row in range(len(map)):
@@ -52,7 +53,7 @@ def file_reader(input_filename):
 
     Возвращает:
     map, в ячейках которых лежит:
-    map[row][col] = name_tile: вид тайла, состоящий из одной буквы
+        map[row][col] = name_tile: вид тайла, состоящий из одной буквы
     """
 
     map = []
@@ -66,6 +67,46 @@ def file_reader(input_filename):
             map.append(line_tiles.copy())
             
     return map
+
+
+def file_reader_level(input_filename):
+    """Cчитывает данные об УРОВНЕ из файла
+
+    Параметры:
+    **input_filename** — имя входного файла
+
+    Возвращает: [map, tanks_bots_list]
+    
+    map: карта, в ячейках которых лежит: map[row][col] = [a * col, a * row, name_tile]
+    
+    tanks_bots_list: список, элементами которого являются:
+        [tank.x, tank.y, tank.ang, tank.type, tank.ID, screen, tank.list_tile, tank.hp]
+    
+    
+    """
+
+    map = []
+    tanks_bots_list = []
+    flag = 'map'
+    with open(input_filename) as input_file:
+        for line in input_file:
+            if line[0:10] == 'tanks_bots':
+                flag = 'tanks_bots'
+            elif flag == 'map':
+                line_tiles = []
+                for line_1 in line.split():
+                    for char in line_1:
+                        line_tiles.append(char)
+                map.append(line_tiles.copy())
+            elif flag == 'tanks_bots':
+                list = eval(line)
+                list_tile = list[5]
+                for i in range(len(list_tile)):
+                    list_tile[i] = pos(list_tile[i][0], list_tile[i][1])
+                list[5] = list_tile
+                tanks_bots_list.append(list) #list = [tank.x, tank.y, tank.ang, tank.type, tank.ID, screen, tank.list_tile, tank.hp]
+                       
+    return [map_maker(map), tanks_bots_list]
 
 
 # "map_maker/templates/ice and ground/"
