@@ -60,7 +60,7 @@ class Button:
         elif self.type == 'exit_game':
             return 'exit()'
         elif self.type == 'go_back':
-            return 'menu_main()'
+            return 'back_stage()'
         elif self.type == 'start_game':
             return 'start_function()'
         elif self.type == 'choose_level':
@@ -77,10 +77,24 @@ class Button:
             return 'menu_multiplayer_join()'
         elif self.type == "music":
             return 'music()'
+        elif self.type == "restart":
+            return 'start_function()'
+        elif self.type == 'to_main_menu':
+            return 'menu_main()'
         elif self.type == "on":
             return 'on()'
         elif self.type == "off":
             return 'off()'
+        elif self.type == '1':
+            return 'one()'
+        elif self.type == '2':
+            return 'two()'
+        elif self.type == '3':
+            return 'three()'
+        elif self.type == '4':
+            return 'four()'
+        elif self.type == '5':
+            return 'five()'
         else:
             return 'print("in_progress")'
 

@@ -19,7 +19,7 @@ def menu_main():
 
     finished = False
 
-    menu = Static(screen, 0, 0, w, h, 'metall')
+    menu = Static(screen, 0, 0, w, h, 'metal')
     button1 = Button(screen, 250, 10, 300, 100, 'singleplayer')
     button2 = Button(screen, 250, 130, 300, 100, 'multiplayer')
     button3 = Button(screen, 250, 250, 300, 100, 'level_constructor')
@@ -50,10 +50,10 @@ def menu_main():
 
 
 def menu_singleplayer():
-    def start_function():
-        ending = game.game_main(game_input, tank_type)
-        if ending != None:
-            eval(ending)
+
+
+    def back_stage():
+        menu_main()
 
     pygame.init()
 
@@ -67,7 +67,7 @@ def menu_singleplayer():
 
     finished = False
 
-    menu = Static(screen, 0, 0, w, h, 'metall')
+    menu = Static(screen, 0, 0, w, h, 'metal')
     button1 = Button(screen, 10, 10, 150, 50, 'go_back')
     button2 = Button(screen, 250, 490, 300, 100, 'start_game')
     button3 = Button(screen, 550, 350, 200, 66, 'choose_level')
@@ -106,6 +106,10 @@ def menu_singleplayer():
 
 
 def menu_multiplayer():
+
+    def back_stage():
+        menu_main()
+
     time_meazure = 0
     pygame.init()
 
@@ -114,7 +118,7 @@ def menu_multiplayer():
 
     finished = False
 
-    menu = Static(screen, 0, 0, w, h, 'metall')
+    menu = Static(screen, 0, 0, w, h, 'metal')
     button1 = Button(screen, 10, 10, 150, 50, 'go_back')
     button2 = Button(screen, 250, 100, 300, 100, 'host_game')
     button3 = Button(screen, 250, 220, 300, 100, 'join_game')
@@ -142,6 +146,10 @@ def menu_multiplayer():
 
 
 def menu_multiplayer_host():
+
+    def back_stage():
+        menu_multiplayer()
+
     def start_function():
         server.server_main(ip_entry.text, port_entry.text, game_input)
 
@@ -156,7 +164,7 @@ def menu_multiplayer_host():
 
     finished = False
 
-    menu = Static(screen, 0, 0, w, h, 'metall')
+    menu = Static(screen, 0, 0, w, h, 'metal')
     button1 = Button(screen, 10, 10, 150, 50, 'go_back')
     button2 = Button(screen, 100, 250, 200, 66, 'choose_level')
     button3 = Button(screen, 250, 490, 300, 100, 'start_game')
@@ -214,6 +222,10 @@ def menu_multiplayer_host():
 
 
 def menu_multiplayer_join():
+
+    def back_stage():
+        menu_multiplayer()
+
     def start_function():
         client.client_main(ip_entry.text, port_entry.text)
 
@@ -228,7 +240,7 @@ def menu_multiplayer_join():
 
     finished = False
 
-    menu = Static(screen, 0, 0, w, h, 'metall')
+    menu = Static(screen, 0, 0, w, h, 'metal')
     button1 = Button(screen, 10, 10, 150, 50, 'go_back')
     button2 = Button(screen, 250, 490, 300, 100, 'start_game')
     tank1 = Button(screen, 220, 150, 100, 200, 'tank_light')
@@ -285,6 +297,10 @@ def menu_multiplayer_join():
 
 
 def menu_settings():
+
+    def back_stage():
+        menu_main()
+
     pygame.init()
 
     screen = pygame.display.set_mode((w, h))
@@ -292,9 +308,9 @@ def menu_settings():
 
     finished = False
 
-    menu = Static(screen, 0, 0, w, h, 'metall')
-    button1 = Button(screen, 10, 10, 150, 50, 'go_back')
-    button2 = Button(screen, 10, 80, 150, 50, 'music')
+    menu = Static(screen, 0, 0, w, h, 'metal')
+    button1 = Button(screen, 300, 100, 250, 100, 'go_back')
+    button2 = Button(screen, 300, 220, 250, 100, 'music')
     buttons = [button1, button2]
 
     while not finished:
@@ -320,6 +336,10 @@ def menu_settings():
 
 
 def music():
+
+    def back_stage():
+        menu_settings()
+
     pygame.init()
 
     screen = pygame.display.set_mode((w, h))
@@ -327,10 +347,15 @@ def music():
 
     finished = False
 
-    menu = Static(screen, 0, 0, w, h, 'metall')
-    button1 = Button(screen, 350, 100, 150, 50, 'on')
-    button2 = Button(screen, 350, 170, 150, 50, 'off')
-    buttons = [button1, button2]
+    menu = Static(screen, 0, 0, w, h, 'metal')
+    button1 = Button(screen, 270, 100, 250, 100, 'go_back')
+    button2 = Button(screen, 140, 250, 250, 100, 'on')
+    button3 = Button(screen, 400, 250, 250, 100, 'off')
+
+    buttons = [button1, button2, button3]
+
+    for i in range(5):
+        buttons.append(Button(screen, 140 + i * 105, 400, 90, 50, str(i + 1)))
 
     while not finished:
         screen.fill((0, 0, 0))
@@ -362,9 +387,10 @@ def death():
 
     finished = False
 
-    menu = Static(screen, 0, 0, w, h, 'floppa')
-    button1 = Button(screen, 10, 10, 150, 50, 'go_back')
-    buttons = []
+    menu = Static(screen, 0, 0, w, h, 'game_over')
+    button1 = Button(screen, 325, 400, 150, 50, 'restart')
+    button2 = Button(screen, 325, 470, 150, 50, 'to_main_menu')
+    buttons = [button1, button2]
 
     while not finished:
         screen.fill((0, 0, 0))
@@ -397,8 +423,9 @@ def win():
     finished = False
 
     menu = Static(screen, 0, 0, w, h, 'floppa_win')
-    button1 = Button(screen, 10, 10, 150, 50, 'go_back')
-    buttons = []
+    button1 = Button(screen, 325, 400, 150, 50, 'restart')
+    button2 = Button(screen, 325, 470, 150, 50, 'to_main_menu')
+    buttons = [button1, button2]
 
     while not finished:
         screen.fill((0, 0, 0))
@@ -422,7 +449,6 @@ def win():
         clock.tick(FPS)
 
 
-
 '''Вспомогательные функции'''
 
 
@@ -440,6 +466,12 @@ def choose_level():
                     game_input += '/' + splited_path[j]
 
 
+def start_function():
+    ending = game.game_main(game_input, tank_type)
+    if ending != None:
+        eval(ending)
+
+
 def set_tank_type(type):
     global tank_type
     tank_type = type
@@ -447,10 +479,32 @@ def set_tank_type(type):
 
 def on():
     pygame.mixer.music.load("music/1.mp3")
+    pygame.mixer.music.set_volume(0.7)
     pygame.mixer.music.play()
 
 
 def off():
     pygame.mixer.music.pause()
+
+
+def one():
+    pygame.mixer.music.set_volume(0.19)
+
+
+def two():
+    pygame.mixer.music.set_volume(0.19 * 2)
+
+
+def three():
+    pygame.mixer.music.set_volume(0.19 * 3)
+
+
+def four():
+    pygame.mixer.music.set_volume(0.19 * 4)
+
+
+def five():
+    pygame.mixer.music.set_volume(0.19 * 5)
+
 
 menu_main()
