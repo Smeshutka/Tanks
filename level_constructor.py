@@ -123,6 +123,18 @@ def draw_dots_from_list_tile(screen, tanks, map, observating_point, k):
             pygame.draw.line(screen, (255,255,255), (ar_for_lines[i][0], ar_for_lines[i][1]),
                              (ar_for_lines[i+1][0],ar_for_lines[i+1][1]))
 
+def del_all_in_tile(ma,mb,tanks,pl_flags):
+    for tank in tanks:
+        if tank.x == ma and tank.y == mb:
+            tank.kill()
+        else:
+            for dot in tank.list_tile:
+                if dot[0] == ma and dot[1] == mb:
+                    tank.list_tile.remove(dot)
+    for flag in pl_flags:
+        if flag[0] == ma and flag[1] == mb:
+            pl_flags.remove(flag)
+
 def level_constructor_main():
     # print('Please, print start number')
     # n = call_n_for_fast_save()
@@ -135,7 +147,10 @@ def level_constructor_main():
     finished = False
     mouse_pressed = False
     updating_tank_list = False
+    rubber_mod = False
+    player_flag = False
 
+    pl_flags = []
     fa, fw, fs, fd, fo, f_ctrl = 0, 0, 0, 0, 0, 0
     scale = 1
     time = 0
@@ -161,6 +176,8 @@ def level_constructor_main():
     change_menu_button = Change_menu_mode_button(screen, w - a * tiles_menu.k - a * 2, h - a * 2, a * 2, a * 2, 'cycle')
     hp_minus_button = HP_button(screen, w - a * tiles_menu.k + a, h-2*a, a, a, 'minus', False)
     hp_plus_button = HP_button(screen, w - 2*a, h-2*a, a, a, 'plus', True)
+    player_flag_button = Button(screen, w - a * tiles_menu.k, tiles_menu.y0, a,a, 'flag')
+    rubber_button = Button(screen, w-2*a, tiles_menu.y0,a,a,'rubber')
     # fast_save_button = SaveLoad_Button(screen, 0, 0, a*2,a*2, 'save')
     to_main_menu_button = button_class.Button(screen, 10, 10, 150, 50, 'to_main_menu')
 
@@ -182,6 +199,8 @@ def level_constructor_main():
         generator.draw(2)
         change_menu_button.draw(2)
         if tiles_menu.mode == 'tanks':
+            player_flag_button.draw(1)
+            rubber_button.draw(1)
             hp_minus_button.draw(1)
             hp_plus_button.draw(1)
         to_main_menu_button.check_pressed()
@@ -282,11 +301,25 @@ def level_constructor_main():
                         hp_minus_button.change_tank_hp(tiles_menu)
                     elif hp_plus_button.check_pressed() and tiles_menu.mode == 'tanks':
                         hp_plus_button.change_tank_hp(tiles_menu)
+                    elif player_flag_button.check_pressed() and tiles_menu.mode == 'tanks' and not(updating_tank_list):
+                        player_flag = True
+                        rubber_mod = False
+                    elif rubber_button.check_pressed() and tiles_menu.mode == 'tanks' and not(updating_tank_list):
+                        player_flag = False
+                        rubber_mod = True
                     #                elif fast_save_button.check_pressed():
                     #                    fast_save_button.fast_save(n, map)
                     #                    n += 1
                     else:
-                        if updating_tank_list:
+                        if player_flag:
+                            ma, mb = calculate_map_pressed(map, chosen_tile, scale)
+                            if ma != -1 and mb != -1:
+                                pl_flags.append([ma,mb])
+                        elif rubber_mod:
+                            ma, mb = calculate_map_pressed(map, chosen_tile, scale)
+                            if ma != -1 and mb != -1:
+                                del_all_in_tile(ma,mb,tanks,pl_flags)
+                        elif updating_tank_list:
                             ma, mb = calculate_map_pressed(map, chosen_tile, scale)
                             if ma != -1 and mb != -1:
                                 if ma == editing_tank.list_tile[0][0] and mb == editing_tank.list_tile[0][1]:
@@ -302,6 +335,8 @@ def level_constructor_main():
                                 editing_tank = put_tank_on_map(tanks, ma, mb, tiles_menu, bots_number)
                                 bots_number += 1
                                 updating_tank_list = True
+                                player_flag = False
+                                rubber_flag = False
                 if event.button == 4:
                     scale += 0.3
                 if event.button == 5 and scale > 0.3:
