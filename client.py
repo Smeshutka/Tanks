@@ -145,7 +145,7 @@ def client_main(ip, port):
                     if event.button == 3:
                         tank_player.reload_right()
             tank_player.game_over()
-            
+
             erunda = prepared_keys(tank_player)
             client.send(pickle.dumps(erunda))
 

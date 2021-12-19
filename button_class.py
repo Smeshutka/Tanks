@@ -62,7 +62,7 @@ class Button:
         elif self.type == 'go_back':
             return 'menu_main()'
         elif self.type == 'start_game':
-            return 'game.game_main(game_input, tank_type)'
+            return 'start_function()'
         elif self.type == 'choose_level':
             return 'choose_level()'
         elif self.type == 'tank_light':
@@ -72,9 +72,9 @@ class Button:
         elif self.type == 'tank_heavy':
             return 'set_tank_type("heavy")'
         elif self.type == 'host_game':
-            return 'server.server_main(ip_entry.text, port_entry.text)'
+            return 'menu_multiplayer_host()'
         elif self.type == 'join_game':
-            return 'client.client_main(ip_entry.text, port_entry.text)'
+            return 'menu_multiplayer_join()'
         elif self.type == "music":
             return 'music()'
         elif self.type == "on":
@@ -86,6 +86,7 @@ class Button:
 
     def set_bg_color(self, bg_color):
         self.bg_color = bg_color
+
 
 class Static:
     '''класс кнопок'''
@@ -173,8 +174,3 @@ class Entry:
 
     def change_text(self, text):
         self.text = text
-
-def music_on():
-    pg.mixer.music.load('1.mp3')
-def music_off():
-    pg.mixer.music.load('1.mp3')
