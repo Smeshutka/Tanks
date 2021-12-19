@@ -80,7 +80,7 @@ class Button:
         elif self.type == "on":
             return 'on()'
         elif self.type == "off":
-            return 'music_off()'
+            return 'off()'
         else:
             return 'print("in_progress")'
 
