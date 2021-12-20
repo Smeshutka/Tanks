@@ -64,7 +64,7 @@ def client_main(ip, port, tank_type):
         finished = False
         screen = pygame.display.set_mode((w, h))
 
-        data_all_start = pickle.loads(client.recv(10240))
+        data_all_start = pickle.loads(client.recv(102400))
         client.send(pickle.dumps(""))
 
         # Декодирование стартовой информации
