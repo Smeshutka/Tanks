@@ -76,17 +76,16 @@ def server_main(ip, port, game_input, num_of_pl):
         server.bind(to_connect_with)
 
         number_of_players = int(num_of_pl)
-        print(number_of_players)
         server.listen(number_of_players)
         players = {}
         for i in range(number_of_players):
-            player,adress = server.accept()
+            player, adress = server.accept()
             players['pl'+str(i)] = player
         print('connected!')
         
         players_start_tank_types = {}
         for ID in players.keys():
-            players_start_tank_types[ID] = pickle.loads(player.recv(1024))
+            players_start_tank_types[ID] = pickle.loads(players[ID].recv(1024))
         
         clock = pygame.time.Clock()
         finished = False
@@ -94,19 +93,20 @@ def server_main(ip, port, game_input, num_of_pl):
         screen = pygame.display.set_mode((w, h))
 
         map, tanks_bots_list, tanks_players = file_reader_level(game_input)
+        map = Map(map, screen)
         dict_tanks_players = {}
         for i in range(number_of_players):
-            tank_player = create_tank_player(tanks_players[0], tanks_players[1], tanks_players[2],
+            tank_player = create_tank_player(tanks_players[i][0], tanks_players[i][1], tanks_players[i][2],
                                              players_start_tank_types['pl'+str(i)],
-                                             tanks_players[3], screen)
+                                             tanks_players[i][3], screen)
             dict_tanks_players['pl'+str(i)] = tank_player
         
-        dict_tanks_bots = {}
+        #dict_tanks_bots = {}
         for i in range(len(tanks_bots_list)):
-            tank_bot = create_tank_bot(tanks_bots_list[0], tanks_bots_list[1], tanks_bots_list[2],
-                                       tanks_bots_list[3], tanks_bots_list[4], screen,
-                                       tanks_bots_list[5], tanks_bots_list[6])
-            dict_tanks_bots[str(i)] = tank_bot
+            tank_bot = create_tank_bot(tanks_bots_list[i][0], tanks_bots_list[i][1], tanks_bots_list[i][2],
+                                       tanks_bots_list[i][3], tanks_bots_list[i][4], screen,
+                                       tanks_bots_list[i][5], tanks_bots_list[i][6])
+            #dict_tanks_bots[str(i)] = tank_bot
         
         observating_point = dict_tanks_players['pl0'].center
 
