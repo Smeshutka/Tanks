@@ -84,7 +84,7 @@ def server_main(ip, port, game_input, num_of_pl):
         print('connected!')
         
         players_start_tank_types = {}
-        for ID in players.keys():
+        for ID in players:
             players_start_tank_types[ID] = pickle.loads(players[ID].recv(1024))
         
         clock = pygame.time.Clock()
@@ -110,7 +110,7 @@ def server_main(ip, port, game_input, num_of_pl):
         
         observating_point = dict_tanks_players['pl0'].center
 
-        for ID in players.keys():
+        for ID in players:
             start_data = all_start(tanks, map, dict_tanks_players[ID])
             players[ID].send(pickle.dumps(start_data))
             players[ID].recv(100)
@@ -127,7 +127,7 @@ def server_main(ip, port, game_input, num_of_pl):
                 tank.draw(observating_point)
 
             for tank in tanks_bots:
-                for ID in players.keys():
+                for ID in players:
                     meet_with_tank(tank, dict_tanks_players[ID])
 
             for tank in tanks:
@@ -156,13 +156,13 @@ def server_main(ip, port, game_input, num_of_pl):
                     tank.meet_with_bullet(bul)
 
             # отправка игроку данных
-            for ID in players.keys():
+            for ID in players:
                 send_all = all(tanks, bullets, dict_tanks_players[ID], map)
                 players[ID].send(pickle.dumps(send_all))
             
             map.list_update = []
 
-            for ID in players.keys():
+            for ID in players:
                 data = pickle.loads(players[ID].recv(1024))
                 update_tank_keys(dict_tanks_players[ID], data)
                 
