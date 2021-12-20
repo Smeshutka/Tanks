@@ -75,8 +75,8 @@ def server_main(ip, port, game_input, num_of_pl):
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server.bind(to_connect_with)
 
-        number_of_players = num_of_pl
-
+        number_of_players = int(num_of_pl)
+        print(number_of_players)
         server.listen(number_of_players)
         players = {}
         for i in range(number_of_players):
@@ -86,7 +86,7 @@ def server_main(ip, port, game_input, num_of_pl):
         
         players_start_tank_types = {}
         for ID in players.keys():
-            players_start_tank_types[ID].append(pickle.loads(player.recv(1024)))
+            players_start_tank_types[ID] = pickle.loads(player.recv(1024))
         
         clock = pygame.time.Clock()
         finished = False
@@ -97,7 +97,8 @@ def server_main(ip, port, game_input, num_of_pl):
         dict_tanks_players = {}
         for i in range(number_of_players):
             tank_player = create_tank_player(tanks_players[0], tanks_players[1], tanks_players[2],
-                                             players_start_tank_types[i], tanks_players[3], screen)
+                                             players_start_tank_types['pl'+str(i)],
+                                             tanks_players[3], screen)
             dict_tanks_players['pl'+str(i)] = tank_player
         
         dict_tanks_bots = {}
