@@ -123,7 +123,7 @@ def server_main(ip, port, game_input, num_of_pl):
             map.draw(observating_point)
 
             for tank in tanks:
-                tank.before_draw(observating_point)
+                #tank.before_draw(observating_point)
                 tank.draw(observating_point)
 
             for tank in tanks_bots:
