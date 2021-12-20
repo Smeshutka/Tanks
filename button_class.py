@@ -60,9 +60,9 @@ class Button:
         elif self.type == 'exit_game':
             return 'exit()'
         elif self.type == 'go_back':
-            return 'back_stage()'
+            return 'menu_main()'
         elif self.type == 'start_game':
-            return 'start_function()'
+            return 'game.game_main(game_input, tank_type)'
         elif self.type == 'choose_level':
             return 'choose_level()'
         elif self.type == 'tank_light':
@@ -72,35 +72,32 @@ class Button:
         elif self.type == 'tank_heavy':
             return 'set_tank_type("heavy")'
         elif self.type == 'host_game':
-            return 'menu_multiplayer_host()'
+            return 'server.server_main(ip_entry.text, port_entry.text)'
         elif self.type == 'join_game':
-            return 'menu_multiplayer_join()'
+            return 'client.client_main(ip_entry.text, port_entry.text)'
         elif self.type == "music":
             return 'music()'
-        elif self.type == "restart":
-            return 'start_function()'
-        elif self.type == 'to_main_menu':
-            return 'menu_main()'
         elif self.type == "on":
             return 'on()'
         elif self.type == "off":
             return 'off()'
-        elif self.type == '1':
+        elif self.type=='1':
             return 'one()'
-        elif self.type == '2':
+        elif self.type=='2':
             return 'two()'
-        elif self.type == '3':
+        elif self.type=='3':
             return 'three()'
-        elif self.type == '4':
+        elif self.type=='4':
             return 'four()'
-        elif self.type == '5':
+        elif self.type=='5':
             return 'five()'
+        elif self.type=='volume':
+            return 'volume_change()'
         else:
             return 'print("in_progress")'
 
     def set_bg_color(self, bg_color):
         self.bg_color = bg_color
-
 
 class Static:
     '''класс кнопок'''
@@ -188,3 +185,8 @@ class Entry:
 
     def change_text(self, text):
         self.text = text
+
+def music_on():
+    pg.mixer.music.load('1.mp3')
+def music_off():
+    pg.mixer.music.load('1.mp3')
