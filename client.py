@@ -49,12 +49,14 @@ class all_start:
     pass
 
 
-def client_main(ip, port):
+def client_main(ip, port, tank_type):
     try:
         to_connect_with = (ip, int(port))
 
         client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         client.connect(to_connect_with)
+
+        client.send(pickle.dumps(tank_type))
 
         pygame.init()
 
@@ -146,8 +148,8 @@ def client_main(ip, port):
                         tank_player.reload_right()
             tank_player.game_over()
 
-            erunda = prepared_keys(tank_player)
-            client.send(pickle.dumps(erunda))
+            keys = prepared_keys(tank_player)
+            client.send(pickle.dumps(keys))
 
     except ValueError:
         print('ошибка в формате данных')

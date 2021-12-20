@@ -58,14 +58,15 @@ class all:
 class all_start:
     def __init__(self, tanks, map, tank_player):
         self.map = convert_map(map)
-        self.tank_player = [tank_player.center.x, tank_player.center.y, tank_player.body_ang, tank_player.type,
-                            tank_player.ID]
+        self.tank_player = [tank_player.center.x, tank_player.center.y, tank_player.body_ang,
+                            tank_player.type, tank_player.ID]
         self.tanks_init = {}
         for tank in tanks:
-            self.tanks_init[tank.ID] = [tank.center.x, tank.center.y, tank.body_ang, tank.type, tank.ID]
+            self.tanks_init[tank.ID] = [tank.center.x, tank.center.y, tank.body_ang,
+                                        tank.type, tank.ID]
 
 
-def server_main(ip, port, game_input):
+def server_main(ip, port, game_input, num_of_pl):
     try:
         to_connect_with = (ip, int(port))
 
@@ -74,38 +75,44 @@ def server_main(ip, port, game_input):
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server.bind(to_connect_with)
 
-        number_of_players = 1
+        number_of_players = num_of_pl
 
         server.listen(number_of_players)
-        player1, adress = server.accept()
-        if number_of_players == 2:
-            player2, adress = server.accept()
+        players = {}
+        for i in range(number_of_players):
+            player,adress = server.accept()
+            players['pl'+str(i)] = player
         print('connected!')
-
+        
+        players_start_tank_types = {}
+        for ID in players.keys():
+            players_start_tank_types[ID].append(pickle.loads(player.recv(1024)))
+        
         clock = pygame.time.Clock()
         finished = False
 
         screen = pygame.display.set_mode((w, h))
 
-        map = Map(map_maker(file_reader(game_input)), screen)
+        map, tanks_bots_list, tanks_players = file_reader_level(game_input)
+        dict_tanks_players = {}
+        for i in range(number_of_players):
+            tank_player = create_tank_player(tanks_players[0], tanks_players[1], tanks_players[2],
+                                             players_start_tank_types[i], tanks_players[3], screen)
+            dict_tanks_players['pl'+str(i)] = tank_player
+        
+        dict_tanks_bots = {}
+        for i in range(len(tanks_bots_list)):
+            tank_bot = create_tank_bot(tanks_bots_list[0], tanks_bots_list[1], tanks_bots_list[2],
+                                       tanks_bots_list[3], tanks_bots_list[4], screen,
+                                       tanks_bots_list[5], tanks_bots_list[6])
+            dict_tanks_bots[str(i)] = tank_bot
+        
+        observating_point = dict_tanks_players['pl0'].center
 
-        tank_player1 = create_tank_player(12, 12, 0, "light", "0", screen)
-        tank_player1.hp = 10
-        if number_of_players == 2:
-            tank_player2 = create_tank_player(14, 14, 1.57, "light", "1", screen)
-
-        list_tile = [pos(5, 5), pos(5, 20), pos(20, 20), pos(20, 5)]
-        bot = create_tank_bot(20, 20, 0, "heavy", "2", screen, list_tile, 2)
-
-        observating_point = tank_player1.center
-
-        start_data = all_start(tanks, map, tank_player1)
-        player1.send(pickle.dumps(start_data))
-        player1.recv(100)
-        if number_of_players == 2:
-            start_data = all_start(tanks, map, tank_player2)
-            player2.send(pickle.dumps(start_data))
-            player2.recv(100)
+        for ID in players.keys():
+            start_data = all_start(tanks, map, dict_tanks_players[ID])
+            players[ID].send(pickle.dumps(start_data))
+            players[ID].recv(100)
 
         for tank in tanks:
             tank.before_draw(observating_point)
@@ -115,21 +122,12 @@ def server_main(ip, port, game_input):
             map.draw(observating_point)
 
             for tank in tanks:
-                flag = True
-                if tank is tank_player1:
-                    flag = False
-                if number_of_players == 2:
-                    if tank is tank_player2:
-                        flag = False
-
-                if flag:
-                    tank.before_draw(observating_point)
+                tank.before_draw(observating_point)
                 tank.draw(observating_point)
 
             for tank in tanks_bots:
-                meet_with_tank(tank, tank_player1)
-                if number_of_players == 2:
-                    meet_with_tank(tank, tank_player2)
+                for ID in players.keys():
+                    meet_with_tank(tank, dict_tanks_players[ID])
 
             for tank in tanks:
                 tank.draw_turret()
@@ -157,19 +155,16 @@ def server_main(ip, port, game_input):
                     tank.meet_with_bullet(bul)
 
             # отправка игроку данных
-            send_all = all(tanks, bullets, tank_player1, map)
-            player1.send(pickle.dumps(send_all))
-            if number_of_players == 2:
-                send_all = all(tanks, bullets, tank_player2, map)
-                player2.send(pickle.dumps(send_all))
+            for ID in players.keys():
+                send_all = all(tanks, bullets, dict_tanks_players[ID], map)
+                players[ID].send(pickle.dumps(send_all))
+            
             map.list_update = []
 
-            data = pickle.loads(player1.recv(1024))
-            update_tank_keys(tank_player1, data)
-            if number_of_players == 2:
-                data = pickle.loads(player2.recv(1024))
-                update_tank_keys(tank_player2, data)
-
+            for ID in players.keys():
+                data = pickle.loads(players[ID].recv(1024))
+                update_tank_keys(dict_tanks_players[ID], data)
+                
     except ValueError:
         print('ошибка в формате данных')
 
