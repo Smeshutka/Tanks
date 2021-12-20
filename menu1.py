@@ -151,7 +151,7 @@ def menu_multiplayer_host():
         menu_multiplayer()
 
     def start_function():
-        server.server_main(ip_entry.text, port_entry.text, game_input)
+        server.server_main(ip_entry.text, port_entry.text, game_input, players_entry.text)
 
     time_meazure = 0
     pygame.init()
@@ -214,6 +214,7 @@ def menu_multiplayer_host():
             if event.type == pygame.KEYUP:
                 ip_entry.writing(event, True)
                 port_entry.writing(event)
+                players_entry.writing(event)
 
         pygame.display.update()
 
@@ -227,7 +228,7 @@ def menu_multiplayer_join():
         menu_multiplayer()
 
     def start_function():
-        client.client_main(ip_entry.text, port_entry.text)
+        client.client_main(ip_entry.text, port_entry.text, tank_type)
 
     time_meazure = 0
     pygame.init()
